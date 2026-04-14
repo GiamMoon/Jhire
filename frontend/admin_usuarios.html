@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JHIRE 2026 | Gestor de Usuarios Admin</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "var(--color-primary)", "surface": "var(--color-surface)", "on-surface": "var(--color-on-surface)", "surface-container": "var(--color-surface-container)", "surface-container-low": "var(--color-surface-container-low)", "surface-container-high": "var(--color-surface-container-high)", "outline": "var(--color-outline)", "outline-variant": "var(--color-outline-variant)", "error": "var(--color-error)", "on-error": "var(--color-on-error)", "success": "#16a34a", "success-container": "#dcfce7" }, fontFamily: { "headline": ["Manrope"], "body": ["Inter"] } } } }
+    </script>
+    
+    <style id="dynamic-theme">
+        :root { --color-primary: #003461; --color-surface: #faf8ff; --color-on-surface: #131b2e; --color-surface-container: #eaedff; --color-surface-container-low: #f2f4ff; --color-surface-container-high: #d9e2ff; --color-outline: #727781; --color-outline-variant: #c2c7d1; --color-error: #ba1a1a; --color-on-error: #ffffff; }
+        html.dark { --color-primary: #a6c8ff; --color-surface: #111318; --color-on-surface: #e2e2e9; --color-surface-container: #1d2024; --color-surface-container-low: #191b20; --color-surface-container-high: #282a2f; --color-outline: #8c9199; --color-outline-variant: #42474e; --color-error: #ffb4ab; --color-on-error: #690005; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface flex flex-col min-h-screen transition-colors duration-300">
+
+<aside class="fixed top-0 left-0 h-screen w-64 bg-surface border-r border-outline-variant/20 z-50 flex flex-col hidden md:flex shadow-xl">
+    <div class="h-16 flex items-center px-6 border-b border-outline-variant/20 bg-surface-container-low">
+        <span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+        <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
+    </div>
+    
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">dashboard</span> Panel Central
+        </a>
+        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">inventory_2</span> Inventarios
+        </a>
+        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">category</span> Catálogo
+        </a>
+        
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
+        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm">
+            <span class="material-symbols-outlined">group</span> Gestor Usuarios
+        </a>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">analytics</span> Reportes y BI
+        </a>
+    </nav>
+    
+    <div class="p-4 border-t border-outline-variant/20">
+        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">settings</span> Mi Perfil
+        </a>
+        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">logout</span> Salir
+        </button>
+    </div>
+</aside>
+
+<main class="md:ml-64 min-h-screen bg-surface flex flex-col">
+    <!-- HEADER -->
+    <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+            <span class="text-xl font-bold text-primary font-headline tracking-tighter">Panel Maestro 2026</span>
+        </div>
+        <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all">
+            <img src="https://ui-avatars.com/api/?name=Admin+Root&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
+            <div class="hidden md:block text-left relative top-[1px]">
+                <p class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Admin Root</p>
+                <p class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">Operaciones</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="p-6 md:p-10 flex-1 flex flex-col items-center justify-center text-center">
+        <span class="material-symbols-outlined text-7xl text-outline-variant/50 mb-4">group_add</span>
+        <h2 class="text-3xl font-headline font-black text-on-surface mb-2">Gestor de Usuarios</h2>
+        <p class="text-on-surface-variant max-w-md mx-auto mb-8">Esta sección estará dedicada al control maestro de roles y accesos del sistema corporativo JHIRE 2026.</p>
+        <button onclick="alert('Funcionalidad en desarrollo para la fase CRM')" class="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-lg hover:-translate-y-1 transition-transform">Crear Nuevo Usuario</button>
+    </div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

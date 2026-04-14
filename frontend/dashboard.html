@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JHIRE 2026 | Panel de Control Administrativo</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "var(--color-primary)",
+                        "surface": "var(--color-surface)",
+                        "on-surface": "var(--color-on-surface)",
+                        "surface-container": "var(--color-surface-container)",
+                        "surface-container-low": "var(--color-surface-container-low)",
+                        "surface-container-high": "var(--color-surface-container-high)",
+                        "outline": "var(--color-outline)",
+                        "outline-variant": "var(--color-outline-variant)",
+                        "error": "var(--color-error)",
+                        "on-error": "var(--color-on-error)",
+                        "success": "#16a34a",
+                        "success-container": "#dcfce7"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style id="dynamic-theme">
+        :root {
+            --color-primary: #003461;
+            --color-surface: #faf8ff;
+            --color-on-surface: #131b2e;
+            --color-surface-container: #eaedff;
+            --color-surface-container-low: #f2f4ff;
+            --color-surface-container-high: #d9e2ff;
+            --color-outline: #727781;
+            --color-outline-variant: #c2c7d1;
+            --color-error: #ba1a1a;
+            --color-on-error: #ffffff;
+        }
+
+        html.dark {
+            --color-primary: #a6c8ff;
+            --color-surface: #111318;
+            --color-on-surface: #e2e2e9;
+            --color-surface-container: #1d2024;
+            --color-surface-container-low: #191b20;
+            --color-surface-container-high: #282a2f;
+            --color-outline: #8c9199;
+            --color-outline-variant: #42474e;
+            --color-error: #ffb4ab;
+            --color-on-error: #690005;
+        }
+        
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+    </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-surface font-body text-on-surface flex flex-col min-h-screen transition-colors duration-300">
+
+<!-- SIDEBAR -->
+<aside class="fixed top-0 left-0 h-screen w-64 bg-surface border-r border-outline-variant/20 z-50 flex flex-col hidden md:flex shadow-xl">
+    <div class="h-16 flex items-center px-6 border-b border-outline-variant/20 bg-surface-container-low">
+        <span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+        <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
+    </div>
+    
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm">
+            <span class="material-symbols-outlined">dashboard</span> Panel Central
+        </a>
+        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">inventory_2</span> Inventarios
+        </a>
+        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">category</span> Catálogo
+        </a>
+        
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
+        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">group</span> Gestor Usuarios
+        </a>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">analytics</span> Reportes y BI
+        </a>
+    </nav>
+    
+    <div class="p-4 border-t border-outline-variant/20">
+        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">settings</span> Mi Perfil
+        </a>
+        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">logout</span> Salir
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN APP -->
+<main class="md:ml-64 min-h-screen bg-surface">
+    
+    <!-- HEADER -->
+    <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+            <span class="text-xl font-bold text-primary font-headline tracking-tighter">Panel Maestro 2026</span>
+            <div class="relative ml-8 hidden sm:block">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+                <input type="text" placeholder="Búsqueda central..." class="pl-10 pr-4 py-1.5 bg-surface-container border border-outline-variant/30 rounded-lg text-sm text-on-surface focus:ring-2 focus:ring-primary w-64 shadow-inner transition-all outline-none">
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface relative">
+                <span class="material-symbols-outlined text-[20px]">notifications</span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+            </button>
+            <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all">
+                <img src="https://ui-avatars.com/api/?name=Admin+Root&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
+                <div class="hidden md:block text-left relative top-[1px]">
+                    <p class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Admin Root</p>
+                    <p class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">Operaciones</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- DASHBOARD CONTENT -->
+    <section class="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
+        
+        <!-- Welcome & Actions -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-outline-variant/20">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-headline font-black text-on-surface tracking-tight">Métricas en Vivo</h2>
+                <p class="text-outline mt-1 font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-success animate-pulse"></span> Sistema Operativo Inteligente JHIRE Activo</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <button id="btnCreateUser" class="px-5 py-2 bg-success text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">person_add</span> NUEVO USUARIO
+                </button>
+                <button onclick="window.location.href='http://localhost:8000/api/reports/excel'" class="px-5 py-2 bg-surface text-primary border-2 border-primary/20 text-xs font-bold rounded-lg shadow-sm hover:bg-primary/5 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">download</span> EXPORTAR
+                </button>
+            </div>
+        </div>
+        
+        <!-- KPIs -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20 hover:border-primary/50 transition-colors relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 opacity-5 group-hover:scale-150 transition-transform duration-700">
+                    <span class="material-symbols-outlined text-9xl">payments</span>
+                </div>
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <span class="p-2 bg-primary/10 text-primary rounded-xl material-symbols-outlined">payments</span>
+                    <span class="px-2 py-1 bg-success-container text-success text-[10px] font-black rounded-lg uppercase tracking-wider flex items-center gap-1">+Ventas</span>
+                </div>
+                <p class="text-outline text-xs font-bold uppercase tracking-widest relative z-10">Volumen Ventas</p>
+                <h3 id="total-sales" class="text-3xl lg:text-3xl font-headline font-black text-on-surface mt-2 tracking-tighter relative z-10">Cargando...</h3>
+            </div>
+            
+            <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20 hover:border-primary/50 transition-colors relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 opacity-5 group-hover:rotate-12 transition-transform duration-700">
+                    <span class="material-symbols-outlined text-9xl">psychology</span>
+                </div>
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <span class="p-2 bg-indigo-500/10 text-indigo-500 rounded-xl material-symbols-outlined">psychology</span>
+                </div>
+                <p class="text-outline text-xs font-bold uppercase tracking-widest relative z-10">Precisión Modelo IA</p>
+                <div class="flex items-baseline gap-2 relative z-10 mt-2">
+                    <h3 id="forecast-accuracy" class="text-3xl lg:text-4xl font-headline font-black text-indigo-600 tracking-tighter">Cargando...</h3>
+                    <span class="text-xs font-bold text-outline">/ 100%</span>
+                </div>
+            </div>
+            
+            <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20 hover:border-primary/50 transition-colors relative overflow-hidden group lg:col-span-2 relative">
+                <div class="flex flex-col h-full z-10 relative">
+                    <div class="flex items-center gap-2 mb-2 text-primary font-bold text-xs uppercase tracking-widest">
+                        <span class="material-symbols-outlined text-sm">robot_2</span> Motor IA Predictivo
+                    </div>
+                    <div id="ai-anomalies-box" class="bg-primary/5 border border-primary/20 rounded-xl p-4 flex-1 flex flex-col justify-center">
+                        <h4 class="text-sm font-bold text-on-surface mb-1 shadow-sm"><span class="w-1.5 h-1.5 inline-block rounded-full bg-primary mb-0.5"></span> Analizando métricas...</h4>
+                        <p class="text-xs text-outline leading-relaxed italic">Espere mientras el motor de Scikit-Learn procesa el pronóstico diario base histórico.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Big Area: Graph / Rankings -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Ranking de Productos -->
+            <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/20 flex flex-col">
+                <h4 class="text-lg font-headline font-black text-on-surface mb-2 border-b border-outline-variant/20 pb-4">Top Productos por Ingresos</h4>
+                
+                <div id="product-ranking-list" class="space-y-3 flex-1 overflow-y-auto max-h-[300px] mt-4 px-2 no-scrollbar">
+                    <p class="text-xs text-outline text-center py-10 font-bold">Cargando ranking en tiempo real...</p>
+                </div>
+            </div>
+            
+            <!-- Órdenes Pendientes -->
+            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-2xl border border-primary/20 flex flex-col relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-400"></div>
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h4 class="text-xl font-headline font-black text-on-surface">Órdenes a Procesar</h4>
+                        <p class="text-xs text-outline font-medium mt-1">Acuerdos pactados esperando validación administrativa.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openHistoryModal()" class="w-10 h-10 md:w-auto md:px-4 md:py-2 bg-surface text-primary border border-outline-variant/30 text-xs font-bold rounded-xl hover:bg-surface-container transition-all flex justify-center items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">history</span> <span class="hidden md:inline">Historial</span>
+                        </button>
+                        <button id="refreshAdminOrdersBtn" class="w-10 h-10 bg-primary/10 text-primary border border-primary/20 text-xs font-bold rounded-xl hover:bg-primary hover:text-white transition-all flex justify-center items-center">
+                            <span class="material-symbols-outlined text-[18px]">refresh</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto border border-outline-variant/20 rounded-xl max-h-[300px]">
+                    <table class="w-full text-left border-collapse bg-surface min-w-[600px]">
+                        <thead class="sticky top-0 bg-surface-container-low shadow-sm z-10">
+                            <tr class="text-on-surface-variant text-[10px] font-extrabold uppercase tracking-widest border-b border-outline-variant/30">
+                                <th class="p-4 rounded-tl-xl text-primary">ID Venta</th>
+                                <th class="p-4">Cliente (Mail)</th>
+                                <th class="p-4 border-r border-outline-variant/20">Liquidación</th>
+                                <th class="p-4 bg-error/5 text-error">SLA Op. Restante</th>
+                                <th class="p-4 text-right rounded-tr-xl">Autorizar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminOrdersTableBody">
+                            <tr><td colspan="5" class="p-10 text-center text-outline text-xs font-bold animate-pulse">Obteniendo despachos pendientes de red...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+    </section>
+</main>
+
+<!-- Create User Modal -->
+<div id="createUserModal" class="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm pointer-events-none flex items-center justify-center transition-opacity opacity-0">
+    <div class="bg-surface w-11/12 max-w-sm rounded-3xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300">
+        <div class="bg-primary p-6 text-white text-center relative overflow-hidden">
+            <span class="material-symbols-outlined text-4xl mb-2 relative z-10" style="font-variation-settings: 'wght' 200;">person_add</span>
+            <h3 class="text-xl font-headline font-black relative z-10">Registrar Cliente Local</h3>
+            <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+        </div>
+        <form id="createUserForm" class="p-6">
+            <div id="createErrorBox" class="hidden mb-4 p-3 bg-error/10 text-error text-xs font-bold rounded-lg text-center border border-error/20"></div>
+            <div class="space-y-4">
+                <div>
+                   <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Correo Electrónico</label>
+                   <input type="email" id="newEmail" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
+                </div>
+                <div>
+                   <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Contraseña Provisional</label>
+                   <input type="text" id="newPassword" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none" value="Temporal123">
+                   <p class="text-[10px] text-outline mt-1 italic px-1">La clave se generará automáticamente recomendada.</p>
+                </div>
+            </div>
+            <div class="mt-8 flex gap-3">
+                <button type="button" id="closeUserModal" class="flex-1 px-4 py-3 bg-surface-container text-on-surface font-bold text-sm rounded-xl hover:bg-surface-container-high transition-colors">Cancelar</button>
+                <button type="submit" class="flex-2 w-full px-4 py-3 bg-primary text-white font-bold text-sm rounded-xl hover:opacity-90 transition-opacity shadow-lg">Crear Acceso</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- History Modal -->
+<div id="historyModal" class="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm pointer-events-none flex items-center justify-center transition-opacity opacity-0">
+    <div class="bg-surface w-11/12 max-w-5xl rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+        <div class="p-6 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-3xl bg-primary/10 p-2 rounded-xl">history</span>
+                <div>
+                    <h3 class="text-xl md:text-2xl font-headline font-black text-on-surface">Auditoría General de Órdenes</h3>
+                    <p class="text-xs text-outline mt-1 font-medium">Registro histórico 2026 de estado comercial por cliente.</p>
+                </div>
+            </div>
+            <button onclick="closeHistoryModal()" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-error/10 hover:border-error/30 hover:text-error transition-all flex items-center justify-center text-outline">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+        <div class="p-6 flex-1 overflow-y-auto no-scrollbar bg-surface">
+            <div class="mb-6 relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+                <input id="historySearchInput" type="text" placeholder="Buscar por ID (#ORD-123) o Correo del Operador..." class="w-full pl-12 pr-4 py-4 bg-surface-container-low border border-outline-variant/30 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary outline-none">
+            </div>
+            <div class="border border-outline-variant/20 rounded-xl overflow-hidden">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="bg-surface-container text-on-surface-variant text-[10px] font-black uppercase tracking-widest">
+                            <th class="p-4">Identificador</th>
+                            <th class="p-4">Cliente (Mail)</th>
+                            <th class="p-4 text-right border-r border-outline-variant/20">Total Facturado</th>
+                            <th class="p-4 text-center">Estado Auditoría</th>
+                            <th class="p-4 text-right">Marca de Tiempo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr><td colspan="5" class="p-12 text-center text-outline text-xs font-bold">Procesando y sincronizando historiales operativos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openHistoryModal() {
+        const modal = document.getElementById('historyModal');
+        modal.classList.remove('pointer-events-none');
+        setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        if(window.loadHistoryAdminOrders) window.loadHistoryAdminOrders();
+    }
+    
+    function closeHistoryModal() {
+        const modal = document.getElementById('historyModal');
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('pointer-events-none'), 300);
+    }
+    
+    // User Modal Logic
+    const btnCreateUser = document.getElementById('btnCreateUser');
+    const createUserModal = document.getElementById('createUserModal');
+    const closeUserModal = document.getElementById('closeUserModal');
+    
+    if (btnCreateUser && createUserModal) {
+        btnCreateUser.addEventListener('click', () => {
+            createUserModal.classList.remove('pointer-events-none');
+            setTimeout(() => createUserModal.classList.remove('opacity-0'), 10);
+        });
+        closeUserModal.addEventListener('click', () => {
+             createUserModal.classList.add('opacity-0');
+             setTimeout(() => createUserModal.classList.add('pointer-events-none'), 300);
+        });
+    }
+</script>
+<script src="app.js"></script>
+
+</body>
+</html>

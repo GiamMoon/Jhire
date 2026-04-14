@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JHIRE 2026 - Facturación y Compliance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                colors: {
+                  "primary": "var(--color-primary)",
+                  "surface": "var(--color-surface)",
+                  "on-surface": "var(--color-on-surface)",
+                  "surface-container": "var(--color-surface-container)",
+                  "surface-container-low": "var(--color-surface-container-low)",
+                  "surface-container-high": "var(--color-surface-container-high)",
+                  "surface-container-highest": "var(--color-surface-container-highest)",
+                  "outline": "var(--color-outline)",
+                  "outline-variant": "var(--color-outline-variant)",
+                  "error": "var(--color-error)",
+                  "on-error": "var(--color-on-error)"
+                },
+                fontFamily: {
+                  "headline": ["Manrope"],
+                  "body": ["Inter"]
+                }
+              }
+            }
+          }
+    </script>
+    <style id="dynamic-theme">
+        :root {
+          --color-primary: #003461;
+          --color-surface: #faf8ff;
+          --color-on-surface: #131b2e;
+          --color-surface-container: #eaedff;
+          --color-surface-container-low: #f2f4ff;
+          --color-surface-container-high: #d9e2ff;
+          --color-surface-container-highest: #c5d2ff;
+          --color-outline: #727781;
+          --color-outline-variant: #c2c7d1;
+          --color-error: #ba1a1a;
+          --color-on-error: #ffffff;
+        }
+
+        html.dark {
+          --color-primary: #a6c8ff;
+          --color-surface: #111318;
+          --color-on-surface: #e2e2e9;
+          --color-surface-container: #1d2024;
+          --color-surface-container-low: #191b20;
+          --color-surface-container-high: #282a2f;
+          --color-surface-container-highest: #33353a;
+          --color-outline: #8c9199;
+          --color-outline-variant: #42474e;
+          --color-error: #ffb4ab;
+          --color-on-error: #690005;
+        }
+    </style>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body { font-family: 'Inter', sans-serif; }
+      h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen">
+<!-- SideNavBar -->
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 min-h-screen">
+<!-- TopNavBar -->
+<header class="w-full h-16 sticky top-0 z-40 bg-surface border-b border-slate-100 shadow-sm flex items-center justify-between px-6">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-blue-900">JHIRE 2025</span>
+<div class="hidden md:flex items-center bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+<span class="material-symbols-outlined text-slate-400 text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64" placeholder="Buscar comprobantes..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200">
+<img alt="User profile avatar" data-alt="professional portrait of a manufacturing executive in a clean office environment with natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkPWb0LlJfglObC28ujCSht3SMvDDUL-j31Chz6gp4K0sHCwdXHsGMlts_UMvvkRkMKQ2M5glJx02JH_VIpDrOIo3MpEJ_1e0ozNpQ-J7cb3-qxLGggPEX0gzM6lVuM3WPqNLGQVTf8s5lvuMYZ5M_UEkT9Kn6Qp20rXT_zf8ADafRAOTm1ulPjYYKl1ns1BFn2wFtbAVc-C52O-JX3JX15_Xu4QM86BbJ0m4y7NkeSTT6O81J8RQhlj9AVyfuFebf_Tm7mVZzEgg"/>
+</div>
+</div>
+</header>
+<div class="p-8 max-w-7xl mx-auto space-y-8">
+<!-- Page Header -->
+<div class="flex justify-between items-end">
+<div>
+<h1 class="text-3xl font-extrabold text-primary tracking-tight">Facturación &amp; Compliance</h1>
+<p class="text-on-surface-variant mt-1">Gestión de comprobantes electrónicos bajo normativa SUNAT 2025.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container-low text-primary font-semibold rounded-md flex items-center gap-2 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">visibility_off</span> Anonimizar Reportes
+                    </button>
+<button class="px-4 py-2 bg-primary text-white font-semibold rounded-md flex items-center gap-2 shadow-lg shadow-primary/10">
+<span class="material-symbols-outlined">add_circle</span> Crear Comprobante
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-8">
+<!-- Invoice Form Column -->
+<div class="col-span-12 lg:col-span-7 space-y-6">
+<section class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<div class="flex items-center gap-3 mb-6 border-b border-outline-variant/15 pb-4">
+<span class="material-symbols-outlined text-primary">edit_document</span>
+<h2 class="text-xl font-bold">Emisión de Comprobante</h2>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Tipo de Documento</label>
+<select class="w-full bg-surface-container-low border-none border-b-2 border-primary/20 focus:border-primary focus:ring-0 rounded-t-sm text-sm">
+<option>Factura Electrónica (F001)</option>
+<option>Boleta de Venta (B001)</option>
+<option>Nota de Crédito</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">RUC / DNI Receptor</label>
+<div class="flex gap-2">
+<input id="rucInput" class="flex-grow bg-surface-container-low border-none border-b-2 border-primary/20 focus:border-primary focus:ring-0 rounded-t-sm text-sm" placeholder="20600000000" type="text" maxlength="11"/>
+<button id="validateRucBtn" class="p-2 bg-secondary-container text-on-secondary-container hover:bg-secondary hover:text-white transition-colors rounded-md" type="button">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</div>
+</div>
+<div class="space-y-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Razón Social / Nombres</label>
+<input class="w-full bg-surface-container-low border-none border-b-2 border-primary/20 focus:border-primary focus:ring-0 rounded-t-sm text-sm" type="text"/>
+</div>
+<div class="space-y-4 pt-4">
+<h3 class="text-sm font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">list_alt</span> Detalle del Item
+                                </h3>
+<div class="grid grid-cols-12 gap-4 items-end bg-surface p-3 rounded-lg">
+<div class="col-span-6 space-y-1">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Descripción</label>
+<input class="w-full bg-surface border-outline-variant/30 rounded-md text-sm" placeholder="Producto o Servicio" type="text"/>
+</div>
+<div class="col-span-2 space-y-1">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Cant.</label>
+<input class="w-full bg-surface border-outline-variant/30 rounded-md text-sm" type="number" value="1"/>
+</div>
+<div class="col-span-3 space-y-1">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">P. Unit</label>
+<input class="w-full bg-surface border-outline-variant/30 rounded-md text-sm" placeholder="0.00" type="number"/>
+</div>
+<div class="col-span-1 flex justify-center pb-1">
+<button class="text-error hover:bg-error-container p-1 rounded-md" type="button">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<button class="text-xs font-bold text-primary-container flex items-center gap-1 hover:underline" type="button">
+<span class="material-symbols-outlined text-sm">add</span> AGREGAR ITEM
+                                </button>
+</div>
+<!-- Compliance & Privacy -->
+<div class="mt-8 p-4 bg-surface-container-low rounded-xl border-l-4 border-primary/40 space-y-4">
+<div class="flex items-start gap-3">
+<input class="mt-1 rounded text-primary focus:ring-primary" id="compliance" type="checkbox"/>
+<label class="text-xs text-on-surface-variant leading-relaxed" for="compliance">
+                                        Confirmo que los datos ingresados han sido validados mediante el motor <strong>Pydantic-Core</strong>. El documento cumple con los esquemas XML UBL 2.1 exigidos por SUNAT.
+                                    </label>
+</div>
+<div class="flex items-start gap-3">
+<input class="mt-1 rounded text-primary focus:ring-primary" id="law29733" type="checkbox"/>
+<label class="text-xs text-on-surface-variant leading-relaxed" for="law29733">
+<strong>Ley N° 29733:</strong> Doy mi consentimiento para el tratamiento de mis datos personales en cumplimiento con la Ley de Protección de Datos Personales del Perú.
+                                    </label>
+</div>
+</div>
+<div class="flex justify-end gap-4 pt-4">
+<button class="px-6 py-2 border border-outline text-on-surface font-semibold rounded-md" type="button">Guardar Borrador</button>
+<button class="px-6 py-2 bg-primary text-white font-bold rounded-md flex items-center gap-2" type="submit">
+<span class="material-symbols-outlined">send</span> VALIDAR Y ENVIAR
+                                </button>
+</div>
+</form>
+</section>
+</div>
+<!-- Status & List Column -->
+<div class="col-span-12 lg:col-span-5 space-y-8">
+<!-- Validation Engine Card -->
+<section class="bg-primary rounded-xl p-6 text-white overflow-hidden relative shadow-xl">
+<div class="relative z-10 space-y-4">
+<div class="flex justify-between items-start">
+<div class="bg-surface/10 p-2 rounded-lg backdrop-blur-md">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<span class="text-[10px] font-bold tracking-widest bg-tertiary-container px-2 py-1 rounded text-white uppercase">Engine Active</span>
+</div>
+<div>
+<h3 class="text-lg font-bold">Validación Pydantic</h3>
+<p class="text-blue-100 text-xs mt-1">Garantizando integridad estructural en tiempo real.</p>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs">
+<span class="opacity-70">Sintaxis XML</span>
+<span class="font-bold">Correcto</span>
+</div>
+<div class="w-full bg-surface/10 h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary-fixed h-full w-[100%]"></div>
+</div>
+<div class="flex justify-between text-xs">
+<span class="opacity-70">Esquema UBL 2.1</span>
+<span class="font-bold">Validando...</span>
+</div>
+<div class="w-full bg-surface/10 h-1.5 rounded-full overflow-hidden">
+<div class="bg-surface/40 h-full w-[65%]"></div>
+</div>
+</div>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-10">
+<span class="material-symbols-outlined text-[160px]" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+</section>
+<!-- Recent Activity List -->
+<section class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">history</span> Últimos Emitidos
+                            </h3>
+<a class="text-xs font-bold text-on-surface-variant hover:text-primary" href="dashboard.html">VER TODO</a>
+</div>
+<div class="space-y-4">
+<!-- Invoice Item -->
+<div class="flex items-center justify-between p-3 border-b border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">F001-0000452</p>
+<p class="text-[10px] text-on-surface-variant font-medium">CONSTRUCTORA DEL SUR S.A.C.</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-on-surface">S/ 12,450.00</p>
+<span class="text-[9px] font-bold text-tertiary-container uppercase">Enviado a SUNAT</span>
+</div>
+</div>
+<!-- Invoice Item -->
+<div class="flex items-center justify-between p-3 border-b border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">F001-0000451</p>
+<p class="text-[10px] text-on-surface-variant font-medium">LOGÍSTICA INTEGRAL PERÚ</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-on-surface">S/ 3,120.50</p>
+<span class="text-[9px] font-bold text-tertiary-container uppercase">Enviado a SUNAT</span>
+</div>
+</div>
+<!-- Invoice Item Error -->
+<div class="flex items-center justify-between p-3 border-b border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-error-container/20 flex items-center justify-center text-error">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">F001-0000450</p>
+<p class="text-[10px] text-on-surface-variant font-medium">IMPORTACIONES ANTARES</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-on-surface">S/ 850.00</p>
+<span class="text-[9px] font-bold text-error uppercase">Rechazado SUNAT</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Compliance Stats -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-4 rounded-xl">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Cumplimiento Mensual</p>
+<p class="text-2xl font-black text-primary mt-1">98.4%</p>
+<div class="mt-2 flex items-center gap-1 text-[10px] text-tertiary font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span> +2.1%
+                            </div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Errores de Validación</p>
+<p class="text-2xl font-black text-error mt-1">03</p>
+<div class="mt-2 flex items-center gap-1 text-[10px] text-on-surface-variant font-bold">
+                                Semanal
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Law 29733 Detail Section (Anonymization Focus) -->
+<section class="bg-surface rounded-xl border-l-8 border-secondary-fixed p-8 flex flex-col md:flex-row items-center gap-8">
+<div class="w-24 h-24 flex-shrink-0 bg-slate-50 rounded-full flex items-center justify-center border-4 border-white shadow-sm">
+<span class="material-symbols-outlined text-4xl text-secondary">privacy_tip</span>
+</div>
+<div class="flex-grow">
+<h3 class="text-xl font-bold text-on-surface">Control de Privacidad &amp; Anonimización</h3>
+<p class="text-sm text-on-surface-variant mt-2 max-w-2xl leading-relaxed">
+                        En cumplimiento con la <strong>Ley N° 29733</strong>, JHIRE 2026 permite el enmascaramiento automático de datos sensibles (Nombres, RUC, Direcciones) en sus reportes financieros globales para proteger la identidad de sus clientes y proveedores.
+                    </p>
+<div class="flex gap-4 mt-6">
+<button class="px-4 py-2 bg-secondary text-white text-xs font-bold rounded-md hover:bg-on-secondary-fixed-variant transition-colors">CONFIGURAR REGLAS DE ANONIMIZACIÓN</button>
+<button class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-md border border-slate-200">VER REGISTRO DE CONSENTIMIENTOS</button>
+</div>
+</div>
+<div class="w-full md:w-64 p-4 bg-slate-50 rounded-lg border border-slate-100">
+<div class="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase">
+<span>Estado de Auditoría</span>
+<span class="text-tertiary">Activo</span>
+</div>
+<div class="mt-3 flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-white bg-slate-300 overflow-hidden">
+<img alt="Auditor 1" data-alt="professional legal auditor reviewing digital records in a modern workspace" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASOKFPi6qmgfUcAk725v9oV9irUDCIbkr2wHTfnG7TPzcsvC8ZH3SczIVaQvk1HyhP1eUzs171cg-bqm-NrgLmHNHFt3toBpmYBxxSTK1H_sDZL65NfEzckMV8JvEHpSs7_B_Hg5iUlR9NDuVE0WYq2yrid2tdQfRTMV_Yzwfsy11QvrK7yv2_LJnkRSD1TMN9GVxr0P7Nil0VW7V6rrG0k43LmfAaVXC9lv33HAX7ObecrF_F8THO-1huD51En2ix85ll1umzoZY"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-slate-300 overflow-hidden">
+<img alt="Auditor 2" data-alt="data protection officer smiling while working on data privacy compliance software" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcRNGbfZK8xa-CxyYnvBrzRmhO6QXuKfePHDXXlbmmkkT6OdNOzZbO8eR0XDVUyhtzOOj7_t1lNMq_veaJc5_hdiALNCCxqsZ2hBqVyZHHktGpomEolybCq1fqvc9Id06RRzS4H05aUB1Jb2ZVcJU6yJb-JfTY2R-wnWfdpaFrccU62xC4Xpw0ZGqiHc_D5i1E7mDUxnXvBp-iz-tqOAGKLzjw2l3OBl-QTfzfjGKhsmbCUWAheW3Clu9nhD09d_gPtZhoj5HWYOE"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-primary text-white flex items-center justify-center text-[10px] font-bold">
+                            +12
+                        </div>
+</div>
+<p class="text-[10px] text-slate-400 mt-2">Personal con acceso a datos sensibles bajo NDA.</p>
+</div>
+</section>
+</div>
+</main>
+<script src="app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const rucInput = document.getElementById('rucInput');
+        const validateBtn = document.getElementById('validateRucBtn');
+        
+        if (rucInput && validateBtn) {
+            validateBtn.addEventListener('click', () => {
+                const ruc = rucInput.value.trim();
+                
+                // Regex para DNI (8 digitos) o RUC (11 digitos)
+                if(!/^\d{8}$|^\d{11}$/.test(ruc)) {
+                    Swal.fire('Error de Formato', 'El RUC/DNI debe contener 8 o 11 dígitos numéricos.', 'error');
+                    return;
+                }
+                
+                if (ruc.length === 11) {
+                    if (!/^(10|15|16|17|20)/.test(ruc)) {
+                        Swal.fire('Error RUC', 'El RUC debe comenzar con 10, 15, 16, 17 o 20.', 'error');
+                        return;
+                    }
+                    
+                    // Modulo 11
+                    const multipliers = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+                    let total = 0;
+                    for (let i = 0; i < 10; i++) {
+                        total += parseInt(ruc.charAt(i)) * multipliers[i];
+                    }
+                    const rem = total % 11;
+                    let check = 11 - rem;
+                    if (check === 10) check = 0;
+                    else if (check === 11) check = 1;
+                    
+                    if (parseInt(ruc.charAt(10)) !== check) {
+                        Swal.fire('RUC Inválido', 'El algoritmo de control Módulo-11 de SUNAT determinó que este RUC es incorrecto.', 'error');
+                        return;
+                    }
+                }
+                
+                Swal.fire('Validación Completa', `El formato del documento ${ruc} cumple con las validaciones lógicas y estructurales de SUNAT.`, 'success');
+            });
+        }
+    });
+</script>
+<footer class="bg-[#0b1829] text-[#e2e2e9] py-16 border-t border-white/10 mt-auto dark:bg-[#05090e]">
+    <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
+        <div class="md:col-span-1">
+            <div class="text-2xl font-black mb-4 text-on-primary-container">JHIRE</div>
+            <p class="text-surface-container/60 mb-6 leading-relaxed">Su aliado estratégico en suministros industriales de limpieza. Liderando el sector operativo 2026.</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-lg mb-4 text-white">Empresa</h4>
+            <ul class="space-y-3 text-surface-container/60">
+                <li><a href="sobre_nosotros.html" class="hover:text-primary transition-colors">Sobre Nosotros</a></li>
+                <li><a href="contacto_comercial.html" class="hover:text-primary transition-colors">Contacto Comercial</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-lg mb-4 text-white">Legal</h4>
+            <ul class="space-y-3 text-surface-container/60">
+                <li><a href="politica_privacidad.html" class="hover:text-primary transition-colors">Política de Privacidad</a></li>
+                <li><a href="terminos_condiciones.html" class="hover:text-primary transition-colors">Términos y Condiciones</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-lg mb-4 text-white">Redes y Contacto</h4>
+            <ul class="space-y-3 text-surface-container/60 flex flex-col">
+                <li><a href="https://wa.me/51970801549" target="_blank" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-lg">chat</span> WhatsApp: +51 970 801 549</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-8 mt-12 pt-8 border-t border-outline/10 text-center text-surface-container/40">
+        <p>© 2026 JHIRE. Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<!-- Mobile Offcanvas Menu -->
+<div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-[60] backdrop-blur-sm hidden transition-opacity opacity-0"></div>
+<aside id="mobileMenuSidebar" class="fixed top-0 right-0 h-full w-72 bg-surface shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="h-20 flex items-center justify-between px-6 border-b border-outline/10">
+        <span class="font-black text-primary tracking-widest uppercase text-sm">Menú</span>
+        <button id="closeMobileMenuBtn" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface">
+            <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+    </div>
+    <div class="flex flex-col p-6 gap-6 flex-1 overflow-y-auto">
+        <a href="inicio.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">home</span> Inicio</a>
+        <a href="catalogo_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">inventory_2</span> Catálogo</a>
+        <a href="mis_pedidos.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">receipt_long</span> Mis Pedidos</a>
+        <hr class="border-outline/10">
+        <a href="perfil_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">account_circle</span> Mi Perfil</a>
+    </div>
+</aside>
+
+</body></html>

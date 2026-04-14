@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>JHIRE 2026 | Acceso al Sistema</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+        <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                colors: {
+                  "primary": "var(--color-primary)",
+                  "surface": "var(--color-surface)",
+                  "on-surface": "var(--color-on-surface)",
+                  "surface-container": "var(--color-surface-container)",
+                  "surface-container-low": "var(--color-surface-container-low)",
+                  "surface-container-high": "var(--color-surface-container-high)",
+                  "surface-container-highest": "var(--color-surface-container-highest)",
+                  "outline": "var(--color-outline)",
+                  "outline-variant": "var(--color-outline-variant)",
+                  "error": "var(--color-error)",
+                  "on-error": "var(--color-on-error)"
+                },
+                fontFamily: {
+                  "headline": ["Manrope"],
+                  "body": ["Inter"]
+                }
+              }
+            }
+          }
+    </script>
+    <style id="dynamic-theme">
+        :root {
+          --color-primary: #003461;
+          --color-surface: #faf8ff;
+          --color-on-surface: #131b2e;
+          --color-surface-container: #eaedff;
+          --color-surface-container-low: #f2f4ff;
+          --color-surface-container-high: #d9e2ff;
+          --color-surface-container-highest: #c5d2ff;
+          --color-outline: #727781;
+          --color-outline-variant: #c2c7d1;
+          --color-error: #ba1a1a;
+          --color-on-error: #ffffff;
+        }
+
+        html.dark {
+          --color-primary: #a6c8ff;
+          --color-surface: #111318;
+          --color-on-surface: #e2e2e9;
+          --color-surface-container: #1d2024;
+          --color-surface-container-low: #191b20;
+          --color-surface-container-high: #282a2f;
+          --color-surface-container-highest: #33353a;
+          --color-outline: #8c9199;
+          --color-outline-variant: #42474e;
+          --color-error: #ffb4ab;
+          --color-on-error: #690005;
+        }
+    </style>
+    <style>
+        .no-line-input {
+            border: none;
+            border-bottom: 2px solid #edeeef;
+            border-radius: 0;
+            background-color: #f3f4f5;
+        }
+        .no-line-input:focus {
+            outline: none;
+            box-shadow: none;
+            border-bottom: 2px solid #00346f;
+            background-color: #ffffff;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-surface font-body text-on-surface min-h-screen flex items-center justify-center relative overflow-hidden">
+    <!-- Architectural background shapes -->
+    <div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-br from-surface to-surface-container-low -z-10"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10"></div>
+    <div class="absolute top-16 left-16 w-64 h-64 bg-primary-container/5 rounded-full blur-3xl -z-10"></div>
+
+    <main class="w-full max-w-md bg-surface-container-lowest p-10 rounded-2xl shadow-xl shadow-primary/5 border border-white/50 relative backdrop-blur-md">
+        
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-headline font-extrabold text-primary tracking-tight">JHIRE 2025</h1>
+            <p id="formSubtitle" class="text-sm font-medium text-on-surface-variant mt-2 uppercase tracking-widest">Portal de Acceso Autorizado</p>
+        </div>
+
+        <form id="loginForm" class="space-y-6">
+            <div id="errorBox" class="hidden p-3 bg-red-50 text-error text-xs font-bold rounded-lg border border-red-200"></div>
+            
+            <div>
+                <label class="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Usuario / Correo</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">mail</span>
+                    <input id="email" type="text" class="no-line-input w-full pl-10 pr-4 py-3 text-sm transition-all text-on-surface font-medium" placeholder="usuario@empresa.com" required/>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Contraseña</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">lock</span>
+                    <input id="password" type="password" class="no-line-input w-full pl-10 pr-4 py-3 text-sm transition-all text-on-surface font-medium" placeholder="••••••••" required/>
+                </div>
+            </div>
+
+            <button id="submitBtn" type="submit" class="w-full py-4 mt-2 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-bold text-sm tracking-wide shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                INGRESAR AL SISTEMA
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+            <p class="text-xs text-on-surface-variant font-medium">¿Aún no tienes cuenta? <button id="btnOpenRegister" class="text-primary font-bold hover:underline">Regístrate</button></p>
+        </div>
+    </main>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="hidden fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-surface rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+            <button id="closeRegisterModal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h3 class="text-xl font-headline font-bold text-primary mb-4">Registro de Usuario</h3>
+            <form id="registerForm" class="space-y-4">
+                <div id="registerErrorBox" class="hidden p-2 bg-red-50 text-error text-xs font-bold rounded"></div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Nombres</label>
+                        <input id="regFirstName" type="text" class="w-full px-3 py-2 border rounded-lg bg-slate-50 text-sm" placeholder="Opcional" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Apellidos</label>
+                        <input id="regLastName" type="text" class="w-full px-3 py-2 border rounded-lg bg-slate-50 text-sm" placeholder="Opcional" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Número de Teléfono</label>
+                    <input id="regPhone" type="tel" class="w-full px-3 py-2 border rounded-lg bg-slate-50 text-sm" placeholder="+51 999 999 999" required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Correo Electrónico</label>
+                    <input id="regEmail" type="email" class="w-full px-3 py-2 border rounded-lg bg-slate-50 text-sm" placeholder="usuario@empresa.com" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Contraseña</label>
+                    <input id="regPassword" type="password" class="w-full px-3 py-2 border rounded-lg bg-slate-50 text-sm" placeholder="••••••••" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Confirmar Contraseña</label>
+                    <input id="regConfirmPassword" type="password" class="w-full px-3 py-2 border rounded-lg bg-slate-50 text-sm" placeholder="••••••••" required>
+                </div>
+                <div class="flex items-start gap-2 mt-2">
+                    <input type="checkbox" id="regConsent" required class="mt-1 border-slate-300 rounded text-primary focus:ring-primary h-4 w-4">
+                    <label for="regConsent" class="text-[10px] text-slate-500 leading-tight">
+                        He leído y acepto la Política de Privacidad. Consiento el tratamiento de mis datos personales según la <strong>Ley N° 29733</strong> de Protección de Datos Personales de Perú.
+                    </label>
+                </div>
+                <button type="submit" class="w-full py-2 bg-primary text-white rounded-lg font-bold mt-2 hover:opacity-90">Completar Registro</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

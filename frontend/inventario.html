@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JHIRE 2026 | Inventarios y Proveedores</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "var(--color-primary)",
+                        "surface": "var(--color-surface)",
+                        "on-surface": "var(--color-on-surface)",
+                        "surface-container": "var(--color-surface-container)",
+                        "surface-container-low": "var(--color-surface-container-low)",
+                        "surface-container-high": "var(--color-surface-container-high)",
+                        "outline": "var(--color-outline)",
+                        "outline-variant": "var(--color-outline-variant)",
+                        "error": "var(--color-error)",
+                        "on-error": "var(--color-on-error)",
+                        "success": "#16a34a",
+                        "success-container": "#dcfce7"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style id="dynamic-theme">
+        :root {
+            --color-primary: #003461;
+            --color-surface: #faf8ff;
+            --color-on-surface: #131b2e;
+            --color-surface-container: #eaedff;
+            --color-surface-container-low: #f2f4ff;
+            --color-surface-container-high: #d9e2ff;
+            --color-outline: #727781;
+            --color-outline-variant: #c2c7d1;
+            --color-error: #ba1a1a;
+            --color-on-error: #ffffff;
+        }
+
+        html.dark {
+            --color-primary: #a6c8ff;
+            --color-surface: #111318;
+            --color-on-surface: #e2e2e9;
+            --color-surface-container: #1d2024;
+            --color-surface-container-low: #191b20;
+            --color-surface-container-high: #282a2f;
+            --color-outline: #8c9199;
+            --color-outline-variant: #42474e;
+            --color-error: #ffb4ab;
+            --color-on-error: #690005;
+        }
+        
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+    </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-surface font-body text-on-surface flex flex-col min-h-screen transition-colors duration-300">
+
+<!-- SIDEBAR -->
+<aside class="fixed top-0 left-0 h-screen w-64 bg-surface border-r border-outline-variant/20 z-50 flex flex-col hidden md:flex shadow-xl">
+    <div class="h-16 flex items-center px-6 border-b border-outline-variant/20 bg-surface-container-low">
+        <span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+        <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
+    </div>
+    
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">dashboard</span> Panel Central
+        </a>
+        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm">
+            <span class="material-symbols-outlined">inventory_2</span> Inventarios
+        </a>
+        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">category</span> Catálogo
+        </a>
+        
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
+        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">group</span> Gestor Usuarios
+        </a>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">analytics</span> Reportes y BI
+        </a>
+    </nav>
+    
+    <div class="p-4 border-t border-outline-variant/20">
+        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">settings</span> Mi Perfil
+        </a>
+        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">logout</span> Salir
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN APP -->
+<main class="md:ml-64 min-h-screen bg-surface flex flex-col">
+    
+    <!-- HEADER -->
+    <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+            <span class="text-xl font-bold text-primary font-headline tracking-tighter">Gestión de Inventarios y Proveedores</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all">
+                <img src="https://ui-avatars.com/api/?name=Admin+Root&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
+                <div class="hidden md:block text-left relative top-[1px]">
+                    <p class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Admin Root</p>
+                    <p class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">Operaciones</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- DASHBOARD CONTENT -->
+    <section class="p-6 md:p-10 flex-1 space-y-8 flex flex-col">
+        
+        <!-- Welcome & Actions -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-outline-variant/20">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-headline font-black text-on-surface tracking-tight">Supervisión en Vivo</h2>
+                <p id="inv-ai-suggestion" class="text-outline mt-1 font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-success animate-pulse"></span> Calculando predicciones logísticas...</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="document.getElementById('movementModal').classList.remove('hidden')" class="px-5 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-md hover:translate-y-px transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">add_box</span> REGISTRAR MOVIMIENTO
+                </button>
+            </div>
+        </div>
+        
+        <!-- KPIs -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+                <p class="text-outline text-xs font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm">inventory_2</span> Insumos / Componentes</p>
+                <h3 id="inv-raw-materials" class="text-3xl font-headline font-black text-primary tracking-tighter">0 <span class="text-sm font-medium text-outline">unidades</span></h3>
+            </div>
+            
+            <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+                <p class="text-outline text-xs font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm">category</span> Productos para Venta</p>
+                <h3 id="inv-finished-products" class="text-3xl font-headline font-black text-primary tracking-tighter">0 <span class="text-sm font-medium text-outline">unidades</span></h3>
+            </div>
+            
+            <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20 border-l-4 border-l-error">
+                <p class="text-error text-xs font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm">warning</span> Escasez Crítica</p>
+                <h3 id="inv-low-stock" class="text-3xl font-headline font-black text-error tracking-tighter">0 <span class="text-sm font-medium text-outline">SKUs</span></h3>
+            </div>
+            
+            <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+                <p class="text-outline text-xs font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm">sync_alt</span> Movimientos Mes</p>
+                <h3 id="inv-movements-count" class="text-3xl font-headline font-black text-on-surface tracking-tighter">0 <span class="text-sm font-medium text-outline">registros</span></h3>
+            </div>
+        </div>
+        
+        <!-- Tables Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1">
+            
+            <!-- Proveedores -->
+            <div class="lg:col-span-1 bg-surface-container-low rounded-2xl border border-outline-variant/20 p-6 flex flex-col">
+                <h3 class="text-lg font-bold text-on-surface mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">local_shipping</span> Proveedores</h3>
+                <div id="supplierContainer" class="space-y-3 overflow-y-auto flex-1 pr-2">
+                    <!-- Dynamic Suppliers -->
+                </div>
+            </div>
+            
+            <!-- Histórico de Movimientos -->
+            <div class="lg:col-span-2 bg-surface-container-low rounded-2xl border border-outline-variant/20 p-6 flex flex-col">
+                <h3 class="text-lg font-bold text-on-surface mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">history</span> Historial de Movimientos</h3>
+                <div class="overflow-y-auto flex-1">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-surface-container">
+                            <tr class="text-[10px] font-black uppercase text-outline tracking-wider">
+                                <th class="p-3 rounded-tl-xl">Producto (SKU)</th>
+                                <th class="p-3">Detalle</th>
+                                <th class="p-3 text-right rounded-tr-xl">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="movementTableBody" class="divide-y divide-outline-variant/10 text-sm font-medium">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+</main>
+
+<!-- MOVEMENT MODAL -->
+<div id="movementModal" class="fixed inset-0 bg-on-surface/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl border border-outline-variant/20 flex flex-col pointer-events-auto">
+        <div class="p-5 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low">
+            <h3 class="text-lg font-bold font-headline">Registrar Operación</h3>
+            <button onclick="document.getElementById('movementModal').classList.add('hidden')" class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">close</span></button>
+        </div>
+        <form id="movementForm" class="p-5 flex flex-col gap-4">
+            <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Producto ID</label>
+                <input type="number" id="movProductId" required class="w-full bg-surface-container border border-outline-variant/30 rounded-lg p-2.5 text-sm focus:ring-primary focus:border-primary">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Tipo de Operación</label>
+                <select id="movType" required class="w-full bg-surface-container border border-outline-variant/30 rounded-lg p-2.5 text-sm focus:ring-primary focus:border-primary font-bold">
+                    <option value="Entrada" class="text-success">ENTRADA (Abastecimiento)</option>
+                    <option value="Salida" class="text-error">SALIDA (Reducción/Merma)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-1">Cantidad</label>
+                <input type="number" min="1" id="movQuantity" required class="w-full bg-surface-container border border-outline-variant/30 rounded-lg p-2.5 text-sm focus:ring-primary focus:border-primary">
+            </div>
+            
+            <div class="mt-2 flex gap-3">
+                <button type="button" onclick="document.getElementById('movementModal').classList.add('hidden')" class="flex-1 px-4 py-2 bg-surface text-outline border border-outline-variant/30 rounded-lg text-sm font-bold hover:bg-surface-container transition-colors">Cancelar</button>
+                <button type="submit" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">Aceptar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

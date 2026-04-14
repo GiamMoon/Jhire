@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JHIRE 2026 - CRM y Clientes y Prospección</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                colors: {
+                  "primary": "var(--color-primary)",
+                  "surface": "var(--color-surface)",
+                  "on-surface": "var(--color-on-surface)",
+                  "surface-container": "var(--color-surface-container)",
+                  "surface-container-low": "var(--color-surface-container-low)",
+                  "surface-container-high": "var(--color-surface-container-high)",
+                  "surface-container-highest": "var(--color-surface-container-highest)",
+                  "outline": "var(--color-outline)",
+                  "outline-variant": "var(--color-outline-variant)",
+                  "error": "var(--color-error)",
+                  "on-error": "var(--color-on-error)"
+                },
+                fontFamily: {
+                  "headline": ["Manrope"],
+                  "body": ["Inter"]
+                }
+              }
+            }
+          }
+    </script>
+    <style id="dynamic-theme">
+        :root {
+          --color-primary: #003461;
+          --color-surface: #faf8ff;
+          --color-on-surface: #131b2e;
+          --color-surface-container: #eaedff;
+          --color-surface-container-low: #f2f4ff;
+          --color-surface-container-high: #d9e2ff;
+          --color-surface-container-highest: #c5d2ff;
+          --color-outline: #727781;
+          --color-outline-variant: #c2c7d1;
+          --color-error: #ba1a1a;
+          --color-on-error: #ffffff;
+        }
+
+        html.dark {
+          --color-primary: #a6c8ff;
+          --color-surface: #111318;
+          --color-on-surface: #e2e2e9;
+          --color-surface-container: #1d2024;
+          --color-surface-container-low: #191b20;
+          --color-surface-container-high: #282a2f;
+          --color-surface-container-highest: #33353a;
+          --color-outline: #8c9199;
+          --color-outline-variant: #42474e;
+          --color-error: #ffb4ab;
+          --color-on-error: #690005;
+        }
+    </style>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .funnel-step {
+        clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%, 5% 50%);
+      }
+      .funnel-step:first-child {
+        clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%);
+      }
+      body { font-family: 'Inter', sans-serif; }
+      h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen flex flex-col min-h-screen">
+<!-- SideNavBar -->
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 min-h-screen bg-surface">
+<!-- TopAppBar -->
+<header class="w-full h-16 sticky top-0 z-40 bg-surface dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm dark:shadow-none flex items-center justify-between px-6">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-blue-900 dark:text-white tracking-tight">JHIRE 2025</span>
+<div class="relative hidden lg:block w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full bg-slate-50 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search sales, clients or products..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-px bg-slate-200 mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-xs font-bold text-blue-900">Eduardo Méndez</p>
+<p class="text-[10px] text-slate-500">Ventas Manager</p>
+</div>
+<img alt="User profile avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10" data-alt="professional portrait of a male sales manager in business attire with a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAiCh1RKbCqkl-zIpboQ6uftJ9ixbt07-8XEskRsJq7HunSi6sIQsxqVKZ_i7LPLbbP_L5IYKp4qznoCoaRefaHMeOVmCyPXqamVReyCNstO5g1iXTypJ9F-U65KHXc-zm8PSI-8grNSKMT979Abo3GuyE9f8NcanIUKjz24CEqO-jTNztp3DSdLJZJm8Q1Fmd633QNPqWO6tsirJ14B46SSclMUNH88t7qo_6HkfD4KjO8kCDDCZ5OmvBKy1h4gxL1FVXxfXc4lg"/>
+</div>
+</div>
+</header>
+<div class="p-8 max-w-7xl mx-auto space-y-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="text-3xl font-extrabold text-primary tracking-tight">Ventas &amp; Prospecting</h2>
+<p class="text-on-surface-variant mt-1">Vista centralizada de todos los clientes y patrones de comportamiento por IA.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-low text-primary font-semibold rounded-md hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+<span>Filters</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold rounded-md shadow-lg shadow-primary/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+<span>New Quotation</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid - KPIs and Funnel -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Ventas Funnel Visualization -->
+<div class="md:col-span-3 bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-slate-100/50">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-lg text-primary">Retención de Clientes</h3>
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Last 30 Días</span>
+</div>
+<div class="flex items-stretch h-32 w-full gap-1">
+<!-- Leads -->
+<div class="funnel-step flex-1 bg-primary flex flex-col items-center justify-center text-on-primary relative">
+<span class="text-2xl font-black">428</span>
+<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Leads</span>
+</div>
+<!-- Opportunities -->
+<div class="funnel-step flex-1 bg-primary/85 flex flex-col items-center justify-center text-on-primary">
+<span class="text-2xl font-black">156</span>
+<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Opportunities</span>
+</div>
+<!-- Quotations -->
+<div class="funnel-step flex-1 bg-primary/70 flex flex-col items-center justify-center text-on-primary">
+<span class="text-2xl font-black">84</span>
+<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Quotations</span>
+</div>
+<!-- Closed Ventas -->
+<div class="funnel-step flex-1 bg-primary/55 flex flex-col items-center justify-center text-on-primary">
+<span class="text-2xl font-black">32</span>
+<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Closed</span>
+</div>
+</div>
+<div class="mt-6 flex justify-around text-center">
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Valor Total</p>
+<p class="text-lg font-black text-primary">$1.2M</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ciclo Prom.</p>
+<p class="text-lg font-black text-primary">14 Días</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Conversión</p>
+<p class="text-lg font-black text-tertiary-container">7.4%</p>
+</div>
+</div>
+</div>
+<!-- Small KPI Card -->
+<div class="bg-primary bg-gradient-to-br from-primary to-primary-container p-6 rounded-xl text-on-primary flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined opacity-50 text-4xl mb-2" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+<h3 class="text-sm font-medium opacity-80">Meta Trimestral</h3>
+<p class="text-3xl font-black mt-1">78%</p>
+</div>
+<div class="mt-4">
+<div class="w-full bg-surface/20 h-2 rounded-full overflow-hidden">
+<div class="bg-surface h-full" style="width: 78%"></div>
+</div>
+<p class="text-[10px] mt-2 font-bold uppercase tracking-widest opacity-80">Restante: $240k</p>
+</div>
+</div>
+</div>
+<!-- Lower Section: Products and Activities -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Product Catalog (Left side) -->
+<div class="lg:col-span-1 space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-lg text-primary">Catálogo Industrial</h3>
+<button class="text-primary text-xs font-bold hover:underline">View All</button>
+</div>
+<div class="space-y-3">
+<!-- Product Item -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
+<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
+<img alt="Circular Industrial Brush" class="object-cover w-full h-full" data-alt="Close up high quality photograph of a steel circular industrial brush with metallic bristles and blue hub" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvLZYq7c_T_Wm_lZM-j0lFwSbw_b5g0Izy5fGG6g6exxL2lGNpMOi_t3McYwSOu5LAl02nmWzAoPFSalXL-L3anibsAyuy_weeMRRKPnt0nDWLg2Cp-GzK0fP_7XbMyAfC5nBzmUdf8zpyNnPkJR30UlN43rTwOSAgH4phQGUJsIUnWvFVZEg9ScBpQXMRpOMsqjKwjgIwanzRbz2RWlfhXGou-n7tpjH4fKJWsGTj8-8_NIM9KR2MkCoBJHpR8seraPF6f0-pCtc"/>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Acero Circular 400mm</h4>
+<p class="text-[10px] text-on-surface-variant">CAT: BR-0492-ST</p>
+<div class="flex items-center justify-between mt-2">
+<span class="text-xs font-bold text-primary">$45.00</span>
+<span class="text-[10px] px-2 py-0.5 bg-tertiary-container/10 text-tertiary-container font-bold rounded">124 in Stock</span>
+</div>
+</div>
+</div>
+<!-- Product Item -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
+<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
+<img alt="Roller Industrial Brush" class="object-cover w-full h-full" data-alt="Heavy duty long roller brush with synthetic nylon bristles used for industrial cleaning on a clean white floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIuCha2enK6IdukGeKd0YZ9JwBkWbtevynWdXKv_kdS4NiaO_8SJpBupt_YvnJX0EZp4fvZ_lS3NHOMIpcmc7rqRRSWXzVJVSXtN2Wopnyoie9fxHHEpIWv7I3lJ9tvbmm1HFFWPDCi2cvbdTsGbnbCvvPf3eS5utvk0zvRryMupuUNhHO_3pRxuVQxeYduHqLHAC0ziAYtymo1jF8X8JtoRelM7XKhZxGq4Bk5gU5lA9ix1hnn8pzRr3Nbubzr-fpgWaUSRMlV1Y"/>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Rodillo de Nylon Pro-X</h4>
+<p class="text-[10px] text-on-surface-variant">CAT: BR-1102-NY</p>
+<div class="flex items-center justify-between mt-2">
+<span class="text-xs font-bold text-primary">$189.50</span>
+<span class="text-[10px] px-2 py-0.5 bg-error-container/10 text-error-container font-bold rounded">12 in Stock</span>
+</div>
+</div>
+</div>
+<!-- Product Item -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
+<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
+<img alt="Disc Industrial Brush" class="object-cover w-full h-full" data-alt="Disc shaped industrial floor scrubbing brush with thick black bristles and reinforced plastic base" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHT_hFZvS3dpKwF_du29XOdA7WgGfcy3LhuUxfi1f0hHx2QknW7cWnq82st8FxG1AvL4op17AUD9ho-4cxqS8h_3bGR7VSzhDKNG9ugH-notuE2z8e-opbJH_xav_IZjrNqACHouMDRj_Pk1ODJhH4oO3kXlE1hSTyE9D4fkgQW5kOIE2dR7v6Ki-xjiIj9D32NbBl7Msg6po5GsGQhLkyyT5EUOTuOAzIk4KKpuibZH4XejnbqpCAfviULHkzHMXorhBqP9qRYqA"/>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Disco Cepillo 20"</h4>
+<p class="text-[10px] text-on-surface-variant">CAT: BR-8821-HD</p>
+<div class="flex items-center justify-between mt-2">
+<span class="text-xs font-bold text-primary">$124.00</span>
+<span class="text-[10px] px-2 py-0.5 bg-tertiary-container/10 text-tertiary-container font-bold rounded">58 in Stock</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Table (Right side) -->
+<div class="lg:col-span-2 space-y-4">
+<h3 class="font-bold text-lg text-primary">Recent Ventas Activity</h3>
+<div class="overflow-hidden rounded-xl bg-surface-container-lowest border border-slate-100/50 shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">ID Transacción</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Client</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Amount</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Status</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Acción</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-50">
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<span class="text-xs font-bold text-primary">#QT-2024-081</span>
+<p class="text-[10px] text-slate-400">Oct 24, 14:20</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs font-bold text-on-surface">Global Automotriz S.A.</p>
+<p class="text-[10px] text-on-surface-variant">Suministro Industrial</p>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-bold">$12,450.00</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-container text-on-tertiary">Invoiced</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<span class="text-xs font-bold text-primary">#QT-2024-082</span>
+<p class="text-[10px] text-slate-400">Oct 24, 11:05</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs font-bold text-on-surface">Textiles del Norte</p>
+<p class="text-[10px] text-on-surface-variant">Fabricante</p>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-bold">$3,820.00</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-primary">Approved</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<span class="text-xs font-bold text-primary">#QT-2024-083</span>
+<p class="text-[10px] text-slate-400">Oct 23, 16:45</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs font-bold text-on-surface">Logística Integral S.C.</p>
+<p class="text-[10px] text-on-surface-variant">Operaciones de Almacén</p>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-bold">$1,200.00</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-surface-container-high text-on-surface-variant">Pending</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<span class="text-xs font-bold text-primary">#QT-2024-084</span>
+<p class="text-[10px] text-slate-400">Oct 23, 09:12</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs font-bold text-on-surface">Minería del Pacífico</p>
+<p class="text-[10px] text-on-surface-variant">Minería Industrial</p>
+</td>
+<td class="px-6 py-4">
+<span class="text-xs font-bold">$45,900.00</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-primary">Approved</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="px-6 py-4 bg-surface-container-low/50 flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Showing 4 of 128 transactions</span>
+<div class="flex gap-2">
+<button class="p-1 rounded hover:bg-surface text-slate-400 transition-colors"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
+<button class="p-1 rounded hover:bg-surface text-slate-400 transition-colors"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Intelligence Banner -->
+<div class="bg-surface-container-low rounded-xl p-6 border border-primary/5 flex items-center gap-6">
+<div class="w-12 h-12 bg-primary-container/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-primary">Insight de Retención IA</h4>
+<p class="text-sm text-on-surface-variant">Historical data suggests an increase in demand for <span class="font-bold text-primary">Synthetic Nylon Brushes</span> in the textile sector over the next 15 days. We recommend proactive outreach to Top 5 clients.</p>
+</div>
+<button class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-md hover:bg-primary/90">Run Campaign</button>
+</div>
+</div>
+</main>
+<script src="app.js"></script>
+<footer class="bg-[#0b1829] text-[#e2e2e9] py-16 border-t border-white/10 mt-auto dark:bg-[#05090e]">
+    <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
+        <div class="md:col-span-1">
+            <div class="text-2xl font-black mb-4 text-on-primary-container">JHIRE</div>
+            <p class="text-surface-container/60 mb-6 leading-relaxed">Su aliado estratégico en suministros industriales de limpieza. Liderando el sector operativo 2026.</p>
+        </div>
+        <div>
+            <h4 class="font-bold text-lg mb-4 text-white">Empresa</h4>
+            <ul class="space-y-3 text-surface-container/60">
+                <li><a href="sobre_nosotros.html" class="hover:text-primary transition-colors">Sobre Nosotros</a></li>
+                <li><a href="contacto_comercial.html" class="hover:text-primary transition-colors">Contacto Comercial</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-lg mb-4 text-white">Legal</h4>
+            <ul class="space-y-3 text-surface-container/60">
+                <li><a href="politica_privacidad.html" class="hover:text-primary transition-colors">Política de Privacidad</a></li>
+                <li><a href="terminos_condiciones.html" class="hover:text-primary transition-colors">Términos y Condiciones</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-lg mb-4 text-white">Redes y Contacto</h4>
+            <ul class="space-y-3 text-surface-container/60 flex flex-col">
+                <li><a href="https://wa.me/51970801549" target="_blank" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-lg">chat</span> WhatsApp: +51 970 801 549</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-8 mt-12 pt-8 border-t border-outline/10 text-center text-surface-container/40">
+        <p>© 2026 JHIRE. Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<!-- Mobile Offcanvas Menu -->
+<div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-[60] backdrop-blur-sm hidden transition-opacity opacity-0"></div>
+<aside id="mobileMenuSidebar" class="fixed top-0 right-0 h-full w-72 bg-surface shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="h-20 flex items-center justify-between px-6 border-b border-outline/10">
+        <span class="font-black text-primary tracking-widest uppercase text-sm">Menú</span>
+        <button id="closeMobileMenuBtn" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface">
+            <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+    </div>
+    <div class="flex flex-col p-6 gap-6 flex-1 overflow-y-auto">
+        <a href="inicio.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">home</span> Inicio</a>
+        <a href="catalogo_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">inventory_2</span> Catálogo</a>
+        <a href="mis_pedidos.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">receipt_long</span> Mis Pedidos</a>
+        <hr class="border-outline/10">
+        <a href="perfil_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">account_circle</span> Mi Perfil</a>
+    </div>
+</aside>
+
+</body></html>
