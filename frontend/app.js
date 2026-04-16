@@ -1041,17 +1041,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     orders.forEach(order => {
                         let itemsHtml = order.items.map(i => `${i.quantity}x ${i.product.name}`).join('<br>');
                         
+                        let anomalyTag = order.status === 'Anomalía / Revisión' ? '<div class="mt-1.5 inline-flex items-center gap-1 bg-error text-white px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse shadow-sm"><span class="material-symbols-outlined text-[10px]">warning</span> ANOMALÍA DETECTADA</div>' : '';
+                        
                         tbody.insertAdjacentHTML('beforeend', `
                             <tr class="hover:bg-slate-50 transition-colors border-b border-outline/10 last:border-0 relative">
                                 <td class="px-4 py-4 font-bold text-on-surface text-sm">#ORD-${order.id}</td>
-                                <td class="px-4 py-4"><span class="text-xs font-bold text-primary">${order.user?.email || 'N/A'}</span></td>
-                                <td class="px-4 py-4 text-sm font-black text-on-surface font-headline">S/ ${order.total_price.toFixed(2)}</td>
+                                <td class="px-4 py-4">
+                                    <div class="text-xs font-bold text-primary">${order.user?.email || 'N/A'}</div>
+                                    <div class="text-[9px] text-outline leading-tight mt-1 max-w-[200px]">${itemsHtml}</div>
+                                    ${anomalyTag}
+                                </td>
+                                <td class="px-4 py-4 text-sm font-black text-on-surface font-headline border-r border-outline-variant/20">S/ ${order.total_price.toFixed(2)}</td>
                                 <td class="px-4 py-4 text-xs font-bold text-error admin-timer" data-start="${order.created_at}">--:--:--</td>
-                                <td class="px-4 py-4 text-[10px] text-outline leading-tight max-w-[200px] print-items">${itemsHtml}</td>
                                 <td class="px-4 py-4 text-right">
                                     <div class="flex justify-end gap-2">
-                                        <button onclick="updateOrderStatus(${order.id}, 'Completado')" class="p-1 px-3 bg-success/10 hover:bg-success text-success hover:text-white rounded text-xs font-bold transition-colors">ACEPTAR</button>
-                                        <button onclick="updateOrderStatus(${order.id}, 'Rechazado')" class="p-1 px-3 bg-error/10 hover:bg-error text-error hover:text-white rounded text-xs font-bold transition-colors">RECHAZAR</button>
+                                        <button onclick="updateOrderStatus(${order.id}, 'Completado')" class="flex-1 max-w-[90px] justify-center p-1.5 px-3 bg-success/10 hover:bg-success text-success hover:text-white rounded text-[10px] font-black tracking-wider transition-colors">ACEPTAR</button>
+                                        <button onclick="updateOrderStatus(${order.id}, 'Rechazado')" class="flex-1 max-w-[90px] justify-center p-1.5 px-3 bg-error/10 hover:bg-error text-error hover:text-white rounded text-[10px] font-black tracking-wider transition-colors">RECHAZAR</button>
                                     </div>
                                 </td>
                             </tr>

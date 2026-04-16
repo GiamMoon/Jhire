@@ -47,7 +47,11 @@ def create_order(order_data: OrderCreate, background_tasks: BackgroundTasks, db:
     
     # Anomaly Detection
     from sqlalchemy.sql import func
-    avg_spent = db.query(func.avg(Order.total_price)).filter(Order.user_id == current_user.id, Order.status != "Cancelado").scalar()
+    avg_spent = db.query(func.avg(Order.total_price)).filter(
+        Order.user_id == current_user.id, 
+        Order.status != "Cancelado",
+        Order.id != new_order.id
+    ).scalar()
     
     if avg_spent and avg_spent > 0 and total_price > (avg_spent * 3):
         new_order.status = "Anomalía / Revisión"
@@ -85,7 +89,7 @@ def get_admin_orders(db: Session = Depends(get_db), current_user: User = Depends
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Permisos insuficientes")
     
-    orders = db.query(Order).filter(Order.status == "En Proceso").order_by(Order.created_at.desc()).all()
+    orders = db.query(Order).filter(Order.status.in_(["En Proceso", "Anomalía / Revisión"])).order_by(Order.created_at.desc()).all()
     # Expire globally if requested
     for order in orders:
         if order.status == "En Proceso":
@@ -95,7 +99,7 @@ def get_admin_orders(db: Session = Depends(get_db), current_user: User = Depends
                 db.commit()
     
     # Refetch pending orders after possible cancellations
-    return db.query(Order).filter(Order.status == "En Proceso").order_by(Order.created_at.desc()).all()
+    return db.query(Order).filter(Order.status.in_(["En Proceso", "Anomalía / Revisión"])).order_by(Order.created_at.desc()).all()
 
 @router.get("/admin/all", response_model=List[OrderResponse])
 def get_all_admin_orders(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
