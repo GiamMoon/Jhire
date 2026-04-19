@@ -9,6 +9,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    data_protection_consent: bool
 
 class UserUpdate(BaseModel):
     first_name: Optional[str] = None

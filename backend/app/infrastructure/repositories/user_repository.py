@@ -17,7 +17,8 @@ class UserRepository:
             hashed_password=hashed_password,
             first_name=user.first_name,
             last_name=user.last_name,
-            phone=user.phone
+            phone=user.phone,
+            data_protection_consent=user.data_protection_consent
         )
         self.db.add(db_user)
         self.db.commit()

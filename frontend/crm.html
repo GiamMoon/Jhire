@@ -3,7 +3,7 @@
 <html class="light" lang="es"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>JHIRE 2026 - CRM y Clientes y Prospección</title>
+<title>JHIRE 2026 - CRM y Clientees y Prospección</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -79,8 +79,53 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-surface text-on-surface flex min-h-screen flex flex-col min-h-screen">
-<!-- SideNavBar -->
-</div>
+<!-- SIDEBAR -->
+<aside class="fixed top-0 left-0 h-screen w-64 bg-surface border-r border-outline-variant/20 z-50 flex flex-col hidden md:flex shadow-xl">
+    <div class="h-16 flex items-center px-6 border-b border-outline-variant/20 bg-surface-container-low">
+        <span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+        <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
+    </div>
+    
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">dashboard</span> Panel Central
+        </a>
+        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">inventory_2</span> Inventarios
+        </a>
+        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">category</span> Catálogo
+        </a>
+        
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Comercial</p>
+        <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)
+        </a>
+        <a href="crm.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm transition-colors">
+            <span class="material-symbols-outlined">support_agent</span> CRM Clientes
+        </a>
+        <a href="facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span> Facturación
+        </a>
+
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
+        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">group</span> Gestor Usuarios
+        </a>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">analytics</span> Reportes y BI
+        </a>
+    </nav>
+    
+    <div class="p-4 border-t border-outline-variant/20">
+        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">settings</span> Mi Perfil
+        </a>
+        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">logout</span> Salir
+        </button>
+    </div>
 </aside>
 <!-- Main Content Area -->
 <main class="flex-1 ml-64 min-h-screen bg-surface">
@@ -90,27 +135,27 @@
 <span class="text-xl font-bold text-blue-900 dark:text-white tracking-tight">JHIRE 2025</span>
 <div class="relative hidden lg:block w-96">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-<input class="w-full bg-slate-50 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search sales, clients or products..." type="text"/>
+<input class="w-full bg-slate-50 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Buscar ventas, clientes o productos..." type="text"/>
 </div>
 </div>
 <div class="flex items-center gap-4">
-<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full relative">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
-</button>
-<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full">
-<span class="material-symbols-outlined">help_outline</span>
-</button>
-<div class="h-8 w-px bg-slate-200 mx-2"></div>
-<div class="flex items-center gap-3">
-<div class="text-right">
-<p class="text-xs font-bold text-blue-900">Eduardo Méndez</p>
-<p class="text-[10px] text-slate-500">Ventas Manager</p>
-</div>
-<img alt="User profile avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10" data-alt="professional portrait of a male sales manager in business attire with a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAiCh1RKbCqkl-zIpboQ6uftJ9ixbt07-8XEskRsJq7HunSi6sIQsxqVKZ_i7LPLbbP_L5IYKp4qznoCoaRefaHMeOVmCyPXqamVReyCNstO5g1iXTypJ9F-U65KHXc-zm8PSI-8grNSKMT979Abo3GuyE9f8NcanIUKjz24CEqO-jTNztp3DSdLJZJm8Q1Fmd633QNPqWO6tsirJ14B46SSclMUNH88t7qo_6HkfD4KjO8kCDDCZ5OmvBKy1h4gxL1FVXxfXc4lg"/>
-</div>
-</div>
-</header>
+            <!-- Theme Toggle -->
+            <button onclick="changeTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface">
+                <span class="material-symbols-outlined text-[20px]" id="themeIcon">dark_mode</span>
+            </button>
+            <button class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface relative">
+                <span class="material-symbols-outlined text-[20px]">notifications</span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+            </button>
+            <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all" id="avatarContainer">
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
+                <div class="hidden md:block text-left relative top-[1px]">
+                    <p id="headerUserName" class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Cargando...</p>
+                    <p id="headerUserRole" class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">...</p>
+                </div>
+            </div>
+        </div>
+    </header>
 <div class="p-8 max-w-7xl mx-auto space-y-8">
 <!-- Header Section -->
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -121,11 +166,11 @@
 <div class="flex items-center gap-3">
 <button class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-low text-primary font-semibold rounded-md hover:bg-surface-container-high transition-colors">
 <span class="material-symbols-outlined text-lg">filter_list</span>
-<span>Filters</span>
+<span>Filtros</span>
 </button>
 <button class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold rounded-md shadow-lg shadow-primary/20 active:scale-95 transition-all">
 <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
-<span>New Quotation</span>
+<span>Nueva Cotización</span>
 </button>
 </div>
 </div>
@@ -134,43 +179,43 @@
 <!-- Ventas Funnel Visualization -->
 <div class="md:col-span-3 bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-slate-100/50">
 <div class="flex justify-between items-center mb-6">
-<h3 class="font-bold text-lg text-primary">Retención de Clientes</h3>
-<span class="text-xs font-medium text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Last 30 Días</span>
+<h3 class="font-bold text-lg text-primary">Retención de Clientees</h3>
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Últimos 30 Días</span>
 </div>
-<div class="flex items-stretch h-32 w-full gap-1">
-<!-- Leads -->
+<div class="flex items-stretch h-32 w-full gap-1" id="crmFunnelContainer">
+<!-- Prospectos -->
 <div class="funnel-step flex-1 bg-primary flex flex-col items-center justify-center text-on-primary relative">
 <span class="text-2xl font-black">428</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Leads</span>
+<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Prospectos</span>
 </div>
-<!-- Opportunities -->
+<!-- Oportunidades -->
 <div class="funnel-step flex-1 bg-primary/85 flex flex-col items-center justify-center text-on-primary">
 <span class="text-2xl font-black">156</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Opportunities</span>
+<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Oportunidades</span>
 </div>
-<!-- Quotations -->
+<!-- Cotizaciones -->
 <div class="funnel-step flex-1 bg-primary/70 flex flex-col items-center justify-center text-on-primary">
 <span class="text-2xl font-black">84</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Quotations</span>
+<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Cotizaciones</span>
 </div>
-<!-- Closed Ventas -->
+<!-- Cerradas Ventas -->
 <div class="funnel-step flex-1 bg-primary/55 flex flex-col items-center justify-center text-on-primary">
 <span class="text-2xl font-black">32</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Closed</span>
+<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Cerradas</span>
 </div>
 </div>
 <div class="mt-6 flex justify-around text-center">
 <div>
 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Valor Total</p>
-<p class="text-lg font-black text-primary">$1.2M</p>
+<p class="text-lg font-black text-primary" id="kpiValorTotal">$0</p>
 </div>
 <div>
 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ciclo Prom.</p>
-<p class="text-lg font-black text-primary">14 Días</p>
+<p class="text-lg font-black text-primary" id="kpiCicloProm">-</p>
 </div>
 <div>
 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Conversión</p>
-<p class="text-lg font-black text-tertiary-container">7.4%</p>
+<p class="text-lg font-black text-tertiary-container" id="kpiConversion">0%</p>
 </div>
 </div>
 </div>
@@ -185,7 +230,7 @@
 <div class="w-full bg-surface/20 h-2 rounded-full overflow-hidden">
 <div class="bg-surface h-full" style="width: 78%"></div>
 </div>
-<p class="text-[10px] mt-2 font-bold uppercase tracking-widest opacity-80">Restante: $240k</p>
+<p class="text-[10px] mt-2 font-bold uppercase tracking-widest opacity-80">Restante: S/ 50k</p>
 </div>
 </div>
 </div>
@@ -195,9 +240,9 @@
 <div class="lg:col-span-1 space-y-4">
 <div class="flex items-center justify-between">
 <h3 class="font-bold text-lg text-primary">Catálogo Industrial</h3>
-<button class="text-primary text-xs font-bold hover:underline">View All</button>
+<button class="text-primary text-xs font-bold hover:underline">Ver Todo</button>
 </div>
-<div class="space-y-3">
+<div class="space-y-3" id="crmProductList">
 <!-- Product Item -->
 <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
 <div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
@@ -244,19 +289,19 @@
 </div>
 <!-- Recent Activity Table (Right side) -->
 <div class="lg:col-span-2 space-y-4">
-<h3 class="font-bold text-lg text-primary">Recent Ventas Activity</h3>
+<h3 class="font-bold text-lg text-primary">Ventas Recientes</h3>
 <div class="overflow-hidden rounded-xl bg-surface-container-lowest border border-slate-100/50 shadow-sm">
 <table class="w-full text-left border-collapse">
 <thead>
 <tr class="bg-surface-container-low">
 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">ID Transacción</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Client</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Amount</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Status</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Cliente</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Monto</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Estado</th>
 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Acción</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-slate-50">
+<tbody class="divide-y divide-slate-50" id="crmRecentSalesBody">
 <tr class="hover:bg-slate-50 transition-colors">
 <td class="px-6 py-4">
 <span class="text-xs font-bold text-primary">#QT-2024-081</span>
@@ -336,7 +381,7 @@
 </tbody>
 </table>
 <div class="px-6 py-4 bg-surface-container-low/50 flex items-center justify-between">
-<span class="text-xs text-on-surface-variant">Showing 4 of 128 transactions</span>
+<span class="text-xs text-on-surface-variant">Mostrando transacciones recientes de Base de Datos</span>
 <div class="flex gap-2">
 <button class="p-1 rounded hover:bg-surface text-slate-400 transition-colors"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
 <button class="p-1 rounded hover:bg-surface text-slate-400 transition-colors"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
@@ -352,44 +397,14 @@
 </div>
 <div class="flex-1">
 <h4 class="font-bold text-primary">Insight de Retención IA</h4>
-<p class="text-sm text-on-surface-variant">Historical data suggests an increase in demand for <span class="font-bold text-primary">Synthetic Nylon Brushes</span> in the textile sector over the next 15 days. We recommend proactive outreach to Top 5 clients.</p>
+<p class="text-sm text-on-surface-variant">Los datos históricos sugieren un aumento en la demanda en el sector industrial durante los próximos 15 días. Recomendamos envío de promos masivas a los Top 5 clientes.</p>
 </div>
-<button class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-md hover:bg-primary/90">Run Campaign</button>
+<button class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-md hover:bg-primary/90">Desplegar Campaña</button>
 </div>
 </div>
 </main>
 <script src="app.js"></script>
-<footer class="bg-[#0b1829] text-[#e2e2e9] py-16 border-t border-white/10 mt-auto dark:bg-[#05090e]">
-    <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
-        <div class="md:col-span-1">
-            <div class="text-2xl font-black mb-4 text-on-primary-container">JHIRE</div>
-            <p class="text-surface-container/60 mb-6 leading-relaxed">Su aliado estratégico en suministros industriales de limpieza. Liderando el sector operativo 2026.</p>
-        </div>
-        <div>
-            <h4 class="font-bold text-lg mb-4 text-white">Empresa</h4>
-            <ul class="space-y-3 text-surface-container/60">
-                <li><a href="sobre_nosotros.html" class="hover:text-primary transition-colors">Sobre Nosotros</a></li>
-                <li><a href="contacto_comercial.html" class="hover:text-primary transition-colors">Contacto Comercial</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4 class="font-bold text-lg mb-4 text-white">Legal</h4>
-            <ul class="space-y-3 text-surface-container/60">
-                <li><a href="politica_privacidad.html" class="hover:text-primary transition-colors">Política de Privacidad</a></li>
-                <li><a href="terminos_condiciones.html" class="hover:text-primary transition-colors">Términos y Condiciones</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4 class="font-bold text-lg mb-4 text-white">Redes y Contacto</h4>
-            <ul class="space-y-3 text-surface-container/60 flex flex-col">
-                <li><a href="https://wa.me/51970801549" target="_blank" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-lg">chat</span> WhatsApp: +51 970 801 549</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="max-w-7xl mx-auto px-8 mt-12 pt-8 border-t border-outline/10 text-center text-surface-container/40">
-        <p>© 2026 JHIRE. Todos los derechos reservados.</p>
-    </div>
-</footer>
+
 
 <!-- Mobile Offcanvas Menu -->
 <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-[60] backdrop-blur-sm hidden transition-opacity opacity-0"></div>

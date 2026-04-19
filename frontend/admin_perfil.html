@@ -29,7 +29,7 @@
         <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
     </div>
     
-    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
         <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">dashboard</span> Panel Central
@@ -41,6 +41,17 @@
             <span class="material-symbols-outlined">category</span> Catálogo
         </a>
         
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Comercial</p>
+        <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)
+        </a>
+        <a href="crm.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">support_agent</span> CRM Clientes
+        </a>
+        <a href="facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span> Facturación
+        </a>
+
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
         <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">group</span> Gestor Usuarios
@@ -64,13 +75,20 @@
     <!-- HEADER -->
     <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
         <div class="flex items-center gap-4">
-            <span class="text-xl font-bold text-primary font-headline tracking-tighter">Panel Maestro 2026</span>
-        </div>
-        <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all">
-            <img src="https://ui-avatars.com/api/?name=Admin+Root&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
-            <div class="hidden md:block text-left relative top-[1px]">
-                <p class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Admin Root</p>
-                <p class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">Operaciones</p>
+            <!-- Theme Toggle -->
+            <button onclick="changeTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface">
+                <span class="material-symbols-outlined text-[20px]" id="themeIcon">dark_mode</span>
+            </button>
+            <button class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface relative">
+                <span class="material-symbols-outlined text-[20px]">notifications</span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+            </button>
+            <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all" id="avatarContainer">
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
+                <div class="hidden md:block text-left relative top-[1px]">
+                    <p id="headerUserName" class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Cargando...</p>
+                    <p id="headerUserRole" class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">...</p>
+                </div>
             </div>
         </div>
     </header>

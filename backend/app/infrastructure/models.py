@@ -13,6 +13,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     profile_picture_url = Column(String, nullable=True)
     role = Column(String, default="user")
+    data_protection_consent = Column(Boolean, default=False)
 
 class Product(Base):
     __tablename__ = "products"

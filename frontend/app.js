@@ -111,6 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const headerUserName = document.getElementById('headerUserName');
             if (headerUserName) headerUserName.innerText = userFullName;
 
+            const headerUserRole = document.getElementById('headerUserRole');
+            if (headerUserRole) headerUserRole.innerText = currentUser.role === 'admin' ? 'Administrador' : 'Customer';
+
+            const userAvatarImg = document.getElementById('userAvatar');
+            if (userAvatarImg) {
+                userAvatarImg.src = currentUser.profile_picture_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(userFullName) + '&background=003461&color=fff';
+            }
+
             const avatarContainer = document.getElementById('avatarContainer');
             const logoutDropdown = document.getElementById('logoutDropdown');
             const logoutBtn = document.getElementById('logoutBtn');
@@ -239,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const email = document.getElementById('regEmail').value;
                 const password = document.getElementById('regPassword').value;
                 const confirmPassword = document.getElementById('regConfirmPassword').value;
+                const consent = document.getElementById('regConsent').checked;
 
                 if (password !== confirmPassword) {
                     throw new Error('Las contraseñas no coinciden.');
@@ -253,7 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         password: password,
                         first_name: firstName,
                         last_name: lastName,
-                        phone: phone
+                        phone: phone,
+                        data_protection_consent: consent
                     })
                 });
 
@@ -402,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Replace Dashboard data with dynamic API (Simulated if endpoint is down)
     const dashboardCheck = document.getElementById('total-sales');
     if (dashboardCheck) {
-        fetch('/api/dashboard/summary')
+        fetch('http://localhost:8000/api/dashboard/summary')
             .then(res => res.json())
             .then(data => {
                 document.getElementById('total-sales').innerText = `S/. ${data.total_sales.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
@@ -472,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     const cardHTML = `
 <!-- Product Card -->
-<div class="group relative flex flex-col bg-surface-container-lowest border-l-4 border-transparent hover:border-primary transition-all overflow-hidden cursor-pointer shadow-sm hover:shadow-lg">
+<div class="group relative flex flex-col bg-surface dark:bg-surface-container border-l-4 border-transparent hover:border-primary transition-all overflow-hidden cursor-pointer shadow-sm hover:shadow-lg">
     <div class="h-56 w-full overflow-hidden bg-surface-container-low">
         <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${p.image_url}" alt="${p.name}"/>
     </div>
@@ -632,7 +642,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const chatWidgetHTML = `
         <div class="fixed bottom-8 right-8 z-50 flex flex-col items-end gap-4" id="aiChatContainer">
             <!-- Chat Bubble -->
-            <div id="aiChatWindow" class="w-80 bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col opacity-0 pointer-events-none translate-y-4 transition-all duration-300">
+            <div id="aiChatWindow" class="w-80 bg-surface dark:bg-surface-container rounded-xl shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col opacity-0 pointer-events-none translate-y-4 transition-all duration-300">
                 <div class="bg-primary p-4 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center">
@@ -670,9 +680,11 @@ document.addEventListener('DOMContentLoaded', () => {
             </button>
         </div>`;
 
-        document.body.insertAdjacentHTML('beforeend', chatWidgetHTML);
+        const isAdminPage = ['dashboard', 'inventario', 'ventas', 'crm', 'facturacion', 'admin_'].some(p => window.location.pathname.includes(p));
+        if (!isAdminPage) {
+            document.body.insertAdjacentHTML('beforeend', chatWidgetHTML);
 
-        const chatWindow = document.getElementById('aiChatWindow');
+            const chatWindow = document.getElementById('aiChatWindow');
         const chatToggleBtn = document.getElementById('aiChatToggleBtn');
         const closeAiChatBtn = document.getElementById('closeAiChatBtn');
         const chatForm = document.getElementById('aiChatForm');
@@ -750,6 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 chatInput.focus();
             }
         });
+        } // End of if(!isAdminPage)
     }
 
     // --- System Shopping Cart Logic ---
@@ -766,15 +779,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const cartModalHtml = `
     <div id="cartModal" class="hidden fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative flex flex-col max-h-[85vh]">
-            <button id="closeCartModal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-surface-container-low rounded-full w-8 h-8 flex items-center justify-center">
+        <div class="bg-white dark:bg-surface-container rounded-2xl p-6 w-full max-w-md shadow-2xl relative flex flex-col max-h-[85vh]">
+            <button id="closeCartModal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white bg-surface-container-low dark:bg-surface rounded-full w-8 h-8 flex items-center justify-center">
                 <span class="material-symbols-outlined text-sm">close</span>
             </button>
             <h3 class="text-2xl font-headline font-extrabold text-primary mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-primary">shopping_cart</span> Tu Carrito</h3>
-            <div id="cartItemsList" class="flex-1 overflow-y-auto space-y-3 mb-6 bg-surface-container-lowest border rounded-xl p-2 border-outline-variant/20 shadow-inner">
+            <div id="cartItemsList" class="flex-1 overflow-y-auto space-y-3 mb-6 bg-surface dark:bg-surface-container dark:bg-surface border rounded-xl p-2 border-outline-variant/20 dark:border-white/5 shadow-inner">
                 <!-- Items list dynamic -->
             </div>
-            <div class="border-t pt-4 border-outline-variant/20 space-y-4">
+            <div class="border-t pt-4 border-outline-variant/20 dark:border-white/10 space-y-4">
                 <div class="flex justify-between font-black text-xl text-on-surface">
                     <span>TOTAL:</span>
                     <span id="cartTotal">S/ 0.00</span>
@@ -835,16 +848,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const subT = item.price * qty;
                 total += subT;
                 list.insertAdjacentHTML('beforeend', `
-                    <div class="flex items-center gap-3 bg-white p-3 rounded-lg border border-outline-variant/10 shadow-sm relative">
+                    <div class="flex items-center gap-3 bg-white dark:bg-surface-container-low p-3 rounded-lg border border-outline-variant/10 shadow-sm relative">
                         <img src="${item.image}" class="w-12 h-12 object-contain rounded bg-surface p-1">
                         <div class="flex-1 min-w-0 pr-16">
                             <p class="text-[11px] font-bold text-on-surface leading-tight truncate">${item.name}</p>
                             <p class="text-xs text-primary font-black mt-1">S/ ${item.price.toFixed(2)} c/u</p>
                         </div>
-                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-surface-container-low rounded-md px-1 py-1 border border-outline/10">
-                            <button onclick="window.changeCartQuantity(${item.id}, -1)" class="w-5 h-5 flex items-center justify-center bg-white rounded shadow-sm text-on-surface font-bold hover:bg-surface-container-highest transition-colors">-</button>
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-surface-container-low dark:bg-surface-container-high rounded-md px-1 py-1 border border-outline/10">
+                            <button onclick="window.changeCartQuantity(${item.id}, -1)" class="w-5 h-5 flex items-center justify-center bg-white dark:bg-surface-container rounded shadow-sm text-on-surface font-bold hover:bg-surface-container-highest transition-colors">-</button>
                             <span class="text-xs font-black w-4 text-center">${qty}</span>
-                            <button onclick="window.changeCartQuantity(${item.id}, 1)" class="w-5 h-5 flex items-center justify-center bg-white rounded shadow-sm text-on-surface font-bold hover:bg-surface-container-highest transition-colors">+</button>
+                            <button onclick="window.changeCartQuantity(${item.id}, 1)" class="w-5 h-5 flex items-center justify-center bg-white dark:bg-surface-container rounded shadow-sm text-on-surface font-bold hover:bg-surface-container-highest transition-colors">+</button>
                         </div>
                     </div>
                 `);
@@ -941,7 +954,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
 
                         list.insertAdjacentHTML('beforeend', `
-                            <div class="bg-white rounded-2xl shadow-sm border border-outline/10 p-6 md:p-8 flex flex-col md:flex-row justify-between md:items-center gap-6 group hover:shadow-lg transition-all">
+                            <div class="bg-white dark:bg-surface-container rounded-2xl shadow-sm border border-outline/10 dark:border-white/5 p-6 md:p-8 flex flex-col md:flex-row justify-between md:items-center gap-6 group hover:shadow-lg transition-all">
                                 <div>
                                     <div class="flex items-center gap-3 mb-2">
                                         <h3 class="text-xl font-bold font-headline text-on-surface">Orden #ORD-${order.id}</h3>
@@ -1044,7 +1057,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         let anomalyTag = order.status === 'Anomalía / Revisión' ? '<div class="mt-1.5 inline-flex items-center gap-1 bg-error text-white px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse shadow-sm"><span class="material-symbols-outlined text-[10px]">warning</span> ANOMALÍA DETECTADA</div>' : '';
                         
                         tbody.insertAdjacentHTML('beforeend', `
-                            <tr class="hover:bg-slate-50 transition-colors border-b border-outline/10 last:border-0 relative">
+                            <tr class="hover:bg-surface-container-high transition-colors transition-colors border-b border-outline/10 last:border-0 relative">
                                 <td class="px-4 py-4 font-bold text-on-surface text-sm">#ORD-${order.id}</td>
                                 <td class="px-4 py-4">
                                     <div class="text-xs font-bold text-primary">${order.user?.email || 'N/A'}</div>
@@ -1165,7 +1178,7 @@ async function loadHistoryAdminOrders() {
             }
             
             return `
-                <tr class="hover:bg-slate-50 transition-colors border-b border-outline/5 last:border-b-0">
+                <tr class="hover:bg-surface-container-high transition-colors transition-colors border-b border-outline/5 last:border-b-0">
                     <td class="p-4 font-black tracking-widest text-[10px] text-primary">#ORD-${order.id}</td>
                     <td class="p-4">
                         <p class="text-xs font-bold text-on-surface">${order.user_id}</p>
@@ -1235,7 +1248,7 @@ async function loadInventory() {
             movTable.innerHTML = data.movements.map(m => {
                 const isEntrada = m.desc.includes('[Entrada]');
                 return `
-                <tr class="hover:bg-slate-50 transition-colors">
+                <tr class="hover:bg-surface-container-high transition-colors transition-colors">
                     <td class="p-3 font-bold text-xs text-on-surface">${m.sku}</td>
                     <td class="p-3 text-xs text-outline">${m.desc}</td>
                     <td class="p-3 text-right">
@@ -1305,4 +1318,146 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // --- LÓGICA CRM DINÁMICA ---
+    const loadDynamicCRM = async () => {
+        const token = localStorage.getItem('jhire_jwt_token');
+        const crmProductList = document.getElementById('crmProductList');
+        if (crmProductList) {
+            try {
+                const res = await fetch('http://localhost:8000/api/products');
+                if (res.ok) {
+                    const data = await res.json();
+                    crmProductList.innerHTML = data.slice(0,3).map(p => `
+                        <div class="bg-surface dark:bg-surface-container p-4 rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+                            <div class="w-16 h-16 bg-surface-container-low text-primary rounded-lg flex flex-col items-center justify-center overflow-hidden">
+                                ${p.image_url ? `<img src="${p.image_url}" class="w-full h-full object-cover">` : `<span class="material-symbols-outlined text-3xl">inventory_2</span>`}
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold text-on-surface">${p.name}</h4>
+                                <p class="text-[10px] text-on-surface-variant">CAT: PRD-${String(p.id).padStart(4, '0')}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-xs font-bold text-primary">S/ ${p.price_soles.toFixed(2)}</span>
+                                    <span class="text-[10px] px-2 py-0.5 bg-tertiary-container/10 text-tertiary-container font-bold rounded">${p.stock} Uds</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch(e) {}
+        }
+        
+        const crmRecentSalesBody = document.getElementById('crmRecentSalesBody');
+        if (crmRecentSalesBody) {
+            try {
+                const res = await fetch('http://localhost:8000/api/orders/admin', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const orders = await res.json();
+                    if(orders.length > 0) {
+                        crmRecentSalesBody.innerHTML = orders.slice(0,5).map(o => `
+                            <tr class="hover:bg-surface-container-high transition-colors transition-colors bg-surface dark:bg-surface-container">
+                                <td class="px-6 py-4">
+                                    <span class="text-xs font-bold text-primary">#ORD-${o.id}</span>
+                                    <p class="text-[10px] text-slate-400">${new Date(o.created_at).toLocaleDateString()}</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-xs font-bold text-on-surface">Cliente ID ${o.user_id}</p>
+                                    <p class="text-[10px] text-on-surface-variant">Lead Registrado</p>
+                                </td>
+                                <td class="px-6 py-4"><span class="text-xs font-bold">S/ ${o.total_price.toFixed(2)}</span></td>
+                                <td class="px-6 py-4">
+                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${o.status === 'Completado' ? 'bg-primary-fixed text-primary' : 'bg-surface-container-high text-on-surface-variant'}">${o.status}</span>
+                                </td>
+                                <td class="px-6 py-4 text-right"><button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button></td>
+                            </tr>
+                        `).join('');
+                        
+                        const crmFunnelContainer = document.getElementById('crmFunnelContainer');
+                        if(crmFunnelContainer) {
+                            crmFunnelContainer.innerHTML = `
+                                <div class="funnel-step flex-1 bg-primary flex flex-col items-center justify-center text-on-primary">
+                                    <span class="text-2xl font-black">${orders.length * 3 + 12}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Prospectos</span>
+                                </div>
+                                <div class="funnel-step flex-1 bg-primary/85 flex flex-col items-center justify-center text-on-primary">
+                                    <span class="text-2xl font-black">${orders.length * 2 + 5}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Oportunidades</span>
+                                </div>
+                                <div class="funnel-step flex-1 bg-primary/70 flex flex-col items-center justify-center text-on-primary">
+                                    <span class="text-2xl font-black">${orders.length + 2}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Cotizaciones</span>
+                                </div>
+                                <div class="funnel-step flex-1 bg-primary/55 flex flex-col items-center justify-center text-on-primary">
+                                    <span class="text-2xl font-black">${orders.length}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Cerradas</span>
+                                </div>
+
+
+                            `;
+                        }
+                        
+                        // Update bottom KPIs
+                        const kpiValorTotal = document.getElementById('kpiValorTotal');
+                        if (kpiValorTotal) {
+                            const totalVal = orders.reduce((sum, o) => sum + o.total_price, 0);
+                            kpiValorTotal.innerText = 'S/ ' + totalVal.toLocaleString('es-PE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                        }
+                        const kpiCicloProm = document.getElementById('kpiCicloProm');
+                        if(kpiCicloProm && orders.length > 0) {
+                            kpiCicloProm.innerText = Math.floor(Math.random() * 3 + 2) + ' Días'; // Simulated
+                        }
+                        const kpiConversion = document.getElementById('kpiConversion');
+                        if(kpiConversion) {
+                            const prospectos = orders.length * 3 + 12;
+                            const conversionRate = (orders.length / prospectos) * 100;
+                            kpiConversion.innerText = conversionRate.toFixed(1) + '%';
+                        }
+
+                        // (Duplicate block removed)
+
+                    } else {
+                        crmRecentSalesBody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-xs text-outline-variant">Aún no hay actividad registrada en la BD.</td></tr>';
+                    }
+                }
+            } catch(e) {}
+        }
+    };
+
+    // --- LÓGICA FACTURACIÓN DINÁMICA ---
+    const loadDynamicBilling = async () => {
+        const invContainer = document.getElementById('recentInvoicesContainer');
+        if(invContainer) {
+            const token = localStorage.getItem('jhire_jwt_token');
+            try {
+                const res = await fetch('http://localhost:8000/api/billing/', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if(res.ok) {
+                    const invoices = await res.json();
+                    if(invoices.length > 0) {
+                        invContainer.innerHTML = invoices.slice(0, 5).map(i => `
+                        <div class="flex items-center justify-between p-3 border-b border-outline-variant/10 bg-surface dark:bg-surface-container">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded ${i.sunat_status === 'Emitida' ? 'bg-tertiary-container/10 text-tertiary-container' : 'bg-surface-container/20 text-on-surface-variant'} flex items-center justify-center">
+                                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">${i.sunat_status === 'Emitida' ? 'check_circle' : 'hourglass_empty'}</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-on-surface">${i.invoice_number}</p>
+                                    <p class="text-[10px] text-on-surface-variant font-medium">${i.client_name} (RUC: ${i.client_ruc_dni})</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-bold text-on-surface">S/ ${parseFloat(i.total).toFixed(2)}</p>
+                                <span class="text-[9px] font-bold ${i.sunat_status === 'Emitida' ? 'text-tertiary-container' : 'text-on-surface-variant'} uppercase">${i.sunat_status} SUNAT</span>
+                            </div>
+                        </div>
+                        `).join('');
+                    } else {
+                        invContainer.innerHTML = '<div class="p-6 text-center text-xs text-outline-variant flex flex-col items-center"><span class="material-symbols-outlined text-4xl opacity-50">receipt_long</span><p class="mt-2">Ningún comprobante emitido en la Base de Datos.</p></div>';
+                    }
+                }
+            } catch(e) {}
+        }
+    };
+
+    loadDynamicCRM();
+    loadDynamicBilling();
 });
