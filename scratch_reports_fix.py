@@ -1,4 +1,10 @@
-from fastapi import APIRouter, Depends
+import re
+
+path = r"d:\tesis\jhire\backend\app\presentation\routers\reports.py"
+with open(path, "r", encoding="utf-8") as f:
+    reports_code = f.read()
+
+new_reports_code = """from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from fastapi.responses import FileResponse
 import pandas as pd
@@ -140,3 +146,9 @@ def export_pdf(db: Session = Depends(get_db)):
     doc.build(story)
     
     return FileResponse(filepath, filename="informe_ejecutivo_jhire.pdf", media_type="application/pdf")
+"""
+
+with open(path, "w", encoding="utf-8") as f:
+    f.write(new_reports_code)
+    
+print("Replaced reports.py successfully")
