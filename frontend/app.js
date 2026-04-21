@@ -1319,105 +1319,178 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // --- LÓGICA CRM DINÁMICA ---
+            // --- LÓGICA CRM DINÁMICA ---
     const loadDynamicCRM = async () => {
         const token = localStorage.getItem('jhire_jwt_token');
-        const crmProductList = document.getElementById('crmProductList');
-        if (crmProductList) {
-            try {
-                const res = await fetch('http://localhost:8000/api/products');
-                if (res.ok) {
-                    const data = await res.json();
-                    crmProductList.innerHTML = data.slice(0,3).map(p => `
-                        <div class="bg-surface dark:bg-surface-container p-4 rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-                            <div class="w-16 h-16 bg-surface-container-low text-primary rounded-lg flex flex-col items-center justify-center overflow-hidden">
-                                ${p.image_url ? `<img src="${p.image_url}" class="w-full h-full object-cover">` : `<span class="material-symbols-outlined text-3xl">inventory_2</span>`}
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="text-sm font-bold text-on-surface">${p.name}</h4>
-                                <p class="text-[10px] text-on-surface-variant">CAT: PRD-${String(p.id).padStart(4, '0')}</p>
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="text-xs font-bold text-primary">S/ ${p.price_soles.toFixed(2)}</span>
-                                    <span class="text-[10px] px-2 py-0.5 bg-tertiary-container/10 text-tertiary-container font-bold rounded">${p.stock} Uds</span>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            } catch(e) {}
-        }
+        let clientsData = [];
         
-        const crmRecentSalesBody = document.getElementById('crmRecentSalesBody');
-        if (crmRecentSalesBody) {
+        const crmClientsTableBody = document.getElementById('crmClientsTableBody');
+        if (crmClientsTableBody) {
             try {
-                const res = await fetch('http://localhost:8000/api/orders/admin', {
+                const res = await fetch('http://localhost:8000/api/crm/clients', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) {
-                    const orders = await res.json();
-                    if(orders.length > 0) {
-                        crmRecentSalesBody.innerHTML = orders.slice(0,5).map(o => `
-                            <tr class="hover:bg-surface-container-high transition-colors transition-colors bg-surface dark:bg-surface-container">
+                    const clients = await res.json();
+                    clientsData = clients;
+                    if(clients.length > 0) {
+                        crmClientsTableBody.innerHTML = clients.map(client => `
+                            <tr class="hover:bg-surface-container-high transition-colors bg-surface dark:bg-surface-container cursor-pointer" onclick="analyzeCRMProfile(${client.id}, '${client.name}')">
                                 <td class="px-6 py-4">
-                                    <span class="text-xs font-bold text-primary">#ORD-${o.id}</span>
-                                    <p class="text-[10px] text-slate-400">${new Date(o.created_at).toLocaleDateString()}</p>
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(client.name)}&background=random" class="w-8 h-8 rounded-full border border-outline-variant/30">
+                                        <div>
+                                            <p class="text-xs font-bold text-on-surface">${client.name}</p>
+                                            <p class="text-[10px] text-on-surface-variant">ID: #${client.id}</p>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <p class="text-xs font-bold text-on-surface">Cliente ID ${o.user_id}</p>
-                                    <p class="text-[10px] text-on-surface-variant">Lead Registrado</p>
+                                    <p class="text-xs font-medium text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">mail</span> ${client.email}</p>
+                                    <p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">call</span> ${client.phone || 'No registrado'}</p>
                                 </td>
-                                <td class="px-6 py-4"><span class="text-xs font-bold">S/ ${o.total_price.toFixed(2)}</span></td>
                                 <td class="px-6 py-4">
-                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${o.status === 'Completado' ? 'bg-primary-fixed text-primary' : 'bg-surface-container-high text-on-surface-variant'}">${o.status}</span>
+                                    <p class="text-xs font-bold">${client.company}</p>
+                                    <p class="text-[10px] text-on-surface-variant">RUC/DNI: ${client.ruc_dni}</p>
                                 </td>
-                                <td class="px-6 py-4 text-right"><button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button></td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-tertiary-container/30 text-tertiary-container font-bold text-[10px]">
+                                        ${client.interactions_count}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <button onclick="event.stopPropagation(); window.open('mailto:${client.email}')" class="py-1 px-2.5 bg-surface-container hover:bg-primary/10 hover:text-primary rounded text-on-surface text-[10px] font-bold flex items-center gap-1 transition-colors border border-outline-variant/30">
+                                            <span class="material-symbols-outlined text-[14px]">mail</span> Mensaje
+                                        </button>
+                                        <button onclick="event.stopPropagation(); window.open('https://wa.me/${client.phone ? client.phone.replace(/\D/g,'') : ''}')" class="py-1 px-2.5 bg-surface-container hover:bg-green-100 hover:text-green-700 rounded text-on-surface text-[10px] font-bold flex items-center gap-1 transition-colors border border-outline-variant/30">
+                                            <span class="material-symbols-outlined text-[14px]">chat</span> WhatsApp
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         `).join('');
-                        
-                        const crmFunnelContainer = document.getElementById('crmFunnelContainer');
-                        if(crmFunnelContainer) {
-                            crmFunnelContainer.innerHTML = `
-                                <div class="funnel-step flex-1 bg-primary flex flex-col items-center justify-center text-on-primary">
-                                    <span class="text-2xl font-black">${orders.length * 3 + 12}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Prospectos</span>
-                                </div>
-                                <div class="funnel-step flex-1 bg-primary/85 flex flex-col items-center justify-center text-on-primary">
-                                    <span class="text-2xl font-black">${orders.length * 2 + 5}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Oportunidades</span>
-                                </div>
-                                <div class="funnel-step flex-1 bg-primary/70 flex flex-col items-center justify-center text-on-primary">
-                                    <span class="text-2xl font-black">${orders.length + 2}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Cotizaciones</span>
-                                </div>
-                                <div class="funnel-step flex-1 bg-primary/55 flex flex-col items-center justify-center text-on-primary">
-                                    <span class="text-2xl font-black">${orders.length}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Cerradas</span>
-                                </div>
-
-
-                            `;
-                        }
-                        
-                        // Update bottom KPIs
-                        const kpiValorTotal = document.getElementById('kpiValorTotal');
-                        if (kpiValorTotal) {
-                            const totalVal = orders.reduce((sum, o) => sum + o.total_price, 0);
-                            kpiValorTotal.innerText = 'S/ ' + totalVal.toLocaleString('es-PE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                        }
-                        const kpiCicloProm = document.getElementById('kpiCicloProm');
-                        if(kpiCicloProm && orders.length > 0) {
-                            kpiCicloProm.innerText = Math.floor(Math.random() * 3 + 2) + ' Días'; // Simulated
-                        }
-                        const kpiConversion = document.getElementById('kpiConversion');
-                        if(kpiConversion) {
-                            const prospectos = orders.length * 3 + 12;
-                            const conversionRate = (orders.length / prospectos) * 100;
-                            kpiConversion.innerText = conversionRate.toFixed(1) + '%';
-                        }
-
-                        // (Duplicate block removed)
-
                     } else {
-                        crmRecentSalesBody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-xs text-outline-variant">Aún no hay actividad registrada en la BD.</td></tr>';
+                        crmClientsTableBody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-xs text-outline-variant">Aún no hay clientes registrados en la BD.</td></tr>';
                     }
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.error('Error fetching CRM clients:', e);
+            }
+        }
+        
+        // Re-use clients endpoint to dynamically calculate REAL CRM KPIs
+        const crmFunnelContainer = document.getElementById('crmFunnelContainer');
+        if (crmFunnelContainer && clientsData) {
+            try {
+                // Generate funnel data based on clients real interactions
+                const totalClients = clientsData.length;
+                const contactados = clientsData.filter(c => c.interactions_count >= 1).length;
+                const enProceso = clientsData.filter(c => c.interactions_count >= 3).length;
+                const fidelizados = clientsData.filter(c => c.interactions_count >= 6).length;
+                
+                crmFunnelContainer.innerHTML = `
+                    <div class="funnel-step flex-1 bg-primary flex flex-col items-center justify-center text-on-primary relative">
+                        <span class="text-2xl font-black">${totalClients}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Registrados</span>
+                    </div>
+                    <div class="funnel-step flex-1 bg-primary/85 flex flex-col items-center justify-center text-on-primary">
+                        <span class="text-2xl font-black">${contactados}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Contactados</span>
+                    </div>
+                    <div class="funnel-step flex-1 bg-primary/70 flex flex-col items-center justify-center text-on-primary">
+                        <span class="text-2xl font-black">${enProceso}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Activos</span>
+                    </div>
+                    <div class="funnel-step flex-1 bg-primary/55 flex flex-col items-center justify-center text-on-primary">
+                        <span class="text-2xl font-black">${fidelizados}</span><span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Fidelizados</span>
+                    </div>
+                `;
+                
+                const kpiValorTotal = document.getElementById('kpiValorTotal');
+                const kpiCicloProm = document.getElementById('kpiCicloProm');
+                const kpiConversion = document.getElementById('kpiConversion');
+                
+                if (kpiValorTotal) {
+                    const totalInteracciones = clientsData.reduce((sum, c) => sum + c.interactions_count, 0);
+                    kpiValorTotal.innerText = totalInteracciones.toString() + ' Puntos';
+                }
+                if(kpiCicloProm) {
+                    const promResult = totalClients > 0 ? (clientsData.reduce((sum, c) => sum + c.interactions_count, 0) / totalClients).toFixed(1) : 0;
+                    kpiCicloProm.innerText = promResult;
+                }
+                if(kpiConversion) {
+                    const retentionRate = totalClients > 0 ? (contactados / totalClients) * 100 : 0;
+                    kpiConversion.innerText = retentionRate.toFixed(1) + '%';
+                }
+                
+                // Small KPI Card - Frequent Clients
+                const kpiFrequentCount = document.getElementById('kpiFrequentCount');
+                const kpiFrequentBar = document.getElementById('kpiFrequentBar');
+                if(kpiFrequentCount && kpiFrequentBar) {
+                    const freqRate = totalClients > 0 ? (fidelizados / totalClients) * 100 : 0;
+                    kpiFrequentCount.innerText = freqRate.toFixed(1) + '%';
+                    kpiFrequentBar.style.width = freqRate + '%';
+                }
+                
+            } catch(e) {
+                console.error("Funnel processing error:", e);
+            }
+        }
+    };
+
+    // Globally exposed function to trigger AI analysis
+    window.analyzeCRMProfile = async (userId, userName) => {
+        const emptyState = document.getElementById('crmAiEmptyState');
+        const loadingState = document.getElementById('crmAiLoading');
+        const resultsState = document.getElementById('crmAiResults');
+        const clientNameEl = document.getElementById('aiClientName');
+        const clientStatusEl = document.getElementById('aiClientStatus');
+        const listEl = document.getElementById('aiRecommendationsList');
+        
+        if(!emptyState || !loadingState || !resultsState) return;
+        
+        // Ensure styling transition is smooth
+        emptyState.classList.add('hidden');
+        resultsState.classList.add('hidden');
+        loadingState.classList.remove('hidden');
+        
+        try {
+            const token = localStorage.getItem('jhire_jwt_token');
+            const res = await fetch(`http://localhost:8000/api/crm/recommendations/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            // Artificial delay to show processing "AI"
+            setTimeout(() => {
+                loadingState.classList.add('hidden');
+                
+                clientNameEl.innerText = userName;
+                clientStatusEl.innerText = data.message || 'Activo';
+                
+                // Color formatting based on message
+                clientStatusEl.className = data.message === 'Cliente VIP' 
+                    ? 'inline-flex mt-2 items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase'
+                    : 'inline-flex mt-2 items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary uppercase';
+                
+                listEl.innerHTML = '';
+                if(data.recommendations && data.recommendations.length > 0) {
+                    data.recommendations.forEach(rec => {
+                        listEl.innerHTML += `
+                        <li class="p-3 bg-surface border border-outline-variant/10 rounded-lg shadow-sm flex gap-3 text-[11px] text-on-surface-variant leading-relaxed">
+                            <span class="material-symbols-outlined text-[14px] text-primary shrink-0">check_circle</span>
+                            <span>${rec}</span>
+                        </li>`;
+                    });
+                } else {
+                    listEl.innerHTML = `<p class="text-xs text-outline">No hay recomendaciones algorítmicas de la DB en este momento.</p>`;
+                }
+                
+                resultsState.classList.remove('hidden');
+            }, 800);
+            
+        } catch(e) {
+            loadingState.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            console.error(e);
         }
     };
 

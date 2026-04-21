@@ -160,17 +160,17 @@
 <!-- Header Section -->
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
 <div>
-<h2 class="text-3xl font-extrabold text-primary tracking-tight">Ventas &amp; Prospecting</h2>
+<h2 class="text-3xl font-extrabold text-primary tracking-tight">Gestión CRM Central</h2>
 <p class="text-on-surface-variant mt-1">Vista centralizada de todos los clientes y patrones de comportamiento por IA.</p>
 </div>
 <div class="flex items-center gap-3">
-<button class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-low text-primary font-semibold rounded-md hover:bg-surface-container-high transition-colors">
-<span class="material-symbols-outlined text-lg">filter_list</span>
-<span>Filtros</span>
+<button onclick="Swal.fire({title: 'Filtrar Directorio', input: 'select', inputOptions: {vip: 'Clientes Fidelizados', prospect: 'Prospectos Nuevos', all: 'Todos'}, showCancelButton: true, confirmButtonText: 'Aplicar Filtro'})" class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-low text-primary font-semibold rounded-md hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-lg">filter_alt</span>
+<span>Filtrar</span>
 </button>
-<button class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold rounded-md shadow-lg shadow-primary/20 active:scale-95 transition-all">
-<span class="material-symbols-outlined text-lg">add_shopping_cart</span>
-<span>Nueva Cotización</span>
+<button onclick="Swal.fire({title: 'Nuevo Cliente', html: '<input id=\'swal-input1\' class=\'swal2-input\' placeholder=\'Nombre de Empresa\'><input id=\'swal-input2\' class=\'swal2-input\' placeholder=\'Correo de Contacto\'>', focusConfirm: false, confirmButtonText: 'Registrar', showCancelButton: true})" class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold rounded-md shadow-lg shadow-primary/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-lg">person_add</span>
+<span>Nuevo Cliente</span>
 </button>
 </div>
 </div>
@@ -179,7 +179,7 @@
 <!-- Ventas Funnel Visualization -->
 <div class="md:col-span-3 bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-slate-100/50">
 <div class="flex justify-between items-center mb-6">
-<h3 class="font-bold text-lg text-primary">Retención de Clientees</h3>
+<h3 class="font-bold text-lg text-primary">Embudo de Fidelización</h3>
 <span class="text-xs font-medium text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Últimos 30 Días</span>
 </div>
 <div class="flex items-stretch h-32 w-full gap-1" id="crmFunnelContainer">
@@ -206,15 +206,15 @@
 </div>
 <div class="mt-6 flex justify-around text-center">
 <div>
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Valor Total</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Valor Cartera</p>
 <p class="text-lg font-black text-primary" id="kpiValorTotal">$0</p>
 </div>
 <div>
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ciclo Prom.</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Interacción Prom.</p>
 <p class="text-lg font-black text-primary" id="kpiCicloProm">-</p>
 </div>
 <div>
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Conversión</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tasa de Retención</p>
 <p class="text-lg font-black text-tertiary-container" id="kpiConversion">0%</p>
 </div>
 </div>
@@ -222,184 +222,102 @@
 <!-- Small KPI Card -->
 <div class="bg-primary bg-gradient-to-br from-primary to-primary-container p-6 rounded-xl text-on-primary flex flex-col justify-between">
 <div>
-<span class="material-symbols-outlined opacity-50 text-4xl mb-2" style="font-variation-settings: 'FILL' 1;">trending_up</span>
-<h3 class="text-sm font-medium opacity-80">Meta Trimestral</h3>
-<p class="text-3xl font-black mt-1">78%</p>
+<span class="material-symbols-outlined opacity-50 text-4xl mb-2" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+<h3 class="text-sm font-medium opacity-80">Clientes Frecuentes</h3>
+<p class="text-3xl font-black mt-1" id="kpiFrequentCount">0%</p>
 </div>
 <div class="mt-4">
 <div class="w-full bg-surface/20 h-2 rounded-full overflow-hidden">
-<div class="bg-surface h-full" style="width: 78%"></div>
+<div class="bg-surface h-full" id="kpiFrequentBar" style="width: 0%"></div>
 </div>
-<p class="text-[10px] mt-2 font-bold uppercase tracking-widest opacity-80">Restante: S/ 50k</p>
+<p class="text-[10px] mt-2 font-bold uppercase tracking-widest opacity-80" id="kpiFrequentSub">Base Total Activa</p>
 </div>
 </div>
 </div>
-<!-- Lower Section: Products and Activities -->
+<!-- Lower Section: Client Directory and AI Assistant -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-<!-- Product Catalog (Left side) -->
-<div class="lg:col-span-1 space-y-4">
-<div class="flex items-center justify-between">
-<h3 class="font-bold text-lg text-primary">Catálogo Industrial</h3>
-<button class="text-primary text-xs font-bold hover:underline">Ver Todo</button>
-</div>
-<div class="space-y-3" id="crmProductList">
-<!-- Product Item -->
-<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
-<img alt="Circular Industrial Brush" class="object-cover w-full h-full" data-alt="Close up high quality photograph of a steel circular industrial brush with metallic bristles and blue hub" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvLZYq7c_T_Wm_lZM-j0lFwSbw_b5g0Izy5fGG6g6exxL2lGNpMOi_t3McYwSOu5LAl02nmWzAoPFSalXL-L3anibsAyuy_weeMRRKPnt0nDWLg2Cp-GzK0fP_7XbMyAfC5nBzmUdf8zpyNnPkJR30UlN43rTwOSAgH4phQGUJsIUnWvFVZEg9ScBpQXMRpOMsqjKwjgIwanzRbz2RWlfhXGou-n7tpjH4fKJWsGTj8-8_NIM9KR2MkCoBJHpR8seraPF6f0-pCtc"/>
-</div>
-<div class="flex-1">
-<h4 class="text-sm font-bold text-on-surface">Acero Circular 400mm</h4>
-<p class="text-[10px] text-on-surface-variant">CAT: BR-0492-ST</p>
-<div class="flex items-center justify-between mt-2">
-<span class="text-xs font-bold text-primary">$45.00</span>
-<span class="text-[10px] px-2 py-0.5 bg-tertiary-container/10 text-tertiary-container font-bold rounded">124 in Stock</span>
-</div>
-</div>
-</div>
-<!-- Product Item -->
-<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
-<img alt="Roller Industrial Brush" class="object-cover w-full h-full" data-alt="Heavy duty long roller brush with synthetic nylon bristles used for industrial cleaning on a clean white floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIuCha2enK6IdukGeKd0YZ9JwBkWbtevynWdXKv_kdS4NiaO_8SJpBupt_YvnJX0EZp4fvZ_lS3NHOMIpcmc7rqRRSWXzVJVSXtN2Wopnyoie9fxHHEpIWv7I3lJ9tvbmm1HFFWPDCi2cvbdTsGbnbCvvPf3eS5utvk0zvRryMupuUNhHO_3pRxuVQxeYduHqLHAC0ziAYtymo1jF8X8JtoRelM7XKhZxGq4Bk5gU5lA9ix1hnn8pzRr3Nbubzr-fpgWaUSRMlV1Y"/>
-</div>
-<div class="flex-1">
-<h4 class="text-sm font-bold text-on-surface">Rodillo de Nylon Pro-X</h4>
-<p class="text-[10px] text-on-surface-variant">CAT: BR-1102-NY</p>
-<div class="flex items-center justify-between mt-2">
-<span class="text-xs font-bold text-primary">$189.50</span>
-<span class="text-[10px] px-2 py-0.5 bg-error-container/10 text-error-container font-bold rounded">12 in Stock</span>
-</div>
-</div>
-</div>
-<!-- Product Item -->
-<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
-<img alt="Disc Industrial Brush" class="object-cover w-full h-full" data-alt="Disc shaped industrial floor scrubbing brush with thick black bristles and reinforced plastic base" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHT_hFZvS3dpKwF_du29XOdA7WgGfcy3LhuUxfi1f0hHx2QknW7cWnq82st8FxG1AvL4op17AUD9ho-4cxqS8h_3bGR7VSzhDKNG9ugH-notuE2z8e-opbJH_xav_IZjrNqACHouMDRj_Pk1ODJhH4oO3kXlE1hSTyE9D4fkgQW5kOIE2dR7v6Ki-xjiIj9D32NbBl7Msg6po5GsGQhLkyyT5EUOTuOAzIk4KKpuibZH4XejnbqpCAfviULHkzHMXorhBqP9qRYqA"/>
-</div>
-<div class="flex-1">
-<h4 class="text-sm font-bold text-on-surface">Disco Cepillo 20"</h4>
-<p class="text-[10px] text-on-surface-variant">CAT: BR-8821-HD</p>
-<div class="flex items-center justify-between mt-2">
-<span class="text-xs font-bold text-primary">$124.00</span>
-<span class="text-[10px] px-2 py-0.5 bg-tertiary-container/10 text-tertiary-container font-bold rounded">58 in Stock</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Recent Activity Table (Right side) -->
-<div class="lg:col-span-2 space-y-4">
-<h3 class="font-bold text-lg text-primary">Ventas Recientes</h3>
-<div class="overflow-hidden rounded-xl bg-surface-container-lowest border border-slate-100/50 shadow-sm">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-container-low">
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">ID Transacción</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Cliente</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Monto</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Estado</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Acción</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-slate-50" id="crmRecentSalesBody">
-<tr class="hover:bg-slate-50 transition-colors">
-<td class="px-6 py-4">
-<span class="text-xs font-bold text-primary">#QT-2024-081</span>
-<p class="text-[10px] text-slate-400">Oct 24, 14:20</p>
-</td>
-<td class="px-6 py-4">
-<p class="text-xs font-bold text-on-surface">Global Automotriz S.A.</p>
-<p class="text-[10px] text-on-surface-variant">Suministro Industrial</p>
-</td>
-<td class="px-6 py-4">
-<span class="text-xs font-bold">$12,450.00</span>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-container text-on-tertiary">Invoiced</span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
-</td>
-</tr>
-<tr class="hover:bg-slate-50 transition-colors">
-<td class="px-6 py-4">
-<span class="text-xs font-bold text-primary">#QT-2024-082</span>
-<p class="text-[10px] text-slate-400">Oct 24, 11:05</p>
-</td>
-<td class="px-6 py-4">
-<p class="text-xs font-bold text-on-surface">Textiles del Norte</p>
-<p class="text-[10px] text-on-surface-variant">Fabricante</p>
-</td>
-<td class="px-6 py-4">
-<span class="text-xs font-bold">$3,820.00</span>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-primary">Approved</span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
-</td>
-</tr>
-<tr class="hover:bg-slate-50 transition-colors">
-<td class="px-6 py-4">
-<span class="text-xs font-bold text-primary">#QT-2024-083</span>
-<p class="text-[10px] text-slate-400">Oct 23, 16:45</p>
-</td>
-<td class="px-6 py-4">
-<p class="text-xs font-bold text-on-surface">Logística Integral S.C.</p>
-<p class="text-[10px] text-on-surface-variant">Operaciones de Almacén</p>
-</td>
-<td class="px-6 py-4">
-<span class="text-xs font-bold">$1,200.00</span>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-surface-container-high text-on-surface-variant">Pending</span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
-</td>
-</tr>
-<tr class="hover:bg-slate-50 transition-colors">
-<td class="px-6 py-4">
-<span class="text-xs font-bold text-primary">#QT-2024-084</span>
-<p class="text-[10px] text-slate-400">Oct 23, 09:12</p>
-</td>
-<td class="px-6 py-4">
-<p class="text-xs font-bold text-on-surface">Minería del Pacífico</p>
-<p class="text-[10px] text-on-surface-variant">Minería Industrial</p>
-</td>
-<td class="px-6 py-4">
-<span class="text-xs font-bold">$45,900.00</span>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-primary">Approved</span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="px-6 py-4 bg-surface-container-low/50 flex items-center justify-between">
-<span class="text-xs text-on-surface-variant">Mostrando transacciones recientes de Base de Datos</span>
-<div class="flex gap-2">
-<button class="p-1 rounded hover:bg-surface text-slate-400 transition-colors"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
-<button class="p-1 rounded hover:bg-surface text-slate-400 transition-colors"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Intelligence Banner -->
-<div class="bg-surface-container-low rounded-xl p-6 border border-primary/5 flex items-center gap-6">
-<div class="w-12 h-12 bg-primary-container/20 rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">psychology</span>
-</div>
-<div class="flex-1">
-<h4 class="font-bold text-primary">Insight de Retención IA</h4>
-<p class="text-sm text-on-surface-variant">Los datos históricos sugieren un aumento en la demanda en el sector industrial durante los próximos 15 días. Recomendamos envío de promos masivas a los Top 5 clientes.</p>
-</div>
-<button class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-md hover:bg-primary/90">Desplegar Campaña</button>
+    
+    <!-- Client Directory Table (Left side - Main) -->
+    <div class="lg:col-span-2 space-y-4">
+        <div class="flex items-center justify-between">
+            <h3 class="font-bold text-lg text-primary">Directorio de Clientes</h3>
+            <button class="bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-primary/20 transition-colors">Exportar CSV</button>
+        </div>
+        
+        <div class="overflow-x-auto rounded-xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm">
+            <table class="w-full text-left border-collapse min-w-full">
+                <thead>
+                    <tr class="bg-surface-container-low">
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Cliente</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Contacto</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Info Empresa</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-center">Interacciones</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/10" id="crmClientsTableBody">
+                    <tr><td colspan="5" class="p-6 text-center text-xs text-outline-variant">Cargando directorio de la Base de Datos...</td></tr>
+                </tbody>
+            </table>
+            <div class="px-6 py-4 bg-surface-container-low flex items-center justify-between border-t border-outline-variant/10">
+                <span class="text-xs text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-sm text-green-500">check_circle</span> Directorio centralizado sincronizado</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Assistant Panel (Right side) -->
+    <div class="lg:col-span-1 space-y-4">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-[18px]">psychology</span>
+            </div>
+            <h3 class="font-bold text-lg text-primary">AI Insights</h3>
+        </div>
+        <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/20 min-h-[400px] flex flex-col relative overflow-hidden" id="crmAiAssistantContainer">
+            <!-- decorative background -->
+            <div class="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-0"></div>
+            
+            <!-- Empty State -->
+            <div id="crmAiEmptyState" class="flex-1 flex flex-col items-center justify-center text-center opacity-70 relative z-10">
+                <span class="material-symbols-outlined text-5xl text-outline mb-4" style="font-variation-settings: 'FILL' 0, 'wght' 200;">person_search</span>
+                <p class="text-sm font-medium text-on-surface-variant max-w-[200px]">Selecciona un cliente de la tabla para que la IA escanee su LTV y brinde sugerencias comunicativas.</p>
+            </div>
+            
+            <!-- Loading State -->
+            <div id="crmAiLoading" class="flex-1 flex flex-col items-center justify-center hidden relative z-10">
+                <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                <p class="mt-4 text-xs font-bold text-primary animate-pulse">Analizando métricas cognitivas...</p>
+            </div>
+            
+            <!-- Results State -->
+            <div id="crmAiResults" class="hidden flex-col gap-5 h-full relative z-10 w-full">
+                <div class="pb-4 border-b border-outline-variant/20">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h4 id="aiClientName" class="font-bold text-on-surface">Nombre Cliente</h4>
+                            <p id="aiClientStatus" class="inline-flex mt-2 items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary uppercase">Status</p>
+                        </div>
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary shrink-0">
+                            <span class="material-symbols-outlined text-xl">robot_2</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex-1">
+                    <h5 class="text-[10px] font-black uppercase tracking-widest text-outline mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Sugerencias Aprobadas</h5>
+                    <ul id="aiRecommendationsList" class="space-y-4">
+                        <!-- Items rendered dynamically -->
+                    </ul>
+                </div>
+                
+                <div class="mt-auto pt-4 flex gap-2">
+                    <button onclick="Swal.fire('¡Campaña Enviada!','Se ha enviado la comunicación automatizada al cliente.','success')" class="flex-1 py-2.5 bg-primary text-white rounded-lg text-xs font-bold shadow hover:bg-primary/90 flex items-center justify-center gap-2 transition-colors active:scale-95">
+                        <span class="material-symbols-outlined text-[16px]">campaign</span> Despachar Acción
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </div>
 </main>
