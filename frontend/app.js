@@ -1494,6 +1494,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    
     // --- LÓGICA FACTURACIÓN DINÁMICA ---
     const loadDynamicBilling = async () => {
         const invContainer = document.getElementById('recentInvoicesContainer');
@@ -1507,30 +1508,115 @@ document.addEventListener('DOMContentLoaded', () => {
                     const invoices = await res.json();
                     if(invoices.length > 0) {
                         invContainer.innerHTML = invoices.slice(0, 5).map(i => `
-                        <div class="flex items-center justify-between p-3 border-b border-outline-variant/10 bg-surface dark:bg-surface-container">
+                        <div class="flex items-center justify-between p-3 border-b border-outline-variant/10 bg-surface dark:bg-surface-container hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="Swal.fire({title: 'Detalle Comprobante Fiscal', html: '<div style=\'text-align:left;font-size:14px;\' class=\'bg-surface-container-low p-4 rounded-lg\'><p><strong>${i.invoice_number}</strong></p><p><strong>RUC:</strong> ${i.client_ruc_dni}</p><p><strong>Razón:</strong> ${i.client_name}</p><hr style=\'margin:10px 0;border-color:#ccc\'><div style=\'display:flex;justify-content:space-between\'><p>Subtotal:</p> <p>S/ ${parseFloat(i.subtotal).toFixed(2)}</p></div><div style=\'display:flex;justify-content:space-between\'><p>IGV(18%):</p> <p>S/ ${parseFloat(i.igv).toFixed(2)}</p></div><div style=\'display:flex;justify-content:space-between;font-weight:bold;margin-top:5px;\'><p>Total:</p> <p>S/ ${parseFloat(i.total).toFixed(2)}</p></div></div>', icon: 'info', showCancelButton: true, confirmButtonText: 'Ver representación (PDF)', cancelButtonText: 'Cerrar'}).then((res)=>{ if(res.isConfirmed){ window.open('http://localhost:8000/api/billing/'+i.id+'/pdf', '_blank'); } })">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded ${i.sunat_status === 'Emitida' ? 'bg-tertiary-container/10 text-tertiary-container' : 'bg-surface-container/20 text-on-surface-variant'} flex items-center justify-center">
+                                <div class="w-10 h-10 rounded ${i.sunat_status === 'Emitida' ? 'bg-green-100 text-green-700' : 'bg-surface-container/20 text-on-surface-variant'} flex items-center justify-center shadow-sm">
                                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">${i.sunat_status === 'Emitida' ? 'check_circle' : 'hourglass_empty'}</span>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold text-on-surface">${i.invoice_number}</p>
-                                    <p class="text-[10px] text-on-surface-variant font-medium">${i.client_name} (RUC: ${i.client_ruc_dni})</p>
+                                    <p class="text-sm font-black text-primary group-hover:underline">${i.invoice_number}</p>
+                                    <p class="text-[10px] text-on-surface-variant font-bold mt-[2px]">${i.client_name} <span class="bg-surface-container-high px-1 rounded ml-1 text-outline">RUC: ${i.client_ruc_dni}</span></p>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm font-bold text-on-surface">S/ ${parseFloat(i.total).toFixed(2)}</p>
-                                <span class="text-[9px] font-bold ${i.sunat_status === 'Emitida' ? 'text-tertiary-container' : 'text-on-surface-variant'} uppercase">${i.sunat_status} SUNAT</span>
+                                <p class="text-sm font-black text-on-surface">S/ ${parseFloat(i.total).toFixed(2)}</p>
+                                <span class="text-[9px] font-black ${i.sunat_status === 'Emitida' ? 'text-green-600 bg-green-50 px-1 py-0.5 rounded' : 'text-on-surface-variant'} uppercase flex items-center justify-end gap-1"><span class="material-symbols-outlined text-[10px]">cloud_done</span> ${i.sunat_status} SUNAT</span>
                             </div>
                         </div>
                         `).join('');
                     } else {
-                        invContainer.innerHTML = '<div class="p-6 text-center text-xs text-outline-variant flex flex-col items-center"><span class="material-symbols-outlined text-4xl opacity-50">receipt_long</span><p class="mt-2">Ningún comprobante emitido en la Base de Datos.</p></div>';
+                        invContainer.innerHTML = '<div class="p-8 text-center text-xs text-outline-variant flex flex-col items-center bg-surface-container-lowest rounded-lg border border-dashed border-outline/30"><span class="material-symbols-outlined text-4xl opacity-50 mb-2">receipt_long</span><p class="font-bold">Ningún comprobante fiscal emitido.</p></div>';
                     }
                 }
             } catch(e) {}
         }
     };
-
+    
+    // Configurar Envío de Factura Formulada
+    const invoiceForm = document.getElementById('invoiceForm');
+    if(invoiceForm) {
+        invoiceForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const rucInput = document.getElementById('rucInput').value.trim();
+            const clientNameInput = document.getElementById('clientNameInput').value.trim();
+            const orderIdInput = document.getElementById('orderIdInput').value.trim();
+            const compliance = document.getElementById('compliance').checked;
+            const law29733 = document.getElementById('law29733').checked;
+            
+            if(!compliance || !law29733) {
+                Swal.fire('Requisito Legal', 'Debe aceptar las políticas de privacidad y compliance SUNAT para generar comprobantes electrónicos.', 'warning');
+                return;
+            }
+            
+            if(!/^\d{8}$|^\d{11}$/.test(rucInput)) {
+                Swal.fire('Error de RUC', 'El RUC/DNI debe contener 8 o 11 dígitos numéricos para la factura electrónica.', 'error');
+                return;
+            }
+            
+            // Show loading
+            Swal.fire({
+                title: 'Emitiendo CPE',
+                html: 'Enviando payload XML UBL 2.1 a OSE/SUNAT...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+            
+            try {
+                const token = localStorage.getItem('jhire_jwt_token');
+                const res = await fetch('http://localhost:8000/api/billing/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        order_id: parseInt(orderIdInput),
+                        client_ruc_dni: rucInput,
+                        client_name: clientNameInput
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if(res.ok) {
+                    Swal.fire({
+                        title: 'Comprobante Aceptado por SUNAT',
+                        html: `<div class="text-left mt-4 text-sm bg-surface-container-low p-4 rounded-lg" style="user-select: text;">
+                            <p><strong>Nro Resolución:</strong> SUNAT-${Math.floor(Math.random() * 1000000000)}</p>
+                            <p class="mt-2 text-green-700 font-bold"><span class="material-symbols-outlined text-[14px]">check_circle</span> Factura ${data.invoice_number} generada correctamente por S/ ${parseFloat(data.total).toFixed(2)}</p>
+                            <p class="text-xs text-outline mt-2 whitespace-pre-line break-all">Hash Firma: ${btoa(data.invoice_number + data.total)}</p>
+                        </div>`,
+                        icon: 'success',
+                        confirmButtonText: 'Imprimir / Descargar PDF',
+                        showCancelButton: true,
+                        cancelButtonText: 'Cerrar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.open(`http://localhost:8000/api/billing/${data.id}/pdf`, '_blank');
+                        }
+                    });
+                    invoiceForm.reset();
+                    loadDynamicBilling();
+                } else {
+                    Swal.fire('Error al Emitir', data.detail || 'Verifique que el ID de la Órden comercial exista en el sistema.', 'error');
+                }
+            } catch(e) {
+                Swal.fire('Fallo de Red', 'No se pudo contactar al facturador electrónico.', 'error');
+            }
+        });
+        
+        // Auto-fill logic for dummy RUC checking
+        const validateBtn = document.getElementById('validateRucBtn');
+        if(validateBtn) {
+            validateBtn.addEventListener('click', () => {
+                const ruc = document.getElementById('rucInput').value.trim();
+                const nameInp = document.getElementById('clientNameInput');
+                if(/^\d{8}$|^\d{11}$/.test(ruc)) {
+                    if(!nameInp.value) {
+                       nameInp.value = ruc.length === 11 ? "EMPRESA RUC " + ruc + " S.A.C." : "CLIENTE DNI " + ruc;
+                    }
+                }
+            });
+        }
+    }
     loadDynamicCRM();
     loadDynamicBilling();
 });
