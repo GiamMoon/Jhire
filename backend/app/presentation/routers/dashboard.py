@@ -56,6 +56,12 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
     projected = 0.0
     accuracy = 100.0
     ai_msg = "Se requiere instalar scikit-learn para activar la IA predictiva."
+    
+    # Data for time series chart
+    daily_labels = []
+    daily_values = []
+    forecast_labels = []
+    forecast_values = []
 
     if LinearRegression:
         orders = db.query(Order).filter(Order.status != "Cancelado").order_by(Order.created_at).all()
@@ -67,33 +73,54 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
             daily_sales[d] += float(o.total_price)
         
         if len(daily_sales) > 5:
+            sorted_dates = sorted(daily_sales.keys())
+            
+            # Build series for chart (last 30 days max)
+            chart_dates = sorted_dates[-30:]
+            daily_labels = [d.strftime("%d/%m") for d in chart_dates]
+            daily_values = [round(daily_sales[d], 2) for d in chart_dates]
+            
             # Prepare X (days index) and Y (sales)
             X = np.array(range(len(daily_sales))).reshape(-1, 1)
-            y = np.array(list(daily_sales.values()))
+            y = np.array([daily_sales[d] for d in sorted_dates])
             
             model = LinearRegression()
             model.fit(X, y)
             
-            # Predict "today" based on the trend
-            next_day_idx = np.array([[len(daily_sales)]])
-            pred_next = model.predict(next_day_idx)[0]
-            if pred_next < 0: pred_next = 0
+            # Predict next 7 days
+            last_idx = len(daily_sales)
+            for i in range(7):
+                future_idx = np.array([[last_idx + i]])
+                pred = max(0, model.predict(future_idx)[0])
+                future_date = sorted_dates[-1] + timedelta(days=i+1)
+                forecast_labels.append(future_date.strftime("%d/%m"))
+                forecast_values.append(round(pred, 2))
             
-            # The accuracy can be R^2 score converted to %
-            score = model.score(X, y)
-            accuracy = max(10, min(100, score * 100))
+            # Confidence score: Based on Mean Absolute Error relative to mean
+            # This gives a more practical and stable metric than raw R²
+            from sklearn.metrics import mean_absolute_error
+            predictions = model.predict(X)
+            mae = mean_absolute_error(y, predictions)
+            mean_val = max(1, y.mean())
+            # Confidence = 100 - (error% relative to mean), clamped [40, 98]
+            accuracy = max(40, min(98, 100 - (mae / mean_val * 100)))
             
-            projected = pred_next
+            projected = forecast_values[0] if forecast_values else 0
             
             if model.coef_[0] > 0:
-                ai_msg = f"El modelo detecta tendencia a la ALZA. Sugerimos pre-abastecer inventario crítico."
+                ai_msg = f"El modelo detecta tendencia a la ALZA (+S/ {model.coef_[0]:.2f}/día). Sugerimos pre-abastecer inventario crítico y ampliar campañas de fidelización."
             else:
-                ai_msg = f"El modelo detecta tendencia a la BAJA. Se recomiendan campañas de remarketing CRM."
+                ai_msg = f"El modelo detecta tendencia a la BAJA ({model.coef_[0]:.2f}/día). Se recomiendan campañas de remarketing CRM y promociones de reactivación."
 
     return {
         "total_sales": float(total_sales),
         "demand_forecast_accuracy": round(accuracy, 1),
         "projected_next_day": round(projected, 2),
         "top_products": product_ranking,
-        "ai_anomalies": [ai_msg]
+        "ai_anomalies": [ai_msg],
+        # NEW: Time series data for charts
+        "daily_labels": daily_labels,
+        "daily_values": daily_values,
+        "forecast_labels": forecast_labels,
+        "forecast_values": forecast_values
     }

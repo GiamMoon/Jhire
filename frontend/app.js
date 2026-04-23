@@ -105,6 +105,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 return; // Stop execution on this page
             }
             
+            // ADMIN ROUTE GUARD: Block non-admin users from admin pages
+            const adminPages = ['dashboard.html', 'crm.html', 'facturacion.html', 'inventario.html', 'ventas.html', 'admin_catalogo.html', 'admin_usuarios.html', 'admin_perfil.html'];
+            const currentPage = window.location.pathname.split('/').pop();
+            
+            if (adminPages.includes(currentPage) && currentUser.role !== 'admin') {
+                window.location.href = 'inicio.html';
+                return; // Stop all execution
+            }
+            
             // Update Profile UI anywhere
             const userFullName = currentUser.first_name ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim() : currentUser.sub;
             
@@ -367,10 +376,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnCreateUser && createUserModal) {
         btnCreateUser.addEventListener('click', () => {
-            createUserModal.classList.remove('hidden');
+            createUserModal.classList.remove('pointer-events-none');
+            setTimeout(() => createUserModal.classList.remove('opacity-0'), 10);
         });
         closeUserModal.addEventListener('click', () => {
-             createUserModal.classList.add('hidden');
+             createUserModal.classList.add('opacity-0');
+             setTimeout(() => createUserModal.classList.add('pointer-events-none'), 300);
         });
         
         createUserForm.addEventListener('submit', async (e) => {
@@ -397,7 +408,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!res.ok) throw new Error(data.detail || 'Error al crear la cuenta del usuario');
                 
                 Swal.fire('Registrado', `¡El usuario ${email} ha sido registrado!`, 'success');
-                createUserModal.classList.add('hidden');
+                createUserModal.classList.add('opacity-0');
+                setTimeout(() => createUserModal.classList.add('pointer-events-none'), 300);
                 createUserForm.reset();
             } catch (err) {
                 errBox.innerText = err.message;
@@ -417,6 +429,10 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 document.getElementById('total-sales').innerText = `S/. ${data.total_sales.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
                 if (document.getElementById('forecast-accuracy')) document.getElementById('forecast-accuracy').innerText = `${data.demand_forecast_accuracy}`;
+                
+                // NEW: Pronóstico Mañana KPI
+                const forecastNextDay = document.getElementById('forecast-next-day');
+                if (forecastNextDay) forecastNextDay.innerText = `S/. ${data.projected_next_day.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
                 
                 const rankingBox = document.getElementById('product-ranking-list');
                 if (rankingBox && data.top_products) {
@@ -444,12 +460,108 @@ document.addEventListener('DOMContentLoaded', () => {
                     let isUp = msg.toLowerCase().includes('alza');
                     
                     anomaliesBox.innerHTML = `
-                        <h4 class="text-sm font-bold text-on-surface mb-1 shadow-sm flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 inline-block rounded-full ${isUp ? 'bg-success' : 'bg-warning'} animate-pulse"></span> 
-                            Alerta del Motor Predictivo
+                        <h4 class="text-sm font-bold text-on-surface mb-1 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 inline-block rounded-full ${isUp ? 'bg-success' : 'bg-amber-500'} animate-pulse"></span> 
+                            ${isUp ? '📈 Alza Detectada' : '📉 Baja Detectada'}
                         </h4>
-                        <p class="text-xs text-outline leading-relaxed italic">${msg}</p>
+                        <p class="text-xs text-outline leading-relaxed">${msg}</p>
+                        <p class="text-[10px] text-primary font-bold mt-2">Análisis basado en tendencias históricas de ventas</p>
                     `;
+                }
+                
+                // NEW: Render Chart.js Forecast Chart
+                const forecastCanvas = document.getElementById('forecastChart');
+                if (forecastCanvas && data.daily_labels && data.daily_labels.length > 0) {
+                    const ctx = forecastCanvas.getContext('2d');
+                    
+                    // Historical data (real sales)
+                    const historicalData = data.daily_values;
+                    const historicalLabels = data.daily_labels;
+                    
+                    // Forecast data (predicted next 7 days)
+                    const forecastData = data.forecast_values;
+                    const forecastLabels = data.forecast_labels;
+                    
+                    // Combined labels
+                    const allLabels = [...historicalLabels, ...forecastLabels];
+                    
+                    // Build datasets: historical has nulls for future, forecast has nulls for past
+                    // Connect them at the boundary by overlapping the last real point
+                    const realDataset = [...historicalData, ...forecastLabels.map(() => null)];
+                    const predDataset = [...historicalLabels.slice(0, -1).map(() => null), historicalData[historicalData.length - 1], ...forecastData];
+                    
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: allLabels,
+                            datasets: [
+                                {
+                                    label: 'Ventas Reales (S/)',
+                                    data: realDataset,
+                                    borderColor: '#003461',
+                                    backgroundColor: 'rgba(0, 52, 97, 0.08)',
+                                    borderWidth: 2.5,
+                                    pointRadius: 3,
+                                    pointBackgroundColor: '#003461',
+                                    tension: 0.4,
+                                    fill: true,
+                                    spanGaps: false
+                                },
+                                {
+                                    label: 'Pronóstico IA (S/)',
+                                    data: predDataset,
+                                    borderColor: '#10b981',
+                                    backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                                    borderWidth: 2.5,
+                                    borderDash: [6, 4],
+                                    pointRadius: 4,
+                                    pointStyle: 'triangle',
+                                    pointBackgroundColor: '#10b981',
+                                    tension: 0.4,
+                                    fill: true,
+                                    spanGaps: false
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0,0,0,0.8)',
+                                    titleFont: { family: 'Inter', weight: 'bold' },
+                                    bodyFont: { family: 'Inter' },
+                                    padding: 12,
+                                    cornerRadius: 8,
+                                    callbacks: {
+                                        label: function(ctx) {
+                                            return ctx.dataset.label + ': S/ ' + (ctx.parsed.y ? ctx.parsed.y.toFixed(2) : '—');
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { font: { family: 'Inter', size: 10, weight: 'bold' }, color: '#727781' }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(194,199,209,0.2)' },
+                                    ticks: {
+                                        font: { family: 'Inter', size: 10 },
+                                        color: '#727781',
+                                        callback: function(val) { return 'S/ ' + val.toLocaleString('es-PE'); }
+                                    }
+                                }
+                            }
+                        }
+                    });
                 }
             })
             .catch(err => {
@@ -1056,8 +1168,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         let anomalyTag = order.status === 'Anomalía / Revisión' ? '<div class="mt-1.5 inline-flex items-center gap-1 bg-error text-white px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse shadow-sm"><span class="material-symbols-outlined text-[10px]">warning</span> ANOMALÍA DETECTADA</div>' : '';
                         
+                        // Check if SLA expired (72h = 259200000ms)
+                        let createdTime = new Date(order.created_at + 'Z').getTime();
+                        let slaDeadline = createdTime + (72 * 3600 * 1000);
+                        let isExpired = Date.now() > slaDeadline;
+                        
+                        let actionButtons = isExpired 
+                            ? `<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded text-[10px] font-black tracking-wider"><span class="material-symbols-outlined text-[12px]">block</span> SLA VENCIDO</span>`
+                            : `<button onclick="updateOrderStatus(${order.id}, 'Completado')" class="flex-1 max-w-[90px] justify-center p-1.5 px-3 bg-success/10 hover:bg-success text-success hover:text-white rounded text-[10px] font-black tracking-wider transition-colors">ACEPTAR</button>
+                               <button onclick="updateOrderStatus(${order.id}, 'Rechazado')" class="flex-1 max-w-[90px] justify-center p-1.5 px-3 bg-error/10 hover:bg-error text-error hover:text-white rounded text-[10px] font-black tracking-wider transition-colors">RECHAZAR</button>`;
+                        
                         tbody.insertAdjacentHTML('beforeend', `
-                            <tr class="hover:bg-surface-container-high transition-colors transition-colors border-b border-outline/10 last:border-0 relative">
+                            <tr class="hover:bg-surface-container-high transition-colors border-b border-outline/10 last:border-0 relative ${isExpired ? 'opacity-60' : ''}">
                                 <td class="px-4 py-4 font-bold text-on-surface text-sm">#ORD-${order.id}</td>
                                 <td class="px-4 py-4">
                                     <div class="text-xs font-bold text-primary">${order.user?.email || 'N/A'}</div>
@@ -1065,11 +1187,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                     ${anomalyTag}
                                 </td>
                                 <td class="px-4 py-4 text-sm font-black text-on-surface font-headline border-r border-outline-variant/20">S/ ${order.total_price.toFixed(2)}</td>
-                                <td class="px-4 py-4 text-xs font-bold text-error admin-timer" data-start="${order.created_at}">--:--:--</td>
+                                <td class="px-4 py-4 text-xs font-bold ${isExpired ? 'text-gray-400' : 'text-error'} admin-timer" data-start="${order.created_at}">${isExpired ? 'EXPIRADA' : '--:--:--'}</td>
                                 <td class="px-4 py-4 text-right">
                                     <div class="flex justify-end gap-2">
-                                        <button onclick="updateOrderStatus(${order.id}, 'Completado')" class="flex-1 max-w-[90px] justify-center p-1.5 px-3 bg-success/10 hover:bg-success text-success hover:text-white rounded text-[10px] font-black tracking-wider transition-colors">ACEPTAR</button>
-                                        <button onclick="updateOrderStatus(${order.id}, 'Rechazado')" class="flex-1 max-w-[90px] justify-center p-1.5 px-3 bg-error/10 hover:bg-error text-error hover:text-white rounded text-[10px] font-black tracking-wider transition-colors">RECHAZAR</button>
+                                        ${actionButtons}
                                     </div>
                                 </td>
                             </tr>
@@ -1087,6 +1208,19 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(loadAdminOrders, 15000); // Poll every 15s
         
         document.getElementById('refreshAdminOrdersBtn')?.addEventListener('click', loadAdminOrders);
+        
+        // Dashboard Search Bar - filters orders table
+        const dashboardSearch = document.getElementById('dashboardSearchInput');
+        if(dashboardSearch) {
+            dashboardSearch.addEventListener('keyup', (e) => {
+                const term = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('#adminOrdersTableBody tr');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? '' : 'none';
+                });
+            });
+        }
         
         // History Search
         const historySearch = document.getElementById('historySearchInput');
@@ -1466,22 +1600,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 clientNameEl.innerText = userName;
                 clientStatusEl.innerText = data.message || 'Activo';
                 
-                // Color formatting based on message
-                clientStatusEl.className = data.message === 'Cliente VIP' 
-                    ? 'inline-flex mt-2 items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase'
-                    : 'inline-flex mt-2 items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary uppercase';
+                // Color formatting based on behavioral segment
+                const segmentColors = {
+                    'Cliente VIP': 'bg-green-100 text-green-700',
+                    'En Riesgo': 'bg-red-100 text-red-700',
+                    'Cliente Frecuente': 'bg-blue-100 text-blue-700',
+                    'Cliente Ocasional': 'bg-amber-100 text-amber-700',
+                    'Nuevo Prospecto': 'bg-gray-100 text-gray-600'
+                };
+                const colorClass = segmentColors[data.message] || 'bg-primary/10 text-primary';
+                clientStatusEl.className = `inline-flex mt-2 items-center px-2 py-0.5 rounded text-[10px] font-bold ${colorClass} uppercase`;
                 
                 listEl.innerHTML = '';
+                
+                // Show behavioral metrics if available
+                if(data.metrics && data.metrics.total_orders > 0) {
+                    listEl.innerHTML += `
+                    <li class="p-3 bg-surface-container-low rounded-lg text-[11px] text-on-surface grid grid-cols-3 gap-2 text-center border border-outline-variant/20">
+                        <div>
+                            <p class="text-[9px] text-outline uppercase font-bold">Pedidos</p>
+                            <p class="text-lg font-black text-primary">${data.metrics.total_orders}</p>
+                        </div>
+                        <div>
+                            <p class="text-[9px] text-outline uppercase font-bold">Ticket Prom.</p>
+                            <p class="text-lg font-black text-primary">S/ ${data.metrics.avg_ticket.toFixed(0)}</p>
+                        </div>
+                        <div>
+                            <p class="text-[9px] text-outline uppercase font-bold">Últ. Compra</p>
+                            <p class="text-lg font-black text-primary">${data.metrics.days_since_last}d</p>
+                        </div>
+                    </li>`;
+                }
+                
                 if(data.recommendations && data.recommendations.length > 0) {
                     data.recommendations.forEach(rec => {
                         listEl.innerHTML += `
                         <li class="p-3 bg-surface border border-outline-variant/10 rounded-lg shadow-sm flex gap-3 text-[11px] text-on-surface-variant leading-relaxed">
-                            <span class="material-symbols-outlined text-[14px] text-primary shrink-0">check_circle</span>
                             <span>${rec}</span>
                         </li>`;
                     });
                 } else {
-                    listEl.innerHTML = `<p class="text-xs text-outline">No hay recomendaciones algorítmicas de la DB en este momento.</p>`;
+                    listEl.innerHTML += `<p class="text-xs text-outline">No hay recomendaciones algorítmicas en este momento.</p>`;
                 }
                 
                 resultsState.classList.remove('hidden');
