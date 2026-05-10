@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from ...infrastructure.database import get_db
@@ -36,14 +36,40 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
     # 1. Total Sales (Completado / En Proceso)
     total_sales = db.query(func.sum(Order.total_price)).filter(Order.status != "Cancelado").scalar() or 0.0
 
-    # 2. Product Ranking
+    # ========================================
+    # NEW: Sales by Period (last 7d, 30d, 90d)
+    # ========================================
+    now = datetime.utcnow()
+    sales_periods = {}
+    for label, days in [("7d", 7), ("30d", 30), ("90d", 90)]:
+        period_start = now - timedelta(days=days)
+        period_total = db.query(func.sum(Order.total_price)).filter(
+            Order.status != "Cancelado",
+            Order.created_at >= period_start
+        ).scalar() or 0.0
+        period_count = db.query(func.count(Order.id)).filter(
+            Order.status != "Cancelado",
+            Order.created_at >= period_start
+        ).scalar() or 0
+        sales_periods[label] = {
+            "total": round(float(period_total), 2),
+            "count": period_count,
+            "avg_ticket": round(float(period_total) / max(1, period_count), 2)
+        }
+
+    # 2. Product Ranking WITH percentage weight
     top_items = db.query(
         Product.name, 
         func.sum(OrderItem.quantity * OrderItem.unit_price).label("contribution")
     ).join(OrderItem, Product.id == OrderItem.product_id)\
-     .group_by(Product.name).order_by(func.sum(OrderItem.quantity * OrderItem.unit_price).desc()).limit(5).all()
-     
-    product_ranking = [{"name": item[0], "contribution": float(item[1])} for item in top_items]
+     .group_by(Product.name).order_by(func.sum(OrderItem.quantity * OrderItem.unit_price).desc()).limit(10).all()
+    
+    total_product_revenue = sum(float(item[1]) for item in top_items) if top_items else 1.0
+    product_ranking = [{
+        "name": item[0], 
+        "contribution": float(item[1]),
+        "percentage": round(float(item[1]) / total_product_revenue * 100, 1)
+    } for item in top_items]
 
     # 3. Forecast Accuracy (Scikit-Learn ML)
     # We train LR with historical daily sales
@@ -62,6 +88,14 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
     daily_values = []
     forecast_labels = []
     forecast_values = []
+    
+    # NEW: Forecast precision comparison data
+    forecast_precision = {
+        "mae": 0.0,
+        "rmse": 0.0,
+        "mape": 0.0,
+        "comparison": []  # {date, real, predicted, error_pct}
+    }
 
     if LinearRegression:
         orders = db.query(Order).filter(Order.status != "Cancelado").order_by(Order.created_at).all()
@@ -97,15 +131,43 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
                 forecast_values.append(round(pred, 2))
             
             # Confidence score: Based on Mean Absolute Error relative to mean
-            # This gives a more practical and stable metric than raw R²
-            from sklearn.metrics import mean_absolute_error
+            from sklearn.metrics import mean_absolute_error, mean_squared_error
             predictions = model.predict(X)
             mae = mean_absolute_error(y, predictions)
+            rmse = float(np.sqrt(mean_squared_error(y, predictions)))
             mean_val = max(1, y.mean())
             # Confidence = 100 - (error% relative to mean), clamped [40, 98]
             accuracy = max(40, min(98, 100 - (mae / mean_val * 100)))
             
             projected = forecast_values[0] if forecast_values else 0
+            
+            # ========================================
+            # NEW: Forecast Precision Comparison
+            # Compare real vs predicted for last 10 days
+            # ========================================
+            comparison_days = min(10, len(sorted_dates))
+            comparison_data = []
+            for i in range(comparison_days):
+                idx = len(sorted_dates) - comparison_days + i
+                real_val = daily_sales[sorted_dates[idx]]
+                pred_val = float(predictions[idx])
+                error_pct = abs(real_val - pred_val) / max(1, real_val) * 100
+                comparison_data.append({
+                    "date": sorted_dates[idx].strftime("%d/%m"),
+                    "real": round(real_val, 2),
+                    "predicted": round(pred_val, 2),
+                    "error_pct": round(error_pct, 1)
+                })
+            
+            # MAPE (Mean Absolute Percentage Error) for last 10 days
+            mape = sum(c["error_pct"] for c in comparison_data) / max(1, len(comparison_data))
+            
+            forecast_precision = {
+                "mae": round(mae, 2),
+                "rmse": round(rmse, 2),
+                "mape": round(mape, 1),
+                "comparison": comparison_data
+            }
             
             if model.coef_[0] > 0:
                 ai_msg = f"El modelo detecta tendencia a la ALZA (+S/ {model.coef_[0]:.2f}/día). Sugerimos pre-abastecer inventario crítico y ampliar campañas de fidelización."
@@ -118,9 +180,14 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
         "projected_next_day": round(projected, 2),
         "top_products": product_ranking,
         "ai_anomalies": [ai_msg],
-        # NEW: Time series data for charts
+        # Time series data for charts
         "daily_labels": daily_labels,
         "daily_values": daily_values,
         "forecast_labels": forecast_labels,
-        "forecast_values": forecast_values
+        "forecast_values": forecast_values,
+        # NEW: Sales by Period
+        "sales_periods": sales_periods,
+        # NEW: Forecast Precision
+        "forecast_precision": forecast_precision
     }
+

@@ -73,6 +73,10 @@
       h1, h2, h3 {
         font-family: 'Manrope', sans-serif;
       }
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -132,6 +136,42 @@
 </div>
 </div>
 </header>
+<!-- ============================================ -->
+<!-- PERSONALIZED RECOMMENDATIONS SECTION -->
+<!-- ============================================ -->
+<section id="personalizedSection" class="mb-14 hidden" style="opacity:0; transform:translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease;">
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg shadow-primary/20">
+                <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-extrabold tracking-tight text-primary">Recomendado Para Ti</h2>
+                <p class="text-sm text-outline">Basado en tus productos favoritos y patrones de compra</p>
+            </div>
+        </div>
+        <div id="userProfileBadge" class="hidden md:flex items-center gap-2 bg-primary/5 border border-primary/20 px-4 py-2 rounded-xl">
+            <span class="material-symbols-outlined text-primary text-sm">insights</span>
+            <span class="text-[10px] font-black uppercase tracking-widest text-primary" id="profileBadgeText">Analizando...</span>
+        </div>
+    </div>
+    <div id="recommendedGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    
+    <!-- Personalized Discounts Banner -->
+    <div id="personalDiscountBanner" class="hidden mt-8 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 rounded-2xl p-8 border border-amber-200/50 dark:border-amber-700/30 shadow-sm">
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+                <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings: 'FILL' 1;">local_offer</span>
+            </div>
+            <div>
+                <h3 class="text-lg font-extrabold text-amber-800 dark:text-amber-300">Ofertas Exclusivas Para Ti</h3>
+                <p class="text-xs text-amber-600/70 dark:text-amber-400/60">Descuentos personalizados basados en tu actividad</p>
+            </div>
+        </div>
+        <div id="personalDiscountsList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    </div>
+</section>
+
 <!-- Product Bento Grid -->
 <section id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
   <!-- Products will be dynamically loaded here by app.js -->

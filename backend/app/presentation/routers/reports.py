@@ -86,32 +86,49 @@ def export_excel(db: Session = Depends(get_db)):
         ws.column_dimensions['D'].width = 14
         ws.column_dimensions['E'].width = 10
         
+        # --- Create a second sheet for charts ---
+        wb = writer.book
+        ws_charts = wb.create_sheet('Resumen Gráfico')
+        
         # --- PIE CHART: Orders by Status ---
         status_counts = {}
         for o in orders:
             status_counts[o.status] = status_counts.get(o.status, 0) + 1
         
-        # Write status data in hidden area for chart
-        chart_start_col = 7
-        ws.cell(row=4, column=chart_start_col, value='Estado').font = Font(bold=True, size=9, color='727781')
-        ws.cell(row=4, column=chart_start_col + 1, value='Cantidad').font = Font(bold=True, size=9, color='727781')
+        # Write status data for pie chart
+        ws_charts.cell(row=1, column=1, value='RESUMEN GRÁFICO — JHIRE ERP 2026').font = Font(name='Calibri', bold=True, size=14, color='003461')
+        ws_charts.merge_cells('A1:F1')
+        ws_charts['A1'].alignment = Alignment(horizontal='center')
+        
+        ws_charts.cell(row=3, column=1, value='Estado').font = Font(bold=True, size=10, color='003461')
+        ws_charts.cell(row=3, column=2, value='Cantidad').font = Font(bold=True, size=10, color='003461')
         
         for i, (status, count) in enumerate(status_counts.items()):
-            ws.cell(row=5 + i, column=chart_start_col, value=status)
-            ws.cell(row=5 + i, column=chart_start_col + 1, value=count)
+            ws_charts.cell(row=4 + i, column=1, value=status)
+            ws_charts.cell(row=4 + i, column=2, value=count)
         
         pie = PieChart()
-        pie.title = "Distribución por Estado"
+        pie.title = "Distribución por Estado de Órdenes"
         pie.style = 10
-        labels = Reference(ws, min_col=chart_start_col, min_row=5, max_row=4 + len(status_counts))
-        vals = Reference(ws, min_col=chart_start_col + 1, min_row=4, max_row=4 + len(status_counts))
+        labels = Reference(ws_charts, min_col=1, min_row=4, max_row=3 + len(status_counts))
+        vals = Reference(ws_charts, min_col=2, min_row=3, max_row=3 + len(status_counts))
         pie.add_data(vals, titles_from_data=True)
         pie.set_categories(labels)
-        pie.width = 18
-        pie.height = 12
-        ws.add_chart(pie, "G1")
+        pie.width = 20
+        pie.height = 14
+        ws_charts.add_chart(pie, "D3")
         
         # --- BAR CHART: Top 10 Orders by Value ---
+        top_orders = sorted(orders, key=lambda o: float(o.total_price), reverse=True)[:10]
+        
+        bar_data_start_row = 4 + len(status_counts) + 2
+        ws_charts.cell(row=bar_data_start_row, column=1, value='Orden').font = Font(bold=True, size=10, color='003461')
+        ws_charts.cell(row=bar_data_start_row, column=2, value='Monto (S/)').font = Font(bold=True, size=10, color='003461')
+        
+        for i, o in enumerate(top_orders):
+            ws_charts.cell(row=bar_data_start_row + 1 + i, column=1, value=f"#{o.id}")
+            ws_charts.cell(row=bar_data_start_row + 1 + i, column=2, value=round(float(o.total_price), 2))
+        
         bar = BarChart()
         bar.type = "col"
         bar.title = "Top 10 Órdenes por Valor (S/)"
@@ -119,23 +136,14 @@ def export_excel(db: Session = Depends(get_db)):
         bar.y_axis.title = "Monto S/"
         bar.x_axis.title = "Orden"
         
-        top_orders = sorted(orders, key=lambda o: float(o.total_price), reverse=True)[:10]
-        bar_start_col = 10
-        ws.cell(row=4, column=bar_start_col, value='Orden').font = Font(bold=True, size=9, color='727781')
-        ws.cell(row=4, column=bar_start_col + 1, value='Monto').font = Font(bold=True, size=9, color='727781')
-        
-        for i, o in enumerate(top_orders):
-            ws.cell(row=5 + i, column=bar_start_col, value=f"#{o.id}")
-            ws.cell(row=5 + i, column=bar_start_col + 1, value=round(float(o.total_price), 2))
-        
-        bar_labels = Reference(ws, min_col=bar_start_col, min_row=5, max_row=4 + len(top_orders))
-        bar_vals = Reference(ws, min_col=bar_start_col + 1, min_row=4, max_row=4 + len(top_orders))
+        bar_labels = Reference(ws_charts, min_col=1, min_row=bar_data_start_row + 1, max_row=bar_data_start_row + len(top_orders))
+        bar_vals = Reference(ws_charts, min_col=2, min_row=bar_data_start_row, max_row=bar_data_start_row + len(top_orders))
         bar.add_data(bar_vals, titles_from_data=True)
         bar.set_categories(bar_labels)
         bar.shape = 4
-        bar.width = 20
-        bar.height = 12
-        ws.add_chart(bar, "G16")
+        bar.width = 22
+        bar.height = 14
+        ws_charts.add_chart(bar, "D20")
     
     return FileResponse(filepath, filename="informe_corporativo_jhire.xlsx", media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 

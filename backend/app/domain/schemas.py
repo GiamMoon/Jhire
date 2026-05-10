@@ -104,6 +104,23 @@ class InvoiceCreate(BaseModel):
     client_ruc_dni: str
     client_name: str
 
+    @field_validator('order_id')
+    @classmethod
+    def order_id_positive(cls, v: int) -> int:
+        if v <= 0:
+            raise ValueError("El ID de la orden debe ser un número positivo")
+        return v
+
+    @field_validator('client_name')
+    @classmethod
+    def client_name_valid(cls, v: str) -> str:
+        v = v.strip()
+        if len(v) < 3:
+            raise ValueError("Razón Social / Nombres debe tener mínimo 3 caracteres")
+        if any(c.isdigit() for c in v) and not any(c.isalpha() for c in v):
+            raise ValueError("El nombre del cliente no puede ser solo números")
+        return v.upper()
+
     @field_validator('client_ruc_dni')
     @classmethod
     def ruc_modulo11(cls, v: str) -> str:

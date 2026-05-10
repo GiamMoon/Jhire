@@ -244,20 +244,92 @@
                 <canvas id="forecastChart"></canvas>
             </div>
         </div>
+        <!-- NEW: Ventas por Período -->
+        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h4 class="text-lg font-headline font-black text-on-surface">Total de Ventas por Período</h4>
+                    <p class="text-xs text-outline font-medium mt-1">Sumatoria de ingresos en rangos de fechas específicos</p>
+                </div>
+                <span class="material-symbols-outlined text-primary text-2xl">date_range</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="sales-periods-container">
+                <div class="bg-surface p-4 rounded-xl border border-outline-variant/20 text-center">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-outline">Últimos 7 días</p>
+                    <p class="text-2xl font-headline font-black text-primary mt-1" id="period-7d-total">--</p>
+                    <div class="flex justify-center gap-4 mt-2">
+                        <span class="text-[10px] text-outline font-bold" id="period-7d-count">-- órdenes</span>
+                        <span class="text-[10px] text-success font-bold" id="period-7d-avg">Ticket: --</span>
+                    </div>
+                </div>
+                <div class="bg-surface p-4 rounded-xl border border-outline-variant/20 text-center">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-outline">Últimos 30 días</p>
+                    <p class="text-2xl font-headline font-black text-indigo-600 mt-1" id="period-30d-total">--</p>
+                    <div class="flex justify-center gap-4 mt-2">
+                        <span class="text-[10px] text-outline font-bold" id="period-30d-count">-- órdenes</span>
+                        <span class="text-[10px] text-success font-bold" id="period-30d-avg">Ticket: --</span>
+                    </div>
+                </div>
+                <div class="bg-surface p-4 rounded-xl border border-outline-variant/20 text-center">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-outline">Últimos 90 días</p>
+                    <p class="text-2xl font-headline font-black text-emerald-600 mt-1" id="period-90d-total">--</p>
+                    <div class="flex justify-center gap-4 mt-2">
+                        <span class="text-[10px] text-outline font-bold" id="period-90d-count">-- órdenes</span>
+                        <span class="text-[10px] text-success font-bold" id="period-90d-avg">Ticket: --</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Big Area: Graph / Rankings -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Ranking de Productos -->
+            <!-- Ranking de Productos con % -->
             <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/20 flex flex-col">
-                <h4 class="text-lg font-headline font-black text-on-surface mb-2 border-b border-outline-variant/20 pb-4">Top Productos por Ingresos</h4>
+                <div class="flex items-center justify-between mb-2 border-b border-outline-variant/20 pb-4">
+                    <h4 class="text-lg font-headline font-black text-on-surface">Ranking de Productos</h4>
+                    <span class="text-[10px] font-black text-outline uppercase tracking-wider bg-surface-container px-2 py-1 rounded">% Peso sobre Ventas</span>
+                </div>
                 
-                <div id="product-ranking-list" class="space-y-3 flex-1 overflow-y-auto max-h-[300px] mt-4 px-2 no-scrollbar">
+                <div id="product-ranking-list" class="space-y-3 flex-1 overflow-y-auto max-h-[350px] mt-4 px-2 no-scrollbar">
                     <p class="text-xs text-outline text-center py-10 font-bold">Cargando ranking en tiempo real...</p>
                 </div>
             </div>
-            
-            <!-- Órdenes Pendientes -->
-            <div class="bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-2xl border border-primary/20 flex flex-col relative overflow-hidden">
+
+            <!-- NEW: Precisión del Pronóstico -->
+            <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/20 flex flex-col">
+                <div class="flex items-center justify-between mb-2 border-b border-outline-variant/20 pb-4">
+                    <div>
+                        <h4 class="text-lg font-headline font-black text-on-surface">Precisión del Pronóstico</h4>
+                        <p class="text-[10px] text-outline font-medium mt-1">Ventas reales vs proyectadas por la IA</p>
+                    </div>
+                    <span class="material-symbols-outlined text-primary text-2xl">query_stats</span>
+                </div>
+                
+                <!-- Metrics -->
+                <div class="grid grid-cols-3 gap-3 mb-4 mt-4">
+                    <div class="bg-surface p-3 rounded-lg text-center border border-outline-variant/20">
+                        <p class="text-[9px] font-black text-outline uppercase tracking-wider">MAE</p>
+                        <p class="text-lg font-headline font-black text-primary" id="precision-mae">--</p>
+                    </div>
+                    <div class="bg-surface p-3 rounded-lg text-center border border-outline-variant/20">
+                        <p class="text-[9px] font-black text-outline uppercase tracking-wider">RMSE</p>
+                        <p class="text-lg font-headline font-black text-indigo-600" id="precision-rmse">--</p>
+                    </div>
+                    <div class="bg-surface p-3 rounded-lg text-center border border-outline-variant/20">
+                        <p class="text-[9px] font-black text-outline uppercase tracking-wider">MAPE</p>
+                        <p class="text-lg font-headline font-black text-emerald-600" id="precision-mape">--%</p>
+                    </div>
+                </div>
+                
+                <!-- Comparison Chart -->
+                <div class="relative flex-1 min-h-[200px]">
+                    <canvas id="precisionChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Órdenes Pendientes -->
+        <div class="bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-2xl border border-primary/20 flex flex-col relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-400"></div>
                 <div class="flex justify-between items-center mb-6">
                     <div>

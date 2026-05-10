@@ -23,6 +23,7 @@ class Product(Base):
     price_soles = Column(Float, nullable=False)
     image_url = Column(String, nullable=True)
     stock = Column(Integer, default=0)
+    category = Column(String, nullable=True, default="general")  # escobilla, rodillo, general
 
 class Order(Base):
     __tablename__ = "orders"
@@ -112,3 +113,16 @@ class PaymentInstallment(Base):
     paid_date = Column(DateTime, nullable=True)
     
     invoice = relationship("Invoice", backref="installments")
+
+class ProductView(Base):
+    """Tracks which products each user has viewed for personalization."""
+    __tablename__ = "product_views"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    view_count = Column(Integer, default=1)
+    last_viewed = Column(DateTime, default=datetime.utcnow)
+    first_viewed = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", backref="product_views")
+    product = relationship("Product")

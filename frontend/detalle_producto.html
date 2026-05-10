@@ -68,6 +68,10 @@
         }
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -190,6 +194,23 @@
         </div>
     </div>
 </div>
+
+<!-- ============================================ -->
+<!-- COMPLEMENTARY PRODUCTS SECTION -->
+<!-- ============================================ -->
+<section id="complementarySection" class="mt-20 hidden" style="opacity:0; transform:translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease;">
+    <div class="flex items-center gap-3 mb-8">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center shadow-lg shadow-primary/20">
+            <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings: 'FILL' 1;">recommend</span>
+        </div>
+        <div>
+            <h2 class="text-2xl font-extrabold tracking-tight text-primary">Productos Que Podrían Interesarte</h2>
+            <p class="text-sm text-outline">Seleccionados según tu producto actual y patrones de compra</p>
+        </div>
+    </div>
+    <div id="complementaryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+</section>
+
 </main>
 <footer class="bg-[#0b1829] text-[#e2e2e9] py-16 border-t border-white/10 mt-auto dark:bg-[#05090e]">
     <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">

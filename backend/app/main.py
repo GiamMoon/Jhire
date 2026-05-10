@@ -26,10 +26,10 @@ def seed_admin_user_and_products():
         # Seed Products if empty
         if db.query(Product).count() == 0:
             products_data = [
-                {"name": "Escobilla Industrial de Nylon Negro", "description": "Cepillo de alta resistencia, cerdas de nylon negro purificado, mango ergonómico. Uso industrial múltiple.", "price_soles": 45.50, "image_url": "assets/images/escobilla_1.png", "stock": 100},
-                {"name": "Rodillo Cilíndrico de Nylon Negro", "description": "Rodillo rotativo denso de nylon para máquinas pulidoras. Larga durabilidad.", "price_soles": 120.00, "image_url": "assets/images/rodillo_1.png", "stock": 50},
-                {"name": "Mini Escobilla de Detalle Nylon Negro", "description": "Ideal para limpieza de piezas mecánicas pequeñas. Cerdas rígidas.", "price_soles": 15.00, "image_url": "assets/images/escobilla_mini.png", "stock": 200},
-                {"name": "Rodillo Pincel de Nylon Heavy-Duty", "description": "Rodillo ancho para aplicación uniforme, filamentos negros extra firmes.", "price_soles": 85.90, "image_url": "assets/images/rodillo_heavy.png", "stock": 35}
+                {"name": "Escobilla Industrial de Nylon Negro", "description": "Cepillo de alta resistencia, cerdas de nylon negro purificado, mango ergonómico. Uso industrial múltiple.", "price_soles": 45.50, "image_url": "assets/images/escobilla_1.png", "stock": 100, "category": "escobilla"},
+                {"name": "Rodillo Cilíndrico de Nylon Negro", "description": "Rodillo rotativo denso de nylon para máquinas pulidoras. Larga durabilidad.", "price_soles": 120.00, "image_url": "assets/images/rodillo_1.png", "stock": 50, "category": "rodillo"},
+                {"name": "Mini Escobilla de Detalle Nylon Negro", "description": "Ideal para limpieza de piezas mecánicas pequeñas. Cerdas rígidas.", "price_soles": 15.00, "image_url": "assets/images/escobilla_mini.png", "stock": 200, "category": "escobilla"},
+                {"name": "Rodillo Pincel de Nylon Heavy-Duty", "description": "Rodillo ancho para aplicación uniforme, filamentos negros extra firmes.", "price_soles": 85.90, "image_url": "assets/images/rodillo_heavy.png", "stock": 35, "category": "rodillo"}
             ]
             for p in products_data:
                 db.add(Product(**p))
@@ -49,7 +49,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 
-from .presentation.routers import dashboard, sales, inventory, billing, products, chat, orders, contacts, crm, reports
+from .presentation.routers import dashboard, sales, inventory, billing, products, chat, orders, contacts, crm, reports, recommendations
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(sales.router, prefix="/api/sales", tags=["Sales"])
 app.include_router(inventory.router, prefix="/api/inventory", tags=["Inventory"])
@@ -60,6 +60,7 @@ app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 app.include_router(contacts.router, prefix="/api/contacto", tags=["Contacts"])
 app.include_router(crm.router, prefix="/api/crm", tags=["CRM"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
+app.include_router(recommendations.router, prefix="/api/recommendations", tags=["Recommendations"])
 # Mount Frontend Static Files if the folder exists (to serve the JHIRE screens)
 import os
 frontend_dir = "/frontend"

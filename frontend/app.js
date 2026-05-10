@@ -440,15 +440,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.top_products.length === 0) {
                         rankingBox.innerHTML = '<p class="text-xs text-outline text-center py-4">Aún no hay transacciones para analizar.</p>';
                     } else {
+                        const barColors = ['#003461','#4f46e5','#0891b2','#059669','#d97706','#dc2626','#7c3aed','#0d9488','#e11d48','#6366f1'];
                         data.top_products.forEach((p, index) => {
+                            const pct = p.percentage || 0;
                             rankingBox.innerHTML += `
                             <div class="flex items-center gap-4 p-3 bg-surface rounded-xl hover:bg-surface-container-high transition-colors group">
-                                <div class="w-10 h-10 rounded-lg ${index===0 ? 'bg-primary/20 text-primary' : 'bg-surface-variant text-outline'} flex items-center justify-center font-black shrink-0">0${index+1}</div>
+                                <div class="w-10 h-10 rounded-lg ${index===0 ? 'bg-primary/20 text-primary' : 'bg-surface-container text-outline'} flex items-center justify-center font-black shrink-0">${String(index+1).padStart(2,'0')}</div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold truncate text-on-surface">${p.name}</p>
-                                    <p class="text-[10px] text-on-surface-variant font-medium">S/. ${p.contribution.toLocaleString('es-PE', {minimumFractionDigits: 2})} de contribución</p>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <p class="text-sm font-bold truncate text-on-surface">${p.name}</p>
+                                        <span class="text-xs font-black ${index===0 ? 'text-primary' : 'text-outline'} ml-2 shrink-0">${pct}%</span>
+                                    </div>
+                                    <div class="w-full bg-surface-container-high rounded-full h-1.5 overflow-hidden">
+                                        <div class="h-full rounded-full transition-all duration-700" style="width:${pct}%;background:${barColors[index % barColors.length]}"></div>
+                                    </div>
+                                    <p class="text-[10px] text-on-surface-variant font-medium mt-1">S/. ${p.contribution.toLocaleString('es-PE', {minimumFractionDigits: 2})}</p>
                                 </div>
-                                <span class="material-symbols-outlined ${index===0 ? 'text-success animate-pulse' : 'text-outline-variant'}">trending_up</span>
                             </div>`;
                         });
                     }
@@ -467,6 +474,101 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="text-xs text-outline leading-relaxed">${msg}</p>
                         <p class="text-[10px] text-primary font-bold mt-2">Análisis basado en tendencias históricas de ventas</p>
                     `;
+                }
+                
+                // ============================================
+                // VENTAS POR PERÍODO (7d, 30d, 90d)
+                // ============================================
+                if (data.sales_periods) {
+                    const fmt = (v) => `S/. ${v.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+                    for (const [key, period] of Object.entries(data.sales_periods)) {
+                        const totalEl = document.getElementById(`period-${key}-total`);
+                        const countEl = document.getElementById(`period-${key}-count`);
+                        const avgEl = document.getElementById(`period-${key}-avg`);
+                        if (totalEl) totalEl.innerText = fmt(period.total);
+                        if (countEl) countEl.innerText = `${period.count} órdenes`;
+                        if (avgEl) avgEl.innerText = `Ticket: ${fmt(period.avg_ticket)}`;
+                    }
+                }
+                
+                // ============================================
+                // PRECISIÓN DEL PRONÓSTICO (MAE, RMSE, MAPE + Chart)
+                // ============================================
+                if (data.forecast_precision) {
+                    const fp = data.forecast_precision;
+                    const maeEl = document.getElementById('precision-mae');
+                    const rmseEl = document.getElementById('precision-rmse');
+                    const mapeEl = document.getElementById('precision-mape');
+                    if (maeEl) maeEl.innerText = `S/ ${fp.mae.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+                    if (rmseEl) rmseEl.innerText = `S/ ${fp.rmse.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+                    if (mapeEl) mapeEl.innerText = `${fp.mape}%`;
+                    
+                    // Render precision comparison chart
+                    const precCanvas = document.getElementById('precisionChart');
+                    if (precCanvas && fp.comparison && fp.comparison.length > 0) {
+                        const precCtx = precCanvas.getContext('2d');
+                        new Chart(precCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: fp.comparison.map(c => c.date),
+                                datasets: [
+                                    {
+                                        label: 'Venta Real (S/)',
+                                        data: fp.comparison.map(c => c.real),
+                                        backgroundColor: 'rgba(0, 52, 97, 0.75)',
+                                        borderColor: '#003461',
+                                        borderWidth: 1,
+                                        borderRadius: 4,
+                                        barPercentage: 0.7
+                                    },
+                                    {
+                                        label: 'Proyección IA (S/)',
+                                        data: fp.comparison.map(c => c.predicted),
+                                        backgroundColor: 'rgba(16, 185, 129, 0.55)',
+                                        borderColor: '#10b981',
+                                        borderWidth: 1,
+                                        borderRadius: 4,
+                                        borderDash: [3, 3],
+                                        barPercentage: 0.7
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: { font: { family: 'Inter', size: 10, weight: 'bold' }, usePointStyle: true, pointStyleWidth: 12 }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            afterBody: function(items) {
+                                                const idx = items[0].dataIndex;
+                                                const errPct = fp.comparison[idx].error_pct;
+                                                return `Error: ${errPct}%`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        grid: { display: false },
+                                        ticks: { font: { family: 'Inter', size: 10, weight: 'bold' }, color: '#727781' }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: { color: 'rgba(194,199,209,0.2)' },
+                                        ticks: {
+                                            font: { family: 'Inter', size: 10 },
+                                            color: '#727781',
+                                            callback: function(val) { return 'S/ ' + val.toLocaleString('es-PE'); }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
                 
                 // NEW: Render Chart.js Forecast Chart
@@ -745,7 +847,171 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     };
                 }
+
+                // ─── TRACK PRODUCT VIEW (Personalization Engine) ───────
+                const _trackToken = localStorage.getItem('jhire_jwt_token');
+                if (_trackToken) {
+                    fetch('http://localhost:8000/api/recommendations/track-view', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${_trackToken}`
+                        },
+                        body: JSON.stringify({ product_id: parseInt(productId) })
+                    }).then(r => r.json()).then(d => {
+                        console.log('[JHIRE AI] Vista registrada:', d);
+                    }).catch(() => {});
+                }
+
+                // ─── LOAD COMPLEMENTARY PRODUCTS ───────────────────────
+                const compSection = document.getElementById('complementarySection');
+                const compGrid = document.getElementById('complementaryGrid');
+                if (compSection && compGrid) {
+                    fetch(`http://localhost:8000/api/recommendations/complementary/${productId}`)
+                        .then(r => r.json())
+                        .then(items => {
+                            if (!Array.isArray(items) || items.length === 0) return;
+
+                            compGrid.innerHTML = '';
+                            items.forEach((item, idx) => {
+                                const priceFmt = item.price_soles.toLocaleString('es-PE', {minimumFractionDigits: 2});
+                                compGrid.innerHTML += `
+<div class="group bg-surface dark:bg-surface-container rounded-xl border border-outline-variant/20 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1" onclick="window.location.href='detalle_producto.html?id=${item.id}'" style="opacity:0; animation: fadeSlideUp 0.5s ease ${idx * 0.1}s forwards;">
+    <div class="h-40 overflow-hidden bg-surface-container-low">
+        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${item.image_url}" alt="${item.name}"/>
+    </div>
+    <div class="p-4">
+        <p class="text-[9px] font-bold uppercase tracking-widest text-primary/60 mb-1 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[11px]">link</span> ${item.reason}
+        </p>
+        <h4 class="text-sm font-bold text-on-surface mb-2 line-clamp-2 leading-snug">${item.name}</h4>
+        <div class="flex items-center justify-between">
+            <span class="text-lg font-extrabold text-primary">S/ ${priceFmt}</span>
+            <span class="material-symbols-outlined text-primary text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+    </div>
+</div>`;
+                            });
+
+                            compSection.classList.remove('hidden');
+                            requestAnimationFrame(() => {
+                                compSection.style.opacity = '1';
+                                compSection.style.transform = 'translateY(0)';
+                            });
+                        }).catch(e => console.warn('[JHIRE] Complementary load error:', e));
+                }
             });
+    }
+
+    // ─── PERSONALIZED RECOMMENDATIONS (Catalog Page) ───────────
+    const _recSection = document.getElementById('personalizedSection');
+    const _recGrid = document.getElementById('recommendedGrid');
+    if (_recSection && _recGrid && productGrid) {
+        const _recToken = localStorage.getItem('jhire_jwt_token');
+        if (_recToken) {
+            fetch('http://localhost:8000/api/recommendations/for-me', {
+                headers: { 'Authorization': `Bearer ${_recToken}` }
+            })
+            .then(r => { if (!r.ok) throw new Error('Not auth'); return r.json(); })
+            .then(data => {
+                if (!data.recommended || data.recommended.length === 0) return;
+
+                // Show section with animation
+                _recSection.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    _recSection.style.opacity = '1';
+                    _recSection.style.transform = 'translateY(0)';
+                });
+
+                // Profile badge
+                const badge = document.getElementById('profileBadgeText');
+                const badgeContainer = document.getElementById('userProfileBadge');
+                if (badge && data.user_profile) {
+                    const prof = data.user_profile;
+                    const parts = [];
+                    if (prof.unique_products_viewed > 0) parts.push(`${prof.unique_products_viewed} productos vistos`);
+                    if (prof.total_orders > 0) parts.push(`${prof.total_orders} compras`);
+                    if (prof.favorite_category) parts.push(`Fan de ${prof.favorite_category}s`);
+                    badge.innerText = parts.join(' · ') || 'Personalizado para ti';
+                    if (badgeContainer) badgeContainer.classList.remove('hidden');
+                }
+
+                // Render recommended cards (top 4)
+                _recGrid.innerHTML = '';
+                const topRecs = data.recommended.slice(0, 4);
+                topRecs.forEach((rec, idx) => {
+                    const priceFmt = rec.price_soles.toLocaleString('es-PE', {minimumFractionDigits: 2});
+                    const hasDiscount = rec.discount_pct > 0;
+                    const discPriceFmt = hasDiscount ? rec.discounted_price.toLocaleString('es-PE', {minimumFractionDigits: 2}) : '';
+
+                    const discountBadge = hasDiscount ? `
+                        <div class="absolute top-3 right-3 z-10 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1 animate-pulse">
+                            <span class="material-symbols-outlined text-[12px]">local_offer</span> -${rec.discount_pct}%
+                        </div>` : '';
+
+                    const priceBlock = hasDiscount ? `
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-xl font-extrabold text-primary">S/ ${discPriceFmt}</span>
+                            <span class="text-sm text-outline line-through">S/ ${priceFmt}</span>
+                        </div>` : `
+                        <span class="text-xl font-extrabold text-primary">S/ ${priceFmt}</span>`;
+
+                    const scoreBar = `
+                        <div class="mt-2 flex items-center gap-2">
+                            <div class="flex-1 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all duration-1000" style="width: ${rec.score}%"></div>
+                            </div>
+                            <span class="text-[9px] font-bold text-outline">${rec.score}%</span>
+                        </div>`;
+
+                    _recGrid.innerHTML += `
+<div class="group relative bg-surface dark:bg-surface-container rounded-xl border border-outline-variant/20 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1" onclick="window.location.href='detalle_producto.html?id=${rec.id}'" style="opacity:0; animation: fadeSlideUp 0.5s ease ${idx * 0.12}s forwards;">
+    ${discountBadge}
+    <div class="h-48 overflow-hidden bg-surface-container-low relative">
+        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${rec.image_url}" alt="${rec.name}"/>
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 to-transparent h-16"></div>
+    </div>
+    <div class="p-5">
+        <p class="text-[9px] font-bold uppercase tracking-widest text-primary/70 mb-1.5 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[11px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span> ${rec.reason}
+        </p>
+        <h4 class="text-sm font-bold text-on-surface mb-3 line-clamp-2 leading-snug">${rec.name}</h4>
+        ${priceBlock}
+        ${hasDiscount ? `<span class="inline-block mt-1 text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">${rec.discount_label}</span>` : ''}
+        ${scoreBar}
+    </div>
+</div>`;
+                });
+
+                // Render discount banner
+                if (data.personal_discounts && data.personal_discounts.length > 0) {
+                    const discBanner = document.getElementById('personalDiscountBanner');
+                    const discList = document.getElementById('personalDiscountsList');
+                    if (discBanner && discList) {
+                        discBanner.classList.remove('hidden');
+                        discList.innerHTML = '';
+                        data.personal_discounts.slice(0, 3).forEach(disc => {
+                            const origFmt = disc.original_price.toLocaleString('es-PE', {minimumFractionDigits: 2});
+                            const discFmt = disc.discounted_price.toLocaleString('es-PE', {minimumFractionDigits: 2});
+                            discList.innerHTML += `
+<div class="bg-white dark:bg-surface-container rounded-xl p-4 border border-amber-200/50 dark:border-amber-700/30 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='detalle_producto.html?id=${disc.product_id}'">
+    <img class="w-14 h-14 rounded-lg object-cover border border-outline-variant/20" src="${disc.image_url}" alt="${disc.product_name}"/>
+    <div class="flex-1 min-w-0">
+        <p class="text-xs font-bold text-on-surface truncate">${disc.product_name}</p>
+        <div class="flex items-baseline gap-2 mt-1">
+            <span class="text-base font-extrabold text-amber-700 dark:text-amber-400">S/ ${discFmt}</span>
+            <span class="text-xs text-outline line-through">S/ ${origFmt}</span>
+        </div>
+        <span class="inline-flex items-center gap-1 mt-1 text-[9px] font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 rounded-full">
+            <span class="material-symbols-outlined text-[10px]">local_offer</span> -${disc.discount_pct}% ${disc.discount_label}
+        </span>
+    </div>
+</div>`;
+                        });
+                    }
+                }
+            }).catch(e => console.log('[JHIRE] Recommendations not available (user may not be logged in):', e.message));
+        }
     }
 
     // --- AI Chatbot Widget Logic ---
@@ -1653,7 +1919,342 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    
+    // =====================================================
+    // CRM: MODAL & ACTION LOGIC
+    // =====================================================
+
+    // State: currently selected CRM client
+    window._crmSelectedClient = null;
+
+    // Override analyzeCRMProfile to also store the selected client
+    const _originalAnalyze = window.analyzeCRMProfile;
+    window.analyzeCRMProfile = async (userId, userName) => {
+        window._crmSelectedClient = { id: userId, name: userName };
+        await _originalAnalyze(userId, userName);
+        // Load interaction history
+        loadInteractionHistory(userId);
+    };
+
+    // --- MODAL HELPERS ---
+    const openModal = (id) => {
+        const m = document.getElementById(id);
+        if (!m) return;
+        m.classList.remove('pointer-events-none');
+        setTimeout(() => m.classList.remove('opacity-0'), 10);
+    };
+    const closeModal = (id) => {
+        const m = document.getElementById(id);
+        if (!m) return;
+        m.classList.add('opacity-0');
+        setTimeout(() => m.classList.add('pointer-events-none'), 300);
+    };
+
+    // --- EMAIL MODAL ---
+    window.openEmailModal = () => {
+        if (!window._crmSelectedClient) {
+            Swal.fire('Selecciona un Cliente', 'Haz click en un cliente de la tabla para activar las acciones CRM.', 'info');
+            return;
+        }
+        document.getElementById('emailUserId').value = window._crmSelectedClient.id;
+        document.getElementById('emailModalClientLabel').innerText = `Cliente: ${window._crmSelectedClient.name}`;
+        document.getElementById('emailSubject').value = '';
+        document.getElementById('emailCustomMsg').value = '';
+        openModal('emailModal');
+    };
+    window.closeEmailModal = () => closeModal('emailModal');
+
+    const crmEmailForm = document.getElementById('crmEmailForm');
+    if (crmEmailForm) {
+        crmEmailForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('emailUserId').value;
+            const template = document.getElementById('emailTemplate').value;
+            const subject = document.getElementById('emailSubject').value.trim();
+            const customMsg = document.getElementById('emailCustomMsg').value.trim();
+
+            Swal.fire({ title: 'Enviando Email...', html: 'Procesando comunicación CRM vía SMTP...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            try {
+                const token = localStorage.getItem('jhire_jwt_token');
+                const res = await fetch('http://localhost:8000/api/crm/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        user_id: parseInt(userId),
+                        template: template,
+                        subject: subject || null,
+                        custom_message: customMsg || null
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    closeEmailModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Email Enviado!',
+                        html: `<div class="text-left text-sm mt-2">
+                            <p><strong>Destinatario:</strong> ${data.recipient}</p>
+                            <p><strong>Plantilla:</strong> ${data.template_used}</p>
+                            <p class="text-green-600 font-bold mt-2">✓ Interacción registrada automáticamente en el CRM</p>
+                        </div>`,
+                    });
+                    loadInteractionHistory(parseInt(userId));
+                } else {
+                    Swal.fire('Error', data.detail || 'No se pudo enviar el email', 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error de Conexión', err.message, 'error');
+            }
+        });
+    }
+
+    // --- WHATSAPP MODAL ---
+    window.openWhatsAppModal = () => {
+        if (!window._crmSelectedClient) {
+            Swal.fire('Selecciona un Cliente', 'Haz click en un cliente de la tabla para activar las acciones CRM.', 'info');
+            return;
+        }
+        document.getElementById('waUserId').value = window._crmSelectedClient.id;
+        document.getElementById('waModalClientLabel').innerText = `Cliente: ${window._crmSelectedClient.name}`;
+        document.getElementById('waMessageType').value = 'cotizacion';
+        document.getElementById('waCustomMsgContainer').classList.add('hidden');
+        updateWAPreview();
+        openModal('whatsAppModal');
+    };
+    window.closeWhatsAppModal = () => closeModal('whatsAppModal');
+
+    window.updateWAPreview = () => {
+        const type = document.getElementById('waMessageType').value;
+        const name = window._crmSelectedClient?.name || 'Cliente';
+        const container = document.getElementById('waCustomMsgContainer');
+
+        if (type === 'personalizado') {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+
+        const previews = {
+            cotizacion: `Hola ${name}, le saluda el equipo comercial de *JHIRE*. 🏭\n\nLe recordamos que tiene una cotización pendiente de revisión...\n\n_Equipo Comercial JHIRE_`,
+            seguimiento: `Hola ${name}, le saluda *JHIRE*. 🤝\n\nQueremos asegurarnos de que su último pedido haya llegado en perfectas condiciones...\n\n_Equipo de Atención al Cliente JHIRE_`,
+            recordatorio_pago: `Hola ${name}, le saluda el área de cobranzas de *JHIRE*. 📋\n\nLe recordamos amablemente que tiene una cuota de pago pendiente...\n\n_Área de Cobranzas JHIRE_`,
+            personalizado: `Hola ${name}, le saluda *JHIRE*.\n\n(Escribe tu mensaje arriba)`
+        };
+        document.getElementById('waPreviewText').innerText = previews[type] || previews.personalizado;
+    };
+
+    const crmWhatsAppForm = document.getElementById('crmWhatsAppForm');
+    if (crmWhatsAppForm) {
+        crmWhatsAppForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('waUserId').value;
+            const messageType = document.getElementById('waMessageType').value;
+            const customMsg = document.getElementById('waCustomMsg')?.value?.trim() || null;
+
+            try {
+                const token = localStorage.getItem('jhire_jwt_token');
+                const res = await fetch('http://localhost:8000/api/crm/whatsapp-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        user_id: parseInt(userId),
+                        message_type: messageType,
+                        custom_message: customMsg
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    closeWhatsAppModal();
+                    window.open(data.whatsapp_link, '_blank');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'WhatsApp Abierto',
+                        html: `<p class="text-sm">Se abrió WhatsApp con el mensaje pre-armado para el cliente.</p>
+                        <p class="text-green-600 font-bold text-xs mt-2">✓ Interacción registrada en CRM</p>`,
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    loadInteractionHistory(parseInt(userId));
+                } else {
+                    Swal.fire('Error', data.detail || 'No se pudo generar el link de WhatsApp', 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error de Conexión', err.message, 'error');
+            }
+        });
+    }
+
+    // --- INTERACTION MODAL ---
+    window.openInteractionModal = () => {
+        if (!window._crmSelectedClient) {
+            Swal.fire('Selecciona un Cliente', 'Haz click en un cliente de la tabla para activar las acciones CRM.', 'info');
+            return;
+        }
+        document.getElementById('intUserId').value = window._crmSelectedClient.id;
+        document.getElementById('intModalClientLabel').innerText = `Cliente: ${window._crmSelectedClient.name}`;
+        document.getElementById('intNotes').value = '';
+        openModal('interactionModal');
+    };
+    window.closeInteractionModal = () => closeModal('interactionModal');
+
+    const crmInteractionForm = document.getElementById('crmInteractionForm');
+    if (crmInteractionForm) {
+        crmInteractionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('intUserId').value;
+            const intType = document.querySelector('input[name="intType"]:checked')?.value || 'nota';
+            const notes = document.getElementById('intNotes').value.trim();
+
+            if (!notes) {
+                Swal.fire('Campo Requerido', 'Las notas de la interacción no pueden estar vacías.', 'warning');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('jhire_jwt_token');
+                const res = await fetch('http://localhost:8000/api/crm/interactions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        user_id: parseInt(userId),
+                        type: intType,
+                        notes: notes
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    closeInteractionModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Interacción Registrada',
+                        text: data.message,
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                    loadInteractionHistory(parseInt(userId));
+                } else {
+                    Swal.fire('Error', data.detail || 'No se pudo registrar la interacción', 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error de Conexión', err.message, 'error');
+            }
+        });
+    }
+
+    // --- DISPATCH ACTION (Connected to AI panel) ---
+    window.dispatchCRMAction = async () => {
+        if (!window._crmSelectedClient) {
+            Swal.fire('Selecciona un Cliente', 'Haz click en un cliente de la tabla para que la IA analice y recomiende acciones.', 'info');
+            return;
+        }
+        // Determine best template based on AI segment
+        const statusEl = document.getElementById('aiClientStatus');
+        const segment = statusEl?.innerText?.trim() || '';
+        
+        let template = 'seguimiento';
+        if (segment.includes('Nuevo')) template = 'bienvenida';
+        else if (segment.includes('Riesgo')) template = 'reactivacion';
+        else if (segment.includes('VIP')) template = 'seguimiento';
+        else if (segment.includes('Ocasional')) template = 'cotizacion';
+
+        const { isConfirmed } = await Swal.fire({
+            title: 'Despachar Acción IA',
+            html: `<div class="text-left text-sm">
+                <p>Se enviará un email automático al cliente <strong>${window._crmSelectedClient.name}</strong> basado en su segmento:</p>
+                <p class="mt-2 font-bold text-primary">Segmento: ${segment}</p>
+                <p class="mt-1">Plantilla: <strong>${template.toUpperCase()}</strong></p>
+            </div>`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Enviar Email',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!isConfirmed) return;
+
+        Swal.fire({ title: 'Despachando...', html: 'Enviando comunicación CRM automatizada...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        try {
+            const token = localStorage.getItem('jhire_jwt_token');
+            const res = await fetch('http://localhost:8000/api/crm/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({
+                    user_id: window._crmSelectedClient.id,
+                    template: template
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Acción Despachada!',
+                    html: `<div class="text-left text-sm mt-2">
+                        <p>✓ Email <strong>${data.template_used}</strong> enviado a <strong>${data.recipient}</strong></p>
+                        <p class="text-green-600 font-bold mt-2">Interacción #${data.interaction_id} registrada en CRM</p>
+                    </div>`
+                });
+                loadInteractionHistory(window._crmSelectedClient.id);
+            } else {
+                Swal.fire('Error', data.detail || 'Error despachando acción', 'error');
+            }
+        } catch (err) {
+            Swal.fire('Error de Conexión', err.message, 'error');
+        }
+    };
+
+    // --- INTERACTION HISTORY ---
+    window.loadInteractionHistory = async (userId) => {
+        const historyList = document.getElementById('interactionHistoryList');
+        if (!historyList) return;
+
+        try {
+            const token = localStorage.getItem('jhire_jwt_token');
+            const res = await fetch(`http://localhost:8000/api/crm/clients/${userId}/interactions`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const interactions = await res.json();
+                if (interactions.length === 0) {
+                    historyList.innerHTML = '<p class="text-[10px] text-outline text-center py-2">Sin interacciones registradas.</p>';
+                } else {
+                    const typeIcons = { email: 'mail', whatsapp: 'chat', llamada: 'call', visita: 'location_on', nota: 'sticky_note_2' };
+                    const typeColors = { email: 'text-primary', whatsapp: 'text-green-600', llamada: 'text-blue-600', visita: 'text-amber-600', nota: 'text-purple-600' };
+                    historyList.innerHTML = interactions.slice(0, 10).map(i => {
+                        const d = new Date(i.date);
+                        const dateStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+                        return `<div class="flex gap-2 p-2 bg-surface-container-low rounded-lg border border-outline-variant/10">
+                            <span class="material-symbols-outlined text-[14px] ${typeColors[i.type] || 'text-outline'} shrink-0 mt-0.5">${typeIcons[i.type] || 'info'}</span>
+                            <div class="min-w-0">
+                                <p class="text-[10px] text-on-surface font-medium truncate">${i.notes}</p>
+                                <p class="text-[9px] text-outline">${dateStr}</p>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+                // Show the list
+                historyList.classList.remove('hidden');
+                const icon = document.getElementById('historyToggleIcon');
+                if (icon) icon.innerText = 'expand_less';
+            }
+        } catch (e) {
+            console.error('Error loading interactions:', e);
+        }
+    };
+
+    window.toggleInteractionHistory = () => {
+        const list = document.getElementById('interactionHistoryList');
+        const icon = document.getElementById('historyToggleIcon');
+        if (!list) return;
+        if (list.classList.contains('hidden')) {
+            list.classList.remove('hidden');
+            if (icon) icon.innerText = 'expand_less';
+        } else {
+            list.classList.add('hidden');
+            if (icon) icon.innerText = 'expand_more';
+        }
+    };
+
     // --- LÓGICA FACTURACIÓN DINÁMICA ---
     const loadDynamicBilling = async () => {
         const invContainer = document.getElementById('recentInvoicesContainer');
@@ -1667,7 +2268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const invoices = await res.json();
                     if(invoices.length > 0) {
                         invContainer.innerHTML = invoices.slice(0, 5).map(i => `
-                        <div class="flex items-center justify-between p-3 border-b border-outline-variant/10 bg-surface dark:bg-surface-container hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="Swal.fire({title: 'Detalle Comprobante Fiscal', html: '<div style=\'text-align:left;font-size:14px;\' class=\'bg-surface-container-low p-4 rounded-lg\'><p><strong>${i.invoice_number}</strong></p><p><strong>RUC:</strong> ${i.client_ruc_dni}</p><p><strong>Razón:</strong> ${i.client_name}</p><hr style=\'margin:10px 0;border-color:#ccc\'><div style=\'display:flex;justify-content:space-between\'><p>Subtotal:</p> <p>S/ ${parseFloat(i.subtotal).toFixed(2)}</p></div><div style=\'display:flex;justify-content:space-between\'><p>IGV(18%):</p> <p>S/ ${parseFloat(i.igv).toFixed(2)}</p></div><div style=\'display:flex;justify-content:space-between;font-weight:bold;margin-top:5px;\'><p>Total:</p> <p>S/ ${parseFloat(i.total).toFixed(2)}</p></div></div>', icon: 'info', showCancelButton: true, confirmButtonText: 'Ver representación (PDF)', cancelButtonText: 'Cerrar'}).then((res)=>{ if(res.isConfirmed){ window.open('http://localhost:8000/api/billing/'+i.id+'/pdf', '_blank'); } })">
+                        <div class="flex items-center justify-between p-3 border-b border-outline-variant/10 bg-surface dark:bg-surface-container hover:bg-surface-container-low transition-colors group cursor-pointer invoice-detail-btn" data-inv-id="${i.id}" data-inv-number="${i.invoice_number}" data-inv-ruc="${i.client_ruc_dni}" data-inv-name="${(i.client_name || '').replace(/"/g, '&quot;')}" data-inv-subtotal="${i.subtotal}" data-inv-igv="${i.igv}" data-inv-total="${i.total}">
                             <div class="flex items-center gap-4">
                                 <div class="w-10 h-10 rounded ${i.sunat_status === 'Emitida' ? 'bg-green-100 text-green-700' : 'bg-surface-container/20 text-on-surface-variant'} flex items-center justify-center shadow-sm">
                                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">${i.sunat_status === 'Emitida' ? 'check_circle' : 'hourglass_empty'}</span>
@@ -1683,6 +2284,33 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                         `).join('');
+                        
+                        // Attach click handlers safely (no inline JS)
+                        invContainer.querySelectorAll('.invoice-detail-btn').forEach(el => {
+                            el.addEventListener('click', () => {
+                                const d = el.dataset;
+                                Swal.fire({
+                                    title: 'Detalle Comprobante Fiscal',
+                                    html: `<div style="text-align:left;font-size:14px;" class="bg-surface-container-low p-4 rounded-lg">
+                                        <p><strong>${d.invNumber}</strong></p>
+                                        <p><strong>RUC:</strong> ${d.invRuc}</p>
+                                        <p><strong>Razón:</strong> ${d.invName}</p>
+                                        <hr style="margin:10px 0;border-color:#ccc">
+                                        <div style="display:flex;justify-content:space-between"><p>Subtotal:</p><p>S/ ${parseFloat(d.invSubtotal).toFixed(2)}</p></div>
+                                        <div style="display:flex;justify-content:space-between"><p>IGV(18%):</p><p>S/ ${parseFloat(d.invIgv).toFixed(2)}</p></div>
+                                        <div style="display:flex;justify-content:space-between;font-weight:bold;margin-top:5px;"><p>Total:</p><p>S/ ${parseFloat(d.invTotal).toFixed(2)}</p></div>
+                                    </div>`,
+                                    icon: 'info',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Ver representación (PDF)',
+                                    cancelButtonText: 'Cerrar'
+                                }).then((result) => {
+                                    if(result.isConfirmed) {
+                                        window.open('http://localhost:8000/api/billing/' + d.invId + '/pdf', '_blank');
+                                    }
+                                });
+                            });
+                        });
                     } else {
                         invContainer.innerHTML = '<div class="p-8 text-center text-xs text-outline-variant flex flex-col items-center bg-surface-container-lowest rounded-lg border border-dashed border-outline/30"><span class="material-symbols-outlined text-4xl opacity-50 mb-2">receipt_long</span><p class="font-bold">Ningún comprobante fiscal emitido.</p></div>';
                     }
@@ -1704,13 +2332,47 @@ document.addEventListener('DOMContentLoaded', () => {
             const law29733 = document.getElementById('law29733').checked;
             
             if(!compliance || !law29733) {
-                Swal.fire('Requisito Legal', 'Debe aceptar las políticas de privacidad y compliance SUNAT para generar comprobantes electrónicos.', 'warning');
+                Swal.fire('Requisito Legal', 'Debe aceptar las cláusulas de conformidad SUNAT y consentimiento de datos personales (Ley N° 29733) para generar comprobantes electrónicos.', 'warning');
                 return;
             }
             
-            if(!/^\d{8}$|^\d{11}$/.test(rucInput)) {
-                Swal.fire('Error de RUC', 'El RUC/DNI debe contener 8 o 11 dígitos numéricos para la factura electrónica.', 'error');
+            // Validation: Client Name
+            if(!clientNameInput || clientNameInput.length < 3) {
+                Swal.fire('Error de Validación', 'La Razón Social / Nombre del cliente debe tener mínimo 3 caracteres.', 'error');
+                document.getElementById('clientNameInput').focus();
                 return;
+            }
+            
+            // Validation: Order ID
+            if(!orderIdInput || parseInt(orderIdInput) <= 0 || isNaN(parseInt(orderIdInput))) {
+                Swal.fire('Error de Validación', 'Ingrese un ID de Orden válido (número positivo).', 'error');
+                document.getElementById('orderIdInput').focus();
+                return;
+            }
+            
+            // Validation: RUC/DNI format
+            if(!/^\d{8}$|^\d{11}$/.test(rucInput)) {
+                Swal.fire('Error de Documento', 'El RUC debe contener 11 dígitos o el DNI 8 dígitos numéricos.', 'error');
+                document.getElementById('rucInput').focus();
+                return;
+            }
+            
+            // Validation: RUC Módulo-11 (only for 11-digit RUC)
+            if(rucInput.length === 11) {
+                if(!/^(10|15|16|17|20)/.test(rucInput)) {
+                    Swal.fire('Error RUC', 'El RUC debe iniciar con 10 (Persona Natural), 15, 16, 17 o 20 (Persona Jurídica) según normativa SUNAT.', 'error');
+                    return;
+                }
+                const multipliers = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+                let total = 0;
+                for(let i = 0; i < 10; i++) total += parseInt(rucInput.charAt(i)) * multipliers[i];
+                let check = 11 - (total % 11);
+                if(check === 10) check = 0;
+                else if(check === 11) check = 1;
+                if(parseInt(rucInput.charAt(10)) !== check) {
+                    Swal.fire('RUC Inválido', 'El dígito verificador no coincide con el algoritmo Módulo-11 de SUNAT. Verifique el número ingresado.', 'error');
+                    return;
+                }
             }
             
             // Show loading

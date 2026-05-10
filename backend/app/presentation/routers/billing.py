@@ -16,25 +16,56 @@ router = APIRouter()
 def generate_invoice(invoice_data: InvoiceCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Permisos insuficientes")
+    
+    # Validate client name is not empty or too short
+    if not invoice_data.client_name or len(invoice_data.client_name.strip()) < 3:
+        raise HTTPException(status_code=422, detail="Razón Social / Nombres debe tener al menos 3 caracteres")
         
     order = db.query(Order).filter(Order.id == invoice_data.order_id).first()
     if not order:
-        raise HTTPException(status_code=404, detail="Orden no encontrada")
-        
-    # SUNAT Compliance Logic (Mock)
-    subtotal = round(order.total_price / 1.18, 2)
-    igv = round(order.total_price - subtotal, 2)
+        raise HTTPException(status_code=404, detail="Orden no encontrada en el sistema")
     
-    invoice_num = f"F001-{random.randint(100000, 999999)}"
+    # Check for duplicate invoice for same order
+    existing = db.query(Invoice).filter(Invoice.order_id == invoice_data.order_id).first()
+    if existing:
+        raise HTTPException(status_code=409, detail=f"La orden #{invoice_data.order_id} ya tiene un comprobante emitido: {existing.invoice_number}")
+    
+    # Validate order total is positive
+    if order.total_price <= 0:
+        raise HTTPException(status_code=422, detail="El monto de la orden debe ser positivo para emitir comprobante")
+        
+    # SUNAT Compliance: Calculate IGV 18%
+    subtotal = round(float(order.total_price) / 1.18, 2)
+    igv = round(float(order.total_price) - subtotal, 2)
+    
+    # SUNAT: Determine document type (Factura for RUC 11 digits, Boleta for DNI 8 digits)
+    ruc_dni = invoice_data.client_ruc_dni.strip()
+    if len(ruc_dni) == 11:
+        serie = "F001"  # Factura Electrónica
+    else:
+        serie = "B001"  # Boleta de Venta Electrónica
+    
+    # Sequential numbering per series
+    last_invoice = db.query(Invoice).filter(
+        Invoice.invoice_number.like(f"{serie}-%")
+    ).order_by(Invoice.id.desc()).first()
+    
+    if last_invoice:
+        last_num = int(last_invoice.invoice_number.split('-')[1])
+        next_num = last_num + 1
+    else:
+        next_num = 1
+    
+    invoice_num = f"{serie}-{str(next_num).zfill(8)}"
     
     new_inv = Invoice(
         order_id=invoice_data.order_id,
         invoice_number=invoice_num,
-        client_ruc_dni=invoice_data.client_ruc_dni,
-        client_name=invoice_data.client_name,
+        client_ruc_dni=ruc_dni,
+        client_name=invoice_data.client_name.strip().upper(),
         subtotal=subtotal,
         igv=igv,
-        total=order.total_price,
+        total=float(order.total_price),
         sunat_status="Emitida"
     )
     db.add(new_inv)
@@ -113,6 +144,8 @@ def mark_installment_paid(payment_id: int, db: Session = Depends(get_db), curren
     return payment
 
 
+
+
 @router.get("/{invoice_id}/pdf")
 def download_invoice_pdf(invoice_id: int, db: Session = Depends(get_db)):
     from fastapi.responses import FileResponse
@@ -124,6 +157,10 @@ def download_invoice_pdf(invoice_id: int, db: Session = Depends(get_db)):
     invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
     if not invoice:
         raise HTTPException(status_code=404, detail="Factura no encontrada")
+    
+    # Determine document type
+    doc_type = "FACTURA ELECTRÓNICA" if invoice.invoice_number.startswith("F") else "BOLETA DE VENTA ELECTRÓNICA"
+    id_label = "RUC" if len(invoice.client_ruc_dni) == 11 else "DNI"
         
     filepath = f"factura_{invoice.invoice_number}.pdf"
     c = canvas.Canvas(filepath, pagesize=A4)
@@ -132,7 +169,6 @@ def download_invoice_pdf(invoice_id: int, db: Session = Depends(get_db)):
     # -----------------------------
     # 1. EMISOR Y RECUADRO SUNAT
     # -----------------------------
-    # Logo / Nombre Empresa Izquierda
     c.setFont("Helvetica-Bold", 24)
     c.drawString(40, height - 60, "JHIRE S.A.C.")
     c.setFont("Helvetica", 10)
@@ -142,10 +178,11 @@ def download_invoice_pdf(invoice_id: int, db: Session = Depends(get_db)):
     
     # Recuadro Derecho SUNAT
     c.setLineWidth(1)
-    c.rect(width - 250, height - 120, 200, 80)
+    c.rect(width - 260, height - 120, 220, 80)
     c.setFont("Helvetica-Bold", 14)
     c.drawCentredString(width - 150, height - 60, "RUC: 20123456789")
-    c.drawCentredString(width - 150, height - 80, "FACTURA ELECTRÓNICA")
+    c.setFont("Helvetica-Bold", 12)
+    c.drawCentredString(width - 150, height - 80, doc_type)
     c.setFont("Helvetica", 14)
     c.drawCentredString(width - 150, height - 100, f"{invoice.invoice_number}")
     
@@ -155,69 +192,83 @@ def download_invoice_pdf(invoice_id: int, db: Session = Depends(get_db)):
     c.roundRect(40, height - 210, width - 80, 70, 5)
     c.setFont("Helvetica-Bold", 10)
     c.drawString(50, height - 160, "SEÑOR(ES):")
-    c.drawString(50, height - 175, "RUC/DNI:")
+    c.drawString(50, height - 175, f"{id_label}:")
     c.drawString(50, height - 190, "FECHA EMISIÓN:")
     
     c.setFont("Helvetica", 10)
-    c.drawString(130, height - 160, f"{invoice.client_name}")
-    c.drawString(130, height - 175, f"{invoice.client_ruc_dni}")
-    c.drawString(130, height - 190, f"{invoice.issue_date.strftime('%Y-%m-%d')}")
+    c.drawString(140, height - 160, f"{invoice.client_name}")
+    c.drawString(140, height - 175, f"{invoice.client_ruc_dni}")
+    c.drawString(140, height - 190, f"{invoice.issue_date.strftime('%d/%m/%Y')}")
     
     # Moneda
     c.setFont("Helvetica-Bold", 10)
-    c.drawString(width - 200, height - 190, "MONEDA:")
+    c.drawString(width - 200, height - 175, "MONEDA:")
     c.setFont("Helvetica", 10)
-    c.drawString(width - 140, height - 190, "SOLES (PEN)")
+    c.drawString(width - 140, height - 175, "SOLES (PEN)")
+    
+    # Tipo de documento
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(width - 200, height - 160, "TIPO DOC:")
+    c.setFont("Helvetica", 10)
+    c.drawString(width - 140, height - 160, id_label)
     
     # -----------------------------
     # 3. DETALLE DE ÍTEMS
     # -----------------------------
-    # Cabecera Tabla
-    c.setFillColor(colors.lightgrey)
+    c.setFillColor(colors.HexColor("#003461"))
     c.rect(40, height - 250, width - 80, 20, fill=1)
-    c.setFillColor(colors.black)
+    c.setFillColor(colors.white)
     c.setFont("Helvetica-Bold", 10)
     c.drawString(50, height - 245, "CANT")
     c.drawString(100, height - 245, "DESCRIPCIÓN")
-    c.drawString(400, height - 245, "V. UNIT")
+    c.drawString(380, height - 245, "V. UNIT")
     c.drawString(480, height - 245, "IMPORTE")
     
-    # Contenido (1 item genérico apuntando al Order)
+    # Contenido
+    c.setFillColor(colors.black)
     c.setFont("Helvetica", 10)
     y_item = height - 270
     c.drawString(55, y_item, "1.00")
-    c.drawString(100, y_item, f"Consolidados de venta e ítems según Orden Comercial #{invoice.order_id}")
-    c.drawString(400, y_item, f"S/ {invoice.subtotal:.2f}")
+    c.drawString(100, y_item, f"Consolidado de ítems — Orden Comercial #{invoice.order_id}")
+    c.drawString(380, y_item, f"S/ {invoice.subtotal:.2f}")
     c.drawString(480, y_item, f"S/ {invoice.subtotal:.2f}")
     
-    # Líneas de la tabla
+    # Tabla borde
     c.rect(40, height - 500, width - 80, 250)
     
     # -----------------------------
     # 4. TOTALES
     # -----------------------------
-    # Recuadro Totales (Abajo a la derecha)
-    c.rect(width - 220, height - 580, 180, 60)
+    c.setFillColor(colors.HexColor("#f2f4ff"))
+    c.rect(width - 230, height - 580, 190, 70, fill=1)
+    c.setFillColor(colors.black)
     
     c.setFont("Helvetica-Bold", 10)
-    c.drawString(width - 210, height - 540, "OP. GRAVADAS:")
-    c.drawString(width - 210, height - 555, "IGV (18%):")
-    c.drawString(width - 210, height - 570, "IMPORTE TOTAL:")
+    c.drawString(width - 220, height - 530, "OP. GRAVADAS:")
+    c.drawString(width - 220, height - 545, "IGV (18%):")
+    c.drawString(width - 220, height - 565, "IMPORTE TOTAL:")
     
     c.setFont("Helvetica", 10)
-    c.drawRightString(width - 50, height - 540, f"S/ {invoice.subtotal:.2f}")
-    c.drawRightString(width - 50, height - 555, f"S/ {invoice.igv:.2f}")
-    c.setFont("Helvetica-Bold", 10)
-    c.drawRightString(width - 50, height - 570, f"S/ {invoice.total:.2f}")
+    c.drawRightString(width - 50, height - 530, f"S/ {invoice.subtotal:.2f}")
+    c.drawRightString(width - 50, height - 545, f"S/ {invoice.igv:.2f}")
+    c.setFont("Helvetica-Bold", 12)
+    c.drawRightString(width - 50, height - 565, f"S/ {invoice.total:.2f}")
     
-    # Son:
-    c.setFont("Helvetica", 9)
-    c.drawString(40, height - 530, f"SON: AUTOMATIZADO CON EXPRESIÓN NUMÉRICA SOLES")
+    # Monto en letras (simplified)
+    c.setFont("Helvetica-Oblique", 9)
+    c.drawString(40, height - 520, f"SON: {int(invoice.total)} CON {int(round((invoice.total % 1) * 100, 0)):02d}/100 SOLES")
+    
+    # Hash de integridad
+    import hashlib
+    hash_val = hashlib.sha256(f"{invoice.invoice_number}{invoice.total}{invoice.issue_date}".encode()).hexdigest()[:20]
+    c.setFont("Helvetica", 7)
+    c.drawString(40, height - 600, f"Hash de Integridad: {hash_val.upper()}")
     
     # Footer Legal
     c.setFont("Helvetica", 8)
-    c.drawCentredString(width / 2, 50, "Representación Impresa de la FACTURA ELECTRÓNICA. Consúltela en la clave SOL.")
-    c.drawCentredString(width / 2, 40, "Generado por JHIRE ERP 2026.")
+    c.drawCentredString(width / 2, 60, f"Representación Impresa de la {doc_type}.")
+    c.drawCentredString(width / 2, 48, "Autorizado mediante Resolución de Intendencia N° 0340050006573/SUNAT")
+    c.drawCentredString(width / 2, 36, "Consulte su validez en www.sunat.gob.pe — Generado por JHIRE ERP 2026")
     
     c.save()
-    return FileResponse(filepath, filename=f"factura_{invoice.invoice_number}.pdf", media_type="application/pdf")
+    return FileResponse(filepath, filename=f"comprobante_{invoice.invoice_number}.pdf", media_type="application/pdf")
