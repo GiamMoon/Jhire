@@ -96,6 +96,9 @@
         <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)
         </a>
+        <a href="nivel_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">trending_up</span> Nivel de Ventas
+        </a>
         <a href="crm.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">support_agent</span> CRM Clientes
         </a>
@@ -107,7 +110,16 @@
         <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">group</span> Gestor Usuarios
         </a>
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+        <a href="tiempo_registro.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">timer</span> Tiempos Operativos
+        </a>
+        <a href="tiempo_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">speed</span> Eficiencia Ventas
+        </a>
+        <a href="tiempo_facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span> Tiempo de Procesamiento
+        </a>
+        <a href="reportes.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">analytics</span> Reportes y BI
         </a>
     </nav>
@@ -128,7 +140,7 @@
     <!-- HEADER -->
     <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
         <div class="flex items-center gap-4">
-            <span class="text-xl font-bold text-primary font-headline tracking-tighter">Gestión de Inventarios y Proveedores</span>
+            <span class="text-xl font-bold text-primary font-headline tracking-tighter">JHIRE</span>
         </div>
         <div class="flex items-center gap-4">
             <!-- Theme Toggle -->
@@ -224,7 +236,7 @@
     <div class="bg-surface rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl border border-outline-variant/20 flex flex-col pointer-events-auto">
         <div class="p-5 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low">
             <h3 class="text-lg font-bold font-headline">Registrar Operación</h3>
-            <button onclick="document.getElementById('movementModal').classList.add('hidden')" class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">close</span></button>
+            <button onclick="document.getElementById('movementModal').classList.add('hidden')" class="text-outline hover:text-error transition-colors whitespace-nowrap"><span class="material-symbols-outlined text-lg">close</span></button>
         </div>
         <form id="movementForm" class="p-5 flex flex-col gap-4">
             <div>

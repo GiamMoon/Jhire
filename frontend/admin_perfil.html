@@ -3,15 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JHIRE 2026 | Mi Perfil (Admin)</title>
+    <title>JHIRE 2026 | Mi Perfil</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    
     <script id="tailwind-config">
         tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "var(--color-primary)", "surface": "var(--color-surface)", "on-surface": "var(--color-on-surface)", "surface-container": "var(--color-surface-container)", "surface-container-low": "var(--color-surface-container-low)", "surface-container-high": "var(--color-surface-container-high)", "outline": "var(--color-outline)", "outline-variant": "var(--color-outline-variant)", "error": "var(--color-error)", "on-error": "var(--color-on-error)", "success": "#16a34a", "success-container": "#dcfce7" }, fontFamily: { "headline": ["Manrope"], "body": ["Inter"] } } } }
     </script>
-    
     <style id="dynamic-theme">
         :root { --color-primary: #003461; --color-surface: #faf8ff; --color-on-surface: #131b2e; --color-surface-container: #eaedff; --color-surface-container-low: #f2f4ff; --color-surface-container-high: #d9e2ff; --color-outline: #727781; --color-outline-variant: #c2c7d1; --color-error: #ba1a1a; --color-on-error: #ffffff; }
         html.dark { --color-primary: #a6c8ff; --color-surface: #111318; --color-on-surface: #e2e2e9; --color-surface-container: #1d2024; --color-surface-container-low: #191b20; --color-surface-container-high: #282a2f; --color-outline: #8c9199; --color-outline-variant: #42474e; --color-error: #ffb4ab; --color-on-error: #690005; }
@@ -19,7 +17,12 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .anim-in { animation: fadeUp .5s ease-out both; }
+        .anim-d1 { animation: fadeUp .5s ease-out .1s both; }
+        .anim-d2 { animation: fadeUp .5s ease-out .2s both; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-surface font-body text-on-surface flex flex-col min-h-screen transition-colors duration-300">
 
@@ -28,59 +31,35 @@
         <span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
         <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
     </div>
-    
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">dashboard</span> Panel Central
-        </a>
-        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">inventory_2</span> Inventarios
-        </a>
-        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">category</span> Catálogo
-        </a>
-        
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">dashboard</span> Panel Central</a>
+        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">inventory_2</span> Inventarios</a>
+        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">category</span> Catálogo</a>
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Comercial</p>
-        <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)
-        </a>
-        <a href="crm.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">support_agent</span> CRM Clientes
-        </a>
-        <a href="facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">receipt_long</span> Facturación
-        </a>
-
+        <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)</a>
+        <a href="nivel_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">trending_up</span> Nivel de Ventas</a>
+        <a href="crm.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">support_agent</span> CRM Clientes</a>
+        <a href="facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">receipt_long</span> Facturación</a>
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
-        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">group</span> Gestor Usuarios
-        </a>
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">analytics</span> Reportes y BI
-        </a>
+        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">group</span> Gestor Usuarios</a>
+        <a href="tiempo_registro.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">timer</span> Tiempos Operativos</a>
+        <a href="tiempo_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">speed</span> Eficiencia Ventas</a>
+        <a href="tiempo_facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">receipt_long</span> Tiempo de Procesamiento</a>
+        <a href="reportes.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">analytics</span> Reportes y BI</a>
     </nav>
-    
     <div class="p-4 border-t border-outline-variant/20">
-        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm">
-            <span class="material-symbols-outlined">settings</span> Mi Perfil
-        </a>
-        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">logout</span> Salir
-        </button>
+        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm"><span class="material-symbols-outlined">settings</span> Mi Perfil</a>
+        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">logout</span> Salir</button>
     </div>
 </aside>
 
-<main class="md:ml-64 min-h-screen bg-surface flex flex-col">
-    <!-- HEADER -->
+<main class="md:ml-64 min-h-screen bg-surface">
     <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
+        <div class="flex items-center gap-4"><span class="text-xl font-bold text-primary font-headline tracking-tighter">JHIRE</span></div>
         <div class="flex items-center gap-4">
-            <!-- Theme Toggle -->
-            <button onclick="changeTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface">
-                <span class="material-symbols-outlined text-[20px]" id="themeIcon">dark_mode</span>
-            </button>
-
-            <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all" id="avatarContainer">
+            <button onclick="changeTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface"><span class="material-symbols-outlined text-[20px]" id="themeIcon">dark_mode</span></button>
+            <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm" id="avatarContainer">
                 <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
                 <div class="hidden md:block text-left relative top-[1px]">
                     <p id="headerUserName" class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Cargando...</p>
@@ -90,16 +69,272 @@
         </div>
     </header>
 
-    <div class="p-6 md:p-10 flex-1 flex flex-col items-center justify-center text-center">
-        <div class="relative w-32 h-32 mb-6">
-            <img src="https://ui-avatars.com/api/?name=Admin+Root&background=003461&color=fff&size=200" class="w-full h-full rounded-full border-4 border-surface shadow-2xl z-10 relative">
-            <span class="absolute bottom-0 right-0 w-8 h-8 bg-success border-4 border-surface rounded-full z-20"></span>
+    <section class="p-6 md:p-10 max-w-4xl mx-auto space-y-8">
+        <!-- Profile Header -->
+        <div class="bg-gradient-to-br from-primary to-blue-800 rounded-3xl p-8 text-white relative overflow-hidden anim-in">
+            <div class="absolute -right-16 -top-16 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+            <div class="absolute -left-8 -bottom-8 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
+            <div class="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                <div class="relative">
+                    <img id="profileAvatar" src="https://ui-avatars.com/api/?name=Admin&background=ffffff&color=003461&size=200&bold=true" class="w-28 h-28 rounded-full border-4 border-white/30 shadow-2xl">
+                    <div class="absolute bottom-1 right-1 w-6 h-6 bg-success rounded-full border-3 border-white"></div>
+                </div>
+                <div class="text-center md:text-left">
+                    <h2 id="profileName" class="text-2xl md:text-3xl font-headline font-black tracking-tight">Cargando...</h2>
+                    <p id="profileEmail" class="text-white/70 text-sm font-medium mt-1">...</p>
+                    <div class="flex items-center gap-3 mt-3 justify-center md:justify-start">
+                        <span id="profileRole" class="px-4 py-1.5 bg-white/15 backdrop-blur-sm rounded-full text-xs font-black uppercase tracking-wider border border-white/20">--</span>
+                        <span class="px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-xs font-bold border border-white/10 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span> En línea
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <h2 class="text-3xl font-headline font-black text-on-surface mb-1">Administrador (Root)</h2>
-        <p class="text-on-surface-variant max-w-sm mx-auto mb-8 font-bold text-sm">Privilegios totales del Sistema Operativo.</p>
-        <button onclick="alert('Funcionalidad de Edición en fase de seguridad (Módulo 9)')" class="px-6 py-3 bg-surface-container-high text-on-surface font-bold rounded-xl hover:bg-outline/20 transition-colors">Modificar Credenciales Maestras</button>
-    </div>
+
+        <!-- Profile Form -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Edit Info -->
+            <div class="lg:col-span-2 bg-surface-container-low rounded-2xl shadow-sm border border-outline-variant/20 p-6 anim-d1">
+                <div class="flex items-center gap-2 mb-6">
+                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">edit</span>
+                    <h4 class="font-headline font-bold text-on-surface">Información Personal</h4>
+                </div>
+                <form id="profileForm" class="space-y-5">
+                    <div id="profileError" class="hidden p-3 bg-error/10 text-error text-xs font-bold rounded-lg text-center border border-error/20"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Nombre</label>
+                            <input type="text" id="editFirstName" class="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Apellido</label>
+                            <input type="text" id="editLastName" class="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none font-medium">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Correo Electrónico</label>
+                        <input type="email" id="editEmail" class="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Teléfono</label>
+                        <input type="tel" id="editPhone" class="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none font-medium" placeholder="+51 999 999 999">
+                    </div>
+                    <button type="submit" class="w-full px-6 py-3 bg-primary text-white font-bold text-sm rounded-xl hover:opacity-90 transition-opacity shadow-lg flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm">save</span> Guardar Cambios
+                    </button>
+                </form>
+            </div>
+
+            <!-- Side Panel -->
+            <div class="space-y-6">
+                <!-- Change Password -->
+                <div class="bg-surface-container-low rounded-2xl shadow-sm border border-outline-variant/20 p-6 anim-d2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">lock</span>
+                        <h4 class="font-headline font-bold text-on-surface text-sm">Seguridad</h4>
+                    </div>
+                    <form id="passwordForm" class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Nueva Contraseña</label>
+                            <input type="password" id="newPassword" required minlength="6" class="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="Mínimo 6 caracteres">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Confirmar Contraseña</label>
+                            <input type="password" id="confirmPassword" required minlength="6" class="w-full bg-surface border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="Repetir contraseña">
+                        </div>
+                        <button type="submit" class="w-full px-4 py-3 bg-surface-container-high text-on-surface font-bold text-xs rounded-xl hover:bg-outline-variant/30 transition-colors flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">lock_reset</span> Cambiar Contraseña
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Account Info -->
+                <div class="bg-surface-container-low rounded-2xl shadow-sm border border-outline-variant/20 p-6 anim-d2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">info</span>
+                        <h4 class="font-headline font-bold text-on-surface text-sm">Cuenta</h4>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-outline font-bold">ID de Usuario</span>
+                            <span id="infoId" class="text-xs font-black text-primary">#--</span>
+                        </div>
+                        <div class="w-full h-px bg-outline-variant/20"></div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-outline font-bold">Rol Asignado</span>
+                            <span id="infoRole" class="text-xs font-black text-indigo-600">--</span>
+                        </div>
+                        <div class="w-full h-px bg-outline-variant/20"></div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-outline font-bold">Ley 29733</span>
+                            <span id="infoConsent" class="text-xs font-black">--</span>
+                        </div>
+                        <div class="w-full h-px bg-outline-variant/20"></div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-outline font-bold">Autenticación</span>
+                            <span class="text-xs font-black text-success">JWT Activo</span>
+                        </div>
+                        <div class="w-full h-px bg-outline-variant/20"></div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-outline font-bold">Sesión</span>
+                            <span id="infoSession" class="text-xs font-black text-on-surface">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Info -->
+                <div class="bg-surface-container-low rounded-2xl shadow-sm border border-outline-variant/20 p-6 anim-d2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">memory</span>
+                        <h4 class="font-headline font-bold text-on-surface text-sm">Sistema</h4>
+                    </div>
+                    <div class="space-y-3 text-xs">
+                        <div class="flex justify-between"><span class="text-outline font-bold">Plataforma</span><span class="font-black text-on-surface">JHIRE ERP 2026</span></div>
+                        <div class="w-full h-px bg-outline-variant/20"></div>
+                        <div class="flex justify-between"><span class="text-outline font-bold">Backend</span><span class="font-black text-on-surface">FastAPI + PostgreSQL</span></div>
+                        <div class="w-full h-px bg-outline-variant/20"></div>
+                        <div class="flex justify-between"><span class="text-outline font-bold">Motor IA</span><span class="font-black text-on-surface">Scikit-Learn</span></div>
+                        <div class="w-full h-px bg-outline-variant/20"></div>
+                        <div class="flex justify-between"><span class="text-outline font-bold">Facturación</span><span class="font-black text-on-surface">UBL 2.1 SUNAT</span></div>
+                        <div class="w-full h-px bg-outline-variant/20"></div>
+                        <div class="flex justify-between"><span class="text-outline font-bold">Versión</span><span class="font-black text-primary">v2.0.0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
+
+<script>
+const API = 'http://localhost:8000';
+let currentUser = null;
+
+async function loadProfile() {
+    try {
+        const token = localStorage.getItem('jhire_jwt_token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        
+        const res = await fetch(API + '/api/auth/me', { headers });
+        if (!res.ok) throw new Error('No auth');
+        currentUser = await res.json();
+        
+        const name = [currentUser.first_name, currentUser.last_name].filter(Boolean).join(' ') || currentUser.email;
+        const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+        
+        // Header
+        document.getElementById('profileName').textContent = name;
+        document.getElementById('profileEmail').textContent = currentUser.email;
+        document.getElementById('profileRole').textContent = currentUser.role === 'admin' ? 'Administrador' : 'Operador';
+        document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ffffff&color=003461&size=200&bold=true`;
+        
+        // Form
+        document.getElementById('editFirstName').value = currentUser.first_name || '';
+        document.getElementById('editLastName').value = currentUser.last_name || '';
+        document.getElementById('editEmail').value = currentUser.email || '';
+        document.getElementById('editPhone').value = currentUser.phone || '';
+        
+        // Info panel
+        document.getElementById('infoId').textContent = '#' + currentUser.id;
+        document.getElementById('infoRole').textContent = currentUser.role === 'admin' ? 'Administrador' : 'Operador';
+        
+        const consentEl = document.getElementById('infoConsent');
+        if (currentUser.data_protection_consent) {
+            consentEl.textContent = 'Aceptado';
+            consentEl.className = 'text-xs font-black text-success';
+        } else {
+            consentEl.textContent = 'Pendiente';
+            consentEl.className = 'text-xs font-black text-amber-500';
+        }
+        
+        // Session time
+        const now = new Date();
+        document.getElementById('infoSession').textContent = now.toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
+        
+    } catch (err) {
+        console.log('Profile: User not authenticated, showing default');
+        // El usuario solicitó SOLO DATOS REALES. Si no hay sesión, se muestra vacío/error.
+        document.getElementById('profileName').textContent = 'Usuario no autenticado';
+        document.getElementById('profileEmail').textContent = 'Inicie sesión';
+        document.getElementById('profileRole').textContent = 'Desconocido';
+        document.getElementById('infoId').textContent = '---';
+        document.getElementById('infoRole').textContent = '---';
+        document.getElementById('infoConsent').textContent = 'No verificado';
+        document.getElementById('infoConsent').className = 'text-xs font-black text-outline';
+        document.getElementById('infoSession').textContent = '---';
+        document.getElementById('editFirstName').disabled = true;
+        document.getElementById('editLastName').disabled = true;
+        document.getElementById('editEmail').disabled = true;
+        document.getElementById('editPhone').disabled = true;
+        document.querySelector('#profileForm button[type="submit"]').disabled = true;
+    }
+}
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errBox = document.getElementById('profileError');
+    errBox.classList.add('hidden');
+    
+    const body = {
+        first_name: document.getElementById('editFirstName').value.trim() || null,
+        last_name: document.getElementById('editLastName').value.trim() || null,
+        email: document.getElementById('editEmail').value.trim() || null,
+        phone: document.getElementById('editPhone').value.trim() || null,
+    };
+    
+    try {
+        const token = localStorage.getItem('jhire_jwt_token');
+        const res = await fetch(API + '/api/auth/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) { const d = await res.json(); throw new Error(d.detail || 'Error al actualizar'); }
+        const data = await res.json();
+        // Update token
+        if (data.access_token) localStorage.setItem('jhire_jwt_token', data.access_token);
+        Swal.fire({ icon: 'success', title: 'Perfil actualizado', text: 'Los cambios se guardaron correctamente.', timer: 2000, showConfirmButton: false });
+        loadProfile();
+    } catch (err) {
+        errBox.textContent = err.message;
+        errBox.classList.remove('hidden');
+    }
+});
+
+document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newPwd = document.getElementById('newPassword').value;
+    const confirmPwd = document.getElementById('confirmPassword').value;
+    
+    if (newPwd !== confirmPwd) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Las contraseñas no coinciden.' });
+        return;
+    }
+    if (newPwd.length < 6) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'La contraseña debe tener al menos 6 caracteres.' });
+        return;
+    }
+    
+    try {
+        const token = localStorage.getItem('jhire_jwt_token');
+        const res = await fetch(API + '/api/auth/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ password: newPwd })
+        });
+        if (!res.ok) throw new Error('Error al cambiar contraseña');
+        const data = await res.json();
+        if (data.access_token) localStorage.setItem('jhire_jwt_token', data.access_token);
+        Swal.fire({ icon: 'success', title: 'Contraseña actualizada', text: 'Tu contraseña ha sido cambiada exitosamente.', timer: 2000, showConfirmButton: false });
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', loadProfile);
+</script>
 <script src="app.js"></script>
 </body>
 </html>

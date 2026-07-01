@@ -22,16 +22,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @router.get("/summary")
 def get_dashboard_summary(db: Session = Depends(get_db)):
-    # Seed fake transactions if there are not enough (Phase 8 requirement)
-    orders_count = db.query(Order).filter(Order.status != "Cancelado").count()
-    if orders_count < 15:
-        import random as rnd
-        for i in range(30, 0, -1):
-            past_date = datetime.utcnow() - timedelta(days=i)
-            fake_total = rnd.uniform(200.0, 1500.0)
-            new_ord = Order(user_id=1, status="Completado", total_price=fake_total, created_at=past_date)
-            db.add(new_ord)
-        db.commit()
+    # The user requested ONLY real data from the database.
+    # No more fake data seeding.
 
     # 1. Total Sales (Completado / En Proceso)
     total_sales = db.query(func.sum(Order.total_price)).filter(Order.status != "Cancelado").scalar() or 0.0
@@ -73,8 +65,8 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
 
     # 3. Forecast Accuracy (Scikit-Learn ML)
     # We train LR with historical daily sales
-    import numpy as np
     try:
+        import numpy as np
         from sklearn.linear_model import LinearRegression
     except ImportError:
         LinearRegression = None

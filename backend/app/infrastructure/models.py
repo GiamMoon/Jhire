@@ -24,6 +24,8 @@ class Product(Base):
     image_url = Column(String, nullable=True)
     stock = Column(Integer, default=0)
     category = Column(String, nullable=True, default="general")  # escobilla, rodillo, general
+    registration_time_seconds = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class Order(Base):
     __tablename__ = "orders"
@@ -32,6 +34,9 @@ class Order(Base):
     status = Column(String, default="En Proceso") # En Proceso, Completado, Rechazado, Cancelado
     total_price = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow)
+    completed_at = Column(DateTime, nullable=True)
+    registration_time_seconds = Column(Integer, default=0)
+    sale_confirmation_seconds = Column(Integer, default=0)
     
     user = relationship("User", backref="orders")
     items = relationship("OrderItem", back_populates="order")
@@ -69,6 +74,8 @@ class Invoice(Base):
     total = Column(Float, nullable=False)
     issue_date = Column(DateTime, default=datetime.utcnow)
     sunat_status = Column(String, default="Emitida")
+    registration_time_seconds = Column(Integer, default=0)
+    processing_time_seconds = Column(Integer, default=0)
     order = relationship("Order", backref="invoice")
 
 class Supplier(Base):

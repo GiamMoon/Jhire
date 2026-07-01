@@ -3,15 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JHIRE 2026 | Catálogo Admin</title>
+    <title>JHIRE 2026 | Catálogo de Productos</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    
+
     <script id="tailwind-config">
         tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "var(--color-primary)", "surface": "var(--color-surface)", "on-surface": "var(--color-on-surface)", "surface-container": "var(--color-surface-container)", "surface-container-low": "var(--color-surface-container-low)", "surface-container-high": "var(--color-surface-container-high)", "outline": "var(--color-outline)", "outline-variant": "var(--color-outline-variant)", "error": "var(--color-error)", "on-error": "var(--color-on-error)", "success": "#16a34a", "success-container": "#dcfce7" }, fontFamily: { "headline": ["Manrope"], "body": ["Inter"] } } } }
     </script>
-    
+
     <style id="dynamic-theme">
         :root { --color-primary: #003461; --color-surface: #faf8ff; --color-on-surface: #131b2e; --color-surface-container: #eaedff; --color-surface-container-low: #f2f4ff; --color-surface-container-high: #d9e2ff; --color-outline: #727781; --color-outline-variant: #c2c7d1; --color-error: #ba1a1a; --color-on-error: #ffffff; }
         html.dark { --color-primary: #a6c8ff; --color-surface: #111318; --color-on-surface: #e2e2e9; --color-surface-container: #1d2024; --color-surface-container-low: #191b20; --color-surface-container-high: #282a2f; --color-outline: #8c9199; --color-outline-variant: #42474e; --color-error: #ffb4ab; --color-on-error: #690005; }
@@ -19,17 +19,20 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .anim-in { animation: fadeInUp .4s ease-out forwards; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-surface font-body text-on-surface flex flex-col min-h-screen transition-colors duration-300">
 
+<!-- SIDEBAR -->
 <aside class="fixed top-0 left-0 h-screen w-64 bg-surface border-r border-outline-variant/20 z-50 flex flex-col hidden md:flex shadow-xl">
     <div class="h-16 flex items-center px-6 border-b border-outline-variant/20 bg-surface-container-low">
         <span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
         <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
     </div>
-    
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
         <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">dashboard</span> Panel Central
@@ -37,13 +40,15 @@
         <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">inventory_2</span> Inventarios
         </a>
-        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm transition-colors">
             <span class="material-symbols-outlined">category</span> Catálogo
         </a>
-        
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Comercial</p>
         <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)
+        </a>
+        <a href="nivel_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">trending_up</span> Nivel de Ventas
         </a>
         <a href="crm.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">support_agent</span> CRM Clientes
@@ -51,16 +56,23 @@
         <a href="facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">receipt_long</span> Facturación
         </a>
-
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
         <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">group</span> Gestor Usuarios
         </a>
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+        <a href="tiempo_registro.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">timer</span> Tiempos Operativos
+        </a>
+        <a href="tiempo_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">speed</span> Eficiencia Ventas
+        </a>
+        <a href="tiempo_facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span> Tiempo de Procesamiento
+        </a>
+        <a href="reportes.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">analytics</span> Reportes y BI
         </a>
     </nav>
-    
     <div class="p-4 border-t border-outline-variant/20">
         <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">settings</span> Mi Perfil
@@ -71,15 +83,14 @@
     </div>
 </aside>
 
-<main class="md:ml-64 min-h-screen bg-surface flex flex-col">
-    <!-- HEADER -->
+<!-- MAIN -->
+<main class="md:ml-64 min-h-screen bg-surface">
     <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
+        <span class="text-xl font-bold text-primary font-headline tracking-tighter">JHIRE</span>
         <div class="flex items-center gap-4">
-            <!-- Theme Toggle -->
             <button onclick="changeTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface">
                 <span class="material-symbols-outlined text-[20px]" id="themeIcon">dark_mode</span>
             </button>
-
             <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all" id="avatarContainer">
                 <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
                 <div class="hidden md:block text-left relative top-[1px]">
@@ -90,13 +101,327 @@
         </div>
     </header>
 
-    <div class="p-6 md:p-10 flex-1 flex flex-col items-center justify-center text-center">
-        <span class="material-symbols-outlined text-7xl text-outline-variant/50 mb-4">inventory_2</span>
-        <h2 class="text-3xl font-headline font-black text-on-surface mb-2">Inventario y Catálogo Maestro</h2>
-        <p class="text-on-surface-variant max-w-md mx-auto mb-8">Gestión de Stock interno para Operaciones. Próximamente integrado en la Fase de CRM.</p>
-        <button onclick="alert('Funcionalidad de Agregar Productos reservada para la Fase Módulo 3')" class="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-lg hover:-translate-y-1 transition-transform border-b-4 border-black/20">Agregar Nuevo Producto al Catálogo</button>
-    </div>
+    <section class="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
+        <!-- Title -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-outline-variant/20 anim-in">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-headline font-black text-on-surface tracking-tight">Catálogo de Productos</h2>
+                <p class="text-outline mt-1 font-medium text-sm flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+                    Gestión completa del inventario de escobillas y rodillos
+                </p>
+            </div>
+            <div class="flex gap-3">
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+                    <input id="searchInput" type="text" placeholder="Buscar producto..." class="pl-10 pr-4 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary outline-none w-56" oninput="filterProducts()">
+                </div>
+                <button onclick="openModal()" class="px-5 py-2.5 bg-primary text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">add</span> NUEVO PRODUCTO
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="statsBar">
+            <div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20 text-center">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Total Productos</p>
+                <p class="text-2xl font-headline font-black text-primary mt-1" id="stat-total">--</p>
+            </div>
+            <div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20 text-center">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Escobillas</p>
+                <p class="text-2xl font-headline font-black text-indigo-600 mt-1" id="stat-escobillas">--</p>
+            </div>
+            <div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20 text-center">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Rodillos</p>
+                <p class="text-2xl font-headline font-black text-emerald-600 mt-1" id="stat-rodillos">--</p>
+            </div>
+            <div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20 text-center">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Stock Bajo</p>
+                <p class="text-2xl font-headline font-black text-error mt-1" id="stat-lowstock">--</p>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="productGrid">
+            <div class="col-span-full text-center py-16 text-outline text-sm font-bold animate-pulse">Cargando catálogo...</div>
+        </div>
+    </section>
 </main>
+
+<!-- MODAL: Create / Edit Product -->
+<div id="productModal" class="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm pointer-events-none flex items-center justify-center transition-opacity opacity-0">
+    <div class="bg-surface w-11/12 max-w-md rounded-3xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300">
+        <div class="bg-primary p-6 text-white text-center relative overflow-hidden">
+            <span class="material-symbols-outlined text-4xl mb-2 relative z-10" style="font-variation-settings: 'wght' 200;" id="modalIcon">add_box</span>
+            <h3 class="text-xl font-headline font-black relative z-10" id="modalTitle">Nuevo Producto</h3>
+            <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+        </div>
+        <form id="productForm" class="p-6 space-y-4">
+            <input type="hidden" id="editId">
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Nombre del Producto *</label>
+                <div class="flex gap-2">
+                    <input type="text" id="fName" required class="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none" placeholder="Ej: Escobilla Industrial 300mm">
+                    <button type="button" onclick="predictAttributes()" class="px-4 bg-indigo-500/10 text-indigo-600 font-bold rounded-xl hover:bg-indigo-500/20 transition-all flex items-center justify-center gap-1 text-xs border border-indigo-500/20 shadow-sm" title="Autocompletar con Machine Learning">
+                        <span class="material-symbols-outlined text-sm">auto_awesome</span> <span class="hidden sm:inline">Predecir</span>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Descripción</label>
+                <textarea id="fDesc" rows="2" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none" placeholder="Descripción breve del producto"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Precio (S/) *</label>
+                    <input type="number" id="fPrice" step="0.01" min="0" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none" placeholder="45.50">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Stock *</label>
+                    <input type="number" id="fStock" min="0" required class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none" placeholder="100">
+                </div>
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">Categoría</label>
+                <select id="fCategory" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
+                    <option value="escobilla">Escobilla</option>
+                    <option value="rodillo">Rodillo</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-outline mb-1 pl-1">URL de Imagen</label>
+                <input type="text" id="fImage" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none" placeholder="https://...">
+            </div>
+            <div class="mt-6 flex gap-3">
+                <button type="button" onclick="closeModal()" class="flex-1 px-4 py-3 bg-surface-container text-on-surface font-bold text-sm rounded-xl hover:bg-surface-container-high transition-colors">Cancelar</button>
+                <button type="submit" class="flex-[2] px-4 py-3 bg-primary text-white font-bold text-sm rounded-xl hover:opacity-90 transition-opacity shadow-lg" id="btnSubmit">Guardar Producto</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000/api/products';
+let allProducts = [];
+
+function fmt(n) { return 'S/ ' + Number(n).toFixed(2); }
+
+function openModal(product = null) {
+    window.tiempoInicial = new Date(); // Iniciar cronómetro invisible
+    const modal = document.getElementById('productModal');
+    document.getElementById('editId').value = '';
+    document.getElementById('fName').value = '';
+    document.getElementById('fDesc').value = '';
+    document.getElementById('fPrice').value = '';
+    document.getElementById('fStock').value = '';
+    document.getElementById('fCategory').value = 'escobilla';
+    document.getElementById('fImage').value = '';
+    document.getElementById('modalTitle').textContent = 'Nuevo Producto';
+    document.getElementById('modalIcon').textContent = 'add_box';
+    document.getElementById('btnSubmit').textContent = 'Guardar Producto';
+
+    if (product) {
+        document.getElementById('editId').value = product.id;
+        document.getElementById('fName').value = product.name;
+        document.getElementById('fDesc').value = product.description || '';
+        document.getElementById('fPrice').value = product.price_soles;
+        document.getElementById('fStock').value = product.stock;
+        document.getElementById('fCategory').value = product.category || 'general';
+        document.getElementById('fImage').value = product.image_url || '';
+        document.getElementById('modalTitle').textContent = 'Editar Producto';
+        document.getElementById('modalIcon').textContent = 'edit';
+        document.getElementById('btnSubmit').textContent = 'Actualizar Producto';
+    }
+
+    modal.classList.remove('pointer-events-none');
+    setTimeout(() => modal.classList.remove('opacity-0'), 10);
+}
+
+function closeModal() {
+    const modal = document.getElementById('productModal');
+    modal.classList.add('opacity-0');
+    setTimeout(() => modal.classList.add('pointer-events-none'), 300);
+}
+
+async function predictAttributes() {
+    const nameInput = document.getElementById('fName').value;
+    if (!nameInput) {
+        Swal.fire({icon: 'info', title: 'Escribe un nombre', text: 'Escribe el nombre del producto primero para que la IA pueda analizarlo.', timer: 2000, showConfirmButton: false});
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Procesando NLP...',
+        text: 'Clasificando texto y prediciendo atributos',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+    
+    try {
+        const res = await fetch(API + '/predict-attributes', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name: nameInput})
+        });
+        const data = await res.json();
+        
+        document.getElementById('fCategory').value = data.predicted_category;
+        document.getElementById('fPrice').value = data.predicted_price;
+        
+        ['fCategory', 'fPrice'].forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.add('ring-2', 'ring-indigo-500', 'bg-indigo-500/10');
+            setTimeout(() => el.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-500/10'), 2000);
+        });
+        
+        Swal.fire({
+            icon: 'success',
+            title: '¡Predicción Exitosa!',
+            text: `Categoría: ${data.predicted_category.toUpperCase()} | Precio: S/ ${data.predicted_price}`,
+            timer: 2500,
+            showConfirmButton: false
+        });
+    } catch (err) {
+        Swal.fire({icon: 'error', title: 'Error de IA', text: 'No se pudo generar la predicción.', timer: 2000, showConfirmButton: false});
+    }
+}
+
+function getCategoryIcon(cat) {
+    if (cat === 'escobilla') return { icon: 'cleaning_services', color: 'indigo' };
+    if (cat === 'rodillo') return { icon: 'precision_manufacturing', color: 'emerald' };
+    return { icon: 'category', color: 'amber' };
+}
+
+function renderProducts(products) {
+    const grid = document.getElementById('productGrid');
+    if (!products.length) {
+        grid.innerHTML = '<div class="col-span-full text-center py-16"><span class="material-symbols-outlined text-6xl text-outline-variant/40 mb-3">inventory_2</span><p class="text-outline font-bold">No hay productos registrados</p><p class="text-xs text-outline mt-1">Haz clic en "Nuevo Producto" para agregar uno</p></div>';
+        return;
+    }
+    grid.innerHTML = products.map(p => {
+        const cat = getCategoryIcon(p.category);
+        const stockLow = p.stock <= 20;
+        const hasImg = p.image_url && p.image_url.startsWith('http');
+        return `
+        <div class="bg-surface-container-low rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all group anim-in">
+            <div class="h-40 bg-surface-container flex items-center justify-center overflow-hidden relative">
+                ${hasImg
+                    ? `<img src="${p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
+                    : `<span class="material-symbols-outlined text-6xl text-outline-variant/30" style="font-variation-settings: 'FILL' 1;">${cat.icon}</span>`
+                }
+                <span class="absolute top-3 left-3 px-2 py-1 bg-${cat.color}-500/90 text-white text-[10px] font-black rounded-lg uppercase tracking-wider backdrop-blur-sm">${p.category || 'general'}</span>
+            </div>
+            <div class="p-4">
+                <h4 class="text-sm font-bold text-on-surface line-clamp-1">${p.name}</h4>
+                <p class="text-[11px] text-outline mt-1 line-clamp-2 min-h-[2rem]">${p.description || 'Sin descripción'}</p>
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-outline-variant/15">
+                    <span class="text-lg font-headline font-black text-primary">${fmt(p.price_soles)}</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-black ${stockLow ? 'bg-red-50 text-error' : 'bg-emerald-50 text-emerald-600'}">
+                        <span class="material-symbols-outlined text-xs">${stockLow ? 'warning' : 'check_circle'}</span>
+                        ${p.stock} uds
+                    </span>
+                </div>
+                <div class="flex gap-2 mt-3">
+                    <button onclick='openModal(${JSON.stringify(p).replace(/'/g, "\\'")})' class="flex-1 px-3 py-2 bg-primary/10 text-primary text-xs font-bold rounded-lg hover:bg-primary/20 transition-colors flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-sm">edit</span> Editar
+                    </button>
+                    <button onclick="deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="px-3 py-2 bg-error/10 text-error text-xs font-bold rounded-lg hover:bg-error/20 transition-colors flex items-center justify-center">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function updateStats(products) {
+    document.getElementById('stat-total').textContent = products.length;
+    document.getElementById('stat-escobillas').textContent = products.filter(p => p.category === 'escobilla').length;
+    document.getElementById('stat-rodillos').textContent = products.filter(p => p.category === 'rodillo').length;
+    document.getElementById('stat-lowstock').textContent = products.filter(p => p.stock <= 20).length;
+}
+
+function filterProducts() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allProducts.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        (p.description || '').toLowerCase().includes(q) ||
+        (p.category || '').toLowerCase().includes(q)
+    );
+    renderProducts(filtered);
+}
+
+async function loadProducts() {
+    try {
+        const res = await fetch(API);
+        allProducts = await res.json();
+        renderProducts(allProducts);
+        updateStats(allProducts);
+    } catch (err) {
+        console.error(err);
+        document.getElementById('productGrid').innerHTML = '<div class="col-span-full text-center py-16 text-error font-bold">Error al cargar productos</div>';
+    }
+}
+
+async function deleteProduct(id, name) {
+    const result = await Swal.fire({
+        title: '¿Eliminar producto?',
+        text: `Se eliminará "${name}" permanentemente.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ba1a1a',
+        cancelButtonText: 'Cancelar',
+        confirmButtonText: 'Sí, eliminar'
+    });
+    if (!result.isConfirmed) return;
+    try {
+        await fetch(API + '/' + id, { method: 'DELETE' });
+        Swal.fire({ title: 'Eliminado', text: `"${name}" fue eliminado.`, icon: 'success', timer: 1500, showConfirmButton: false });
+        loadProducts();
+    } catch (err) {
+        Swal.fire('Error', 'No se pudo eliminar el producto.', 'error');
+    }
+}
+
+document.getElementById('productForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const editId = document.getElementById('editId').value;
+    
+    // Calcular tiempo que tomó registrar el producto
+    let registrationTime = 0;
+    if (!editId && window.tiempoInicial) {
+        registrationTime = Math.round((new Date() - window.tiempoInicial) / 1000);
+    }
+
+    const body = {
+        name: document.getElementById('fName').value,
+        description: document.getElementById('fDesc').value || null,
+        price_soles: parseFloat(document.getElementById('fPrice').value),
+        stock: parseInt(document.getElementById('fStock').value),
+        category: document.getElementById('fCategory').value,
+        image_url: document.getElementById('fImage').value || null,
+        registration_time_seconds: registrationTime
+    };
+
+    try {
+        if (editId) {
+            await fetch(API + '/' + editId, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            Swal.fire({ title: 'Actualizado', text: `"${body.name}" se actualizó correctamente.`, icon: 'success', timer: 1500, showConfirmButton: false });
+        } else {
+            await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            Swal.fire({ title: 'Producto Creado', text: `"${body.name}" se agregó al catálogo.`, icon: 'success', timer: 1500, showConfirmButton: false });
+        }
+        closeModal();
+        loadProducts();
+    } catch (err) {
+        Swal.fire('Error', 'No se pudo guardar el producto.', 'error');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', loadProducts);
+</script>
 <script src="app.js"></script>
 </body>
 </html>

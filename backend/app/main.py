@@ -49,7 +49,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 
-from .presentation.routers import dashboard, sales, inventory, billing, products, chat, orders, contacts, crm, reports, recommendations
+from .presentation.routers import dashboard, sales, inventory, billing, products, chat, orders, contacts, crm, reports, recommendations, nivel_ventas_ml, tiempo_facturacion_ml
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(sales.router, prefix="/api/sales", tags=["Sales"])
 app.include_router(inventory.router, prefix="/api/inventory", tags=["Inventory"])
@@ -61,6 +61,8 @@ app.include_router(contacts.router, prefix="/api/contacto", tags=["Contacts"])
 app.include_router(crm.router, prefix="/api/crm", tags=["CRM"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(recommendations.router, prefix="/api/recommendations", tags=["Recommendations"])
+app.include_router(nivel_ventas_ml.router, prefix="/api/nivel-ventas", tags=["Nivel de Ventas — ML"])
+app.include_router(tiempo_facturacion_ml.router, prefix="/api/tiempo-facturacion", tags=["Tiempo Facturacion — ML"])
 # Mount Frontend Static Files if the folder exists (to serve the JHIRE screens)
 import os
 frontend_dir = "/frontend"

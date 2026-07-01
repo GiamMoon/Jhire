@@ -59,6 +59,7 @@ class OrderItemCreate(BaseModel):
 
 class OrderCreate(BaseModel):
     items: List[OrderItemCreate]
+    registration_time_seconds: Optional[int] = 0
 
 class OrderItemResponse(BaseModel):
     id: int
@@ -84,6 +85,7 @@ class OrderResponse(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     status: str
+    sale_confirmation_seconds: Optional[int] = 0
 
 class ContactMessageCreate(BaseModel):
     name: str
@@ -152,6 +154,7 @@ class InvoiceResponse(BaseModel):
     total: float
     issue_date: datetime
     sunat_status: str
+    processing_time_seconds: Optional[float] = None
     
     class Config:
         from_attributes = True

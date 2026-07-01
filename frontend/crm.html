@@ -1,433 +1,365 @@
 <!DOCTYPE html>
-
-<html class="light" lang="es"><head>
+<html class="light" lang="es">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>JHIRE 2026 - CRM y Clientees y Prospección</title>
+<title>JHIRE 2026 - CRM Clientes</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-          tailwind.config = {
-            darkMode: "class",
-            theme: {
-              extend: {
-                colors: {
-                  "primary": "var(--color-primary)",
-                  "surface": "var(--color-surface)",
-                  "on-surface": "var(--color-on-surface)",
-                  "surface-container": "var(--color-surface-container)",
-                  "surface-container-low": "var(--color-surface-container-low)",
-                  "surface-container-high": "var(--color-surface-container-high)",
-                  "surface-container-highest": "var(--color-surface-container-highest)",
-                  "outline": "var(--color-outline)",
-                  "outline-variant": "var(--color-outline-variant)",
-                  "error": "var(--color-error)",
-                  "on-error": "var(--color-on-error)"
-                },
-                fontFamily: {
-                  "headline": ["Manrope"],
-                  "body": ["Inter"]
-                }
-              }
-            }
-          }
-    </script>
-    <style id="dynamic-theme">
-        :root {
-          --color-primary: #003461;
-          --color-surface: #faf8ff;
-          --color-on-surface: #131b2e;
-          --color-surface-container: #eaedff;
-          --color-surface-container-low: #f2f4ff;
-          --color-surface-container-high: #d9e2ff;
-          --color-surface-container-highest: #c5d2ff;
-          --color-outline: #727781;
-          --color-outline-variant: #c2c7d1;
-          --color-error: #ba1a1a;
-          --color-on-error: #ffffff;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        html.dark {
-          --color-primary: #a6c8ff;
-          --color-surface: #111318;
-          --color-on-surface: #e2e2e9;
-          --color-surface-container: #1d2024;
-          --color-surface-container-low: #191b20;
-          --color-surface-container-high: #282a2f;
-          --color-surface-container-highest: #33353a;
-          --color-outline: #8c9199;
-          --color-outline-variant: #42474e;
-          --color-error: #ffb4ab;
-          --color-on-error: #690005;
-        }
-    </style>
-<style>
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      }
-      .funnel-step {
-        clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%, 5% 50%);
-      }
-      .funnel-step:first-child {
-        clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%);
-      }
-      body { font-family: 'Inter', sans-serif; }
-      h1, h2, h3 { font-family: 'Manrope', sans-serif; }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "var(--color-primary)",
+        "surface": "var(--color-surface)",
+        "on-surface": "var(--color-on-surface)",
+        "surface-container": "var(--color-surface-container)",
+        "surface-container-low": "var(--color-surface-container-low)",
+        "surface-container-high": "var(--color-surface-container-high)",
+        "outline": "var(--color-outline)",
+        "outline-variant": "var(--color-outline-variant)",
+        "error": "var(--color-error)",
+        "on-error": "var(--color-on-error)"
+      },
+      fontFamily: { "headline": ["Manrope"], "body": ["Inter"] }
+    }
+  }
+}
+</script>
+<style id="dynamic-theme">
+:root {
+  --color-primary: #003461;
+  --color-surface: #faf8ff;
+  --color-on-surface: #131b2e;
+  --color-surface-container: #eaedff;
+  --color-surface-container-low: #f2f4ff;
+  --color-surface-container-high: #d9e2ff;
+  --color-outline: #727781;
+  --color-outline-variant: #c2c7d1;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+}
+html.dark {
+  --color-primary: #a6c8ff;
+  --color-surface: #111318;
+  --color-on-surface: #e2e2e9;
+  --color-surface-container: #1d2024;
+  --color-surface-container-low: #191b20;
+  --color-surface-container-high: #282a2f;
+  --color-outline: #8c9199;
+  --color-outline-variant: #42474e;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+}
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+body { font-family: 'Inter', sans-serif; }
+h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.anim-in { animation: fadeInUp .4s ease-out forwards; }
+.anim-d1 { animation: fadeInUp .4s ease-out .08s forwards; opacity: 0; }
+.anim-d2 { animation: fadeInUp .4s ease-out .16s forwards; opacity: 0; }
+.anim-d3 { animation: fadeInUp .4s ease-out .24s forwards; opacity: 0; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.funnel-step { clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%, 5% 50%); }
+.funnel-step:first-child { clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%); }
+tr.selected-row { background: rgba(0,52,97,0.06) !important; }
+</style>
 </head>
-<body class="bg-surface text-on-surface flex min-h-screen flex flex-col min-h-screen">
+<body class="bg-surface text-on-surface flex flex-col min-h-screen">
+
 <!-- SIDEBAR -->
 <aside class="fixed top-0 left-0 h-screen w-64 bg-surface border-r border-outline-variant/20 z-50 flex flex-col hidden md:flex shadow-xl">
     <div class="h-16 flex items-center px-6 border-b border-outline-variant/20 bg-surface-container-low">
         <span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
         <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
     </div>
-    
     <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">dashboard</span> Panel Central
-        </a>
-        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">inventory_2</span> Inventarios
-        </a>
-        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">category</span> Catálogo
-        </a>
-        
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">dashboard</span> Panel Central</a>
+        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">inventory_2</span> Inventarios</a>
+        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">category</span> Catálogo</a>
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Comercial</p>
-        <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)
-        </a>
-        <a href="crm.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm transition-colors">
-            <span class="material-symbols-outlined">support_agent</span> CRM Clientes
-        </a>
-        <a href="facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">receipt_long</span> Facturación
-        </a>
-
+        <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)</a>
+        <a href="nivel_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">trending_up</span> Nivel de Ventas</a>
+        <a href="crm.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm transition-colors whitespace-nowrap"><span class="material-symbols-outlined">support_agent</span> CRM Clientes</a>
+        <a href="facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">receipt_long</span> Facturación</a>
         <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
-        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">group</span> Gestor Usuarios
-        </a>
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">analytics</span> Reportes y BI
-        </a>
+        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">group</span> Gestor Usuarios</a>
+        <a href="tiempo_registro.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">timer</span> Tiempos Operativos</a>
+        <a href="tiempo_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">speed</span> Eficiencia Ventas</a>
+        <a href="tiempo_facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">receipt_long</span> Tiempo de Procesamiento</a>
     </nav>
-    
     <div class="p-4 border-t border-outline-variant/20">
-        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">settings</span> Mi Perfil
-        </a>
-        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors">
-            <span class="material-symbols-outlined">logout</span> Salir
-        </button>
+        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">settings</span> Mi Perfil</a>
+        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">logout</span> Salir</button>
     </div>
 </aside>
-<!-- Main Content Area -->
-<main class="flex-1 ml-64 min-h-screen bg-surface">
-<!-- TopAppBar -->
-<header class="w-full h-16 sticky top-0 z-40 bg-surface dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm dark:shadow-none flex items-center justify-between px-6">
-<div class="flex items-center gap-8">
-<span class="text-xl font-bold text-blue-900 dark:text-white tracking-tight">JHIRE 2025</span>
-<div class="relative hidden lg:block w-96">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-<input class="w-full bg-slate-50 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Buscar ventas, clientes o productos..." type="text"/>
-</div>
-</div>
-<div class="flex items-center gap-4">
-            <!-- Theme Toggle -->
-            <button onclick="changeTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface">
-                <span class="material-symbols-outlined text-[20px]" id="themeIcon">dark_mode</span>
-            </button>
 
-            <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all" id="avatarContainer">
-                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
-                <div class="hidden md:block text-left relative top-[1px]">
-                    <p id="headerUserName" class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Cargando...</p>
-                    <p id="headerUserRole" class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">...</p>
-                </div>
+<!-- MAIN -->
+<main class="flex-1 md:ml-64 min-h-screen bg-surface">
+
+<!-- HEADER -->
+<header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
+    <div class="flex items-center gap-4"><span class="text-xl font-bold text-primary font-headline tracking-tighter">JHIRE</span></div>
+    <div class="flex items-center gap-4">
+        <button onclick="changeTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface">
+            <span class="material-symbols-outlined text-[20px]" id="themeIcon">dark_mode</span>
+        </button>
+        <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all" id="avatarContainer">
+            <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
+            <div class="hidden md:block text-left relative top-[1px]">
+                <p id="headerUserName" class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Cargando...</p>
+                <p id="headerUserRole" class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">...</p>
             </div>
         </div>
-    </header>
-<div class="p-8 max-w-7xl mx-auto space-y-8">
-<!-- Header Section -->
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-<div>
-<h2 class="text-3xl font-extrabold text-primary tracking-tight">Gestión CRM Central</h2>
-<p class="text-on-surface-variant mt-1">Vista centralizada de todos los clientes y patrones de comportamiento por IA.</p>
-</div>
-<div class="flex items-center gap-3">
-<button onclick="Swal.fire({title: 'Filtrar Directorio', input: 'select', inputOptions: {vip: 'Clientes Fidelizados', prospect: 'Prospectos Nuevos', all: 'Todos'}, showCancelButton: true, confirmButtonText: 'Aplicar Filtro'})" class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-low text-primary font-semibold rounded-md hover:bg-surface-container-high transition-colors">
-<span class="material-symbols-outlined text-lg">filter_alt</span>
-<span>Filtrar</span>
-</button>
-<button onclick="Swal.fire({title: 'Nuevo Cliente', html: '<input id=\'swal-input1\' class=\'swal2-input\' placeholder=\'Nombre de Empresa\'><input id=\'swal-input2\' class=\'swal2-input\' placeholder=\'Correo de Contacto\'>', focusConfirm: false, confirmButtonText: 'Registrar', showCancelButton: true})" class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold rounded-md shadow-lg shadow-primary/20 active:scale-95 transition-all">
-<span class="material-symbols-outlined text-lg">person_add</span>
-<span>Nuevo Cliente</span>
-</button>
-</div>
-</div>
-<!-- Bento Grid - KPIs and Funnel -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-<!-- Ventas Funnel Visualization -->
-<div class="md:col-span-3 bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-slate-100/50">
-<div class="flex justify-between items-center mb-6">
-<h3 class="font-bold text-lg text-primary">Embudo de Fidelización</h3>
-<span class="text-xs font-medium text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Últimos 30 Días</span>
-</div>
-<div class="flex items-stretch h-32 w-full gap-1" id="crmFunnelContainer">
-<!-- Prospectos -->
-<div class="funnel-step flex-1 bg-primary flex flex-col items-center justify-center text-on-primary relative">
-<span class="text-2xl font-black">428</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Prospectos</span>
-</div>
-<!-- Oportunidades -->
-<div class="funnel-step flex-1 bg-primary/85 flex flex-col items-center justify-center text-on-primary">
-<span class="text-2xl font-black">156</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Oportunidades</span>
-</div>
-<!-- Cotizaciones -->
-<div class="funnel-step flex-1 bg-primary/70 flex flex-col items-center justify-center text-on-primary">
-<span class="text-2xl font-black">84</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Cotizaciones</span>
-</div>
-<!-- Cerradas Ventas -->
-<div class="funnel-step flex-1 bg-primary/55 flex flex-col items-center justify-center text-on-primary">
-<span class="text-2xl font-black">32</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Cerradas</span>
-</div>
-</div>
-<div class="mt-6 flex justify-around text-center">
-<div>
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Valor Cartera</p>
-<p class="text-lg font-black text-primary" id="kpiValorTotal">$0</p>
-</div>
-<div>
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Interacción Prom.</p>
-<p class="text-lg font-black text-primary" id="kpiCicloProm">-</p>
-</div>
-<div>
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tasa de Retención</p>
-<p class="text-lg font-black text-tertiary-container" id="kpiConversion">0%</p>
-</div>
-</div>
-</div>
-<!-- Small KPI Card -->
-<div class="bg-primary bg-gradient-to-br from-primary to-primary-container p-6 rounded-xl text-on-primary flex flex-col justify-between">
-<div>
-<span class="material-symbols-outlined opacity-50 text-4xl mb-2" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
-<h3 class="text-sm font-medium opacity-80">Clientes Frecuentes</h3>
-<p class="text-3xl font-black mt-1" id="kpiFrequentCount">0%</p>
-</div>
-<div class="mt-4">
-<div class="w-full bg-surface/20 h-2 rounded-full overflow-hidden">
-<div class="bg-surface h-full" id="kpiFrequentBar" style="width: 0%"></div>
-</div>
-<p class="text-[10px] mt-2 font-bold uppercase tracking-widest opacity-80" id="kpiFrequentSub">Base Total Activa</p>
-</div>
-</div>
-</div>
-<!-- Lower Section: Client Directory and AI Assistant -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <!-- Client Directory Table (Left side - Main) -->
-    <div class="lg:col-span-2 space-y-4">
-        <div class="flex items-center justify-between">
-            <h3 class="font-bold text-lg text-primary">Directorio de Clientes</h3>
-            <button class="bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-primary/20 transition-colors">Exportar CSV</button>
+    </div>
+</header>
+
+<!-- CONTENT -->
+<div class="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
+
+    <!-- Header + Search -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 anim-in">
+        <div>
+            <h2 class="text-3xl md:text-4xl font-headline font-black text-on-surface tracking-tight">Gestión CRM Central</h2>
+            <p class="text-outline mt-1 font-medium text-sm flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Directorio de clientes con análisis predictivo de comportamiento
+            </p>
         </div>
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+                <input type="text" id="searchInput" placeholder="Buscar cliente..." oninput="filterClients()" class="pl-10 pr-4 py-2.5 bg-surface-container-low border border-outline-variant/30 text-on-surface text-xs rounded-lg focus:ring-primary focus:border-primary w-56">
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 anim-d1">
+        <div class="bg-surface-container-low p-5 rounded-2xl shadow-sm border border-outline-variant/20 relative overflow-hidden group">
+            <div class="absolute -right-3 -top-3 opacity-5"><span class="material-symbols-outlined text-7xl">group</span></div>
+            <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Total Clientes</p>
+            <h3 id="kpi-total" class="text-3xl font-headline font-black mt-1 tracking-tighter text-on-surface">--</h3>
+        </div>
+        <div class="bg-surface-container-low p-5 rounded-2xl shadow-sm border border-outline-variant/20 relative overflow-hidden group">
+            <div class="absolute -right-3 -top-3 opacity-5"><span class="material-symbols-outlined text-7xl">diamond</span></div>
+            <p class="text-[10px] font-bold text-outline uppercase tracking-widest">VIP / Frecuentes</p>
+            <h3 id="kpi-vip" class="text-3xl font-headline font-black mt-1 tracking-tighter text-emerald-600">--</h3>
+        </div>
+        <div class="bg-surface-container-low p-5 rounded-2xl shadow-sm border border-outline-variant/20 relative overflow-hidden group">
+            <div class="absolute -right-3 -top-3 opacity-5"><span class="material-symbols-outlined text-7xl">warning</span></div>
+            <p class="text-[10px] font-bold text-outline uppercase tracking-widest">En Riesgo</p>
+            <h3 id="kpi-risk" class="text-3xl font-headline font-black mt-1 tracking-tighter text-orange-600">--</h3>
+        </div>
+        <div class="bg-surface-container-low p-5 rounded-2xl shadow-sm border border-outline-variant/20 relative overflow-hidden group">
+            <div class="absolute -right-3 -top-3 opacity-5"><span class="material-symbols-outlined text-7xl">chat</span></div>
+            <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Interacciones Totales</p>
+            <h3 id="kpi-interactions" class="text-3xl font-headline font-black mt-1 tracking-tighter text-indigo-600">--</h3>
+        </div>
+    </div>
+
+    <!-- Main Grid: Table + AI Panel -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <div class="overflow-x-auto rounded-xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm">
-            <table class="w-full text-left border-collapse min-w-full">
-                <thead>
-                    <tr class="bg-surface-container-low">
-                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Cliente</th>
-                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Contacto</th>
-                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Info Empresa</th>
-                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-center">Interacciones</th>
-                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-outline-variant/10" id="crmClientsTableBody">
-                    <tr><td colspan="5" class="p-6 text-center text-xs text-outline-variant">Cargando directorio de la Base de Datos...</td></tr>
-                </tbody>
-            </table>
-            <div class="px-6 py-4 bg-surface-container-low flex items-center justify-between border-t border-outline-variant/10">
-                <span class="text-xs text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-sm text-green-500">check_circle</span> Directorio centralizado sincronizado</span>
+        <!-- Client Table -->
+        <div class="lg:col-span-2 space-y-3 anim-d2">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg text-on-surface font-headline">Directorio de Clientes</h3>
+                <span class="text-[10px] font-bold text-outline uppercase" id="clientCount">-- registros</span>
+            </div>
+            <div class="overflow-x-auto rounded-xl bg-surface-container-low border border-outline-variant/20 shadow-sm">
+                <table class="w-full text-left border-collapse min-w-full">
+                    <thead>
+                        <tr class="bg-surface-container border-b border-outline-variant/20">
+                            <th class="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-outline">Cliente</th>
+                            <th class="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-outline">Contacto</th>
+                            <th class="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-outline text-center">Interacciones</th>
+                            <th class="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-outline text-center">Últ. Compra</th>
+                            <th class="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-outline text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/10" id="clientsTableBody">
+                        <tr><td colspan="5" class="p-8 text-center text-xs text-outline animate-pulse">Cargando directorio...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- AI Panel -->
+        <div class="lg:col-span-1 space-y-3 anim-d3">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+                </div>
+                <h3 class="font-bold text-lg text-on-surface font-headline">Análisis IA</h3>
+            </div>
+            <div class="bg-surface-container-low p-6 rounded-xl shadow-sm border border-outline-variant/20 min-h-[480px] flex flex-col relative" id="aiPanel">
+                <div class="absolute right-0 top-0 w-28 h-28 bg-primary/5 rounded-bl-full -z-0"></div>
+                
+                <!-- Empty -->
+                <div id="aiEmpty" class="flex-1 flex flex-col items-center justify-center text-center opacity-70 relative z-10">
+                    <span class="material-symbols-outlined text-5xl text-outline mb-4" style="font-variation-settings: 'FILL' 0, 'wght' 200;">person_search</span>
+                    <p class="text-sm font-medium text-outline max-w-[200px]">Selecciona un cliente de la tabla para que la IA analice su comportamiento.</p>
+                </div>
+                
+                <!-- Loading -->
+                <div id="aiLoading" class="flex-1 flex flex-col items-center justify-center hidden relative z-10">
+                    <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    <p class="mt-4 text-xs font-bold text-primary animate-pulse">Analizando métricas del cliente...</p>
+                </div>
+                
+                <!-- Results -->
+                <div id="aiResults" class="hidden flex flex-col gap-4 h-full relative z-10 w-full">
+                    <div class="pb-3 border-b border-outline-variant/20">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 id="aiClientName" class="font-bold text-on-surface text-sm"></h4>
+                                <p id="aiClientSegment" class="inline-flex mt-1.5 items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase"></p>
+                            </div>
+                            <div class="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center text-primary shrink-0">
+                                <span class="material-symbols-outlined text-lg">robot_2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metrics -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-surface-container rounded-lg p-2.5 text-center">
+                            <p class="text-[9px] font-bold text-outline uppercase">Órdenes</p>
+                            <p id="aiMetricOrders" class="text-lg font-black text-on-surface">--</p>
+                        </div>
+                        <div class="bg-surface-container rounded-lg p-2.5 text-center">
+                            <p class="text-[9px] font-bold text-outline uppercase">Gasto Total</p>
+                            <p id="aiMetricSpent" class="text-lg font-black text-emerald-600">--</p>
+                        </div>
+                        <div class="bg-surface-container rounded-lg p-2.5 text-center">
+                            <p class="text-[9px] font-bold text-outline uppercase">Ticket Prom.</p>
+                            <p id="aiMetricTicket" class="text-lg font-black text-on-surface">--</p>
+                        </div>
+                        <div class="bg-surface-container rounded-lg p-2.5 text-center">
+                            <p class="text-[9px] font-bold text-outline uppercase">Últ. Compra</p>
+                            <p id="aiMetricDays" class="text-lg font-black text-on-surface">--</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 overflow-y-auto no-scrollbar">
+                        <h5 class="text-[10px] font-black uppercase tracking-widest text-outline mb-2 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Recomendaciones IA
+                        </h5>
+                        <ul id="aiRecommendations" class="space-y-2.5"></ul>
+                    </div>
+                    
+                    <div class="mt-auto pt-3 flex flex-col gap-2">
+                        <div class="flex gap-2">
+                            <button onclick="openEmailModal()" class="flex-1 py-2 bg-primary text-white rounded-lg text-[10px] font-bold hover:bg-primary/90 flex items-center justify-center gap-1 transition-colors">
+                                <span class="material-symbols-outlined text-[14px]">mail</span> Email
+                            </button>
+                            <button onclick="openWhatsAppModal()" class="flex-1 py-2 bg-green-600 text-white rounded-lg text-[10px] font-bold hover:bg-green-700 flex items-center justify-center gap-1 transition-colors">
+                                <span class="material-symbols-outlined text-[14px]">chat</span> WhatsApp
+                            </button>
+                            <button onclick="openInteractionModal()" class="flex-1 py-2 bg-surface-container text-outline rounded-lg text-[10px] font-bold border border-outline-variant/30 hover:bg-surface-container-high flex items-center justify-center gap-1 transition-colors">
+                                <span class="material-symbols-outlined text-[14px]">edit_note</span> Nota
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Interaction History -->
+                    <div class="pt-3 border-t border-outline-variant/20">
+                        <button onclick="toggleHistory()" class="w-full flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-outline mb-2">
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">history</span> Historial</span>
+                            <span class="material-symbols-outlined text-[14px]" id="historyIcon">expand_more</span>
+                        </button>
+                        <div id="historyList" class="space-y-2 max-h-[160px] overflow-y-auto no-scrollbar hidden"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <!-- AI Assistant Panel (Right side) -->
-    <div class="lg:col-span-1 space-y-4">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center">
-                <span class="material-symbols-outlined text-[18px]">psychology</span>
-            </div>
-            <h3 class="font-bold text-lg text-primary">AI Insights</h3>
-        </div>
-        <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/20 min-h-[400px] flex flex-col relative" id="crmAiAssistantContainer">
-            <!-- decorative background -->
-            <div class="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-0"></div>
-            
-            <!-- Empty State -->
-            <div id="crmAiEmptyState" class="flex-1 flex flex-col items-center justify-center text-center opacity-70 relative z-10">
-                <span class="material-symbols-outlined text-5xl text-outline mb-4" style="font-variation-settings: 'FILL' 0, 'wght' 200;">person_search</span>
-                <p class="text-sm font-medium text-on-surface-variant max-w-[200px]">Selecciona un cliente de la tabla para que la IA escanee su LTV y brinde sugerencias comunicativas.</p>
-            </div>
-            
-            <!-- Loading State -->
-            <div id="crmAiLoading" class="flex-1 flex flex-col items-center justify-center hidden relative z-10">
-                <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                <p class="mt-4 text-xs font-bold text-primary animate-pulse">Analizando métricas cognitivas...</p>
-            </div>
-            
-            <!-- Results State -->
-            <div id="crmAiResults" class="hidden flex flex-col gap-5 h-full relative z-10 w-full">
-                <div class="pb-4 border-b border-outline-variant/20">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <h4 id="aiClientName" class="font-bold text-on-surface">Nombre Cliente</h4>
-                            <p id="aiClientStatus" class="inline-flex mt-2 items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary uppercase">Status</p>
-                        </div>
-                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary shrink-0">
-                            <span class="material-symbols-outlined text-xl">robot_2</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex-1">
-                    <h5 class="text-[10px] font-black uppercase tracking-widest text-outline mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Sugerencias Aprobadas</h5>
-                    <ul id="aiRecommendationsList" class="space-y-4">
-                        <!-- Items rendered dynamically -->
-                    </ul>
-                </div>
-                
-                <div class="mt-auto pt-4 flex flex-col gap-2">
-                    <button onclick="dispatchCRMAction()" class="w-full py-2.5 bg-primary text-white rounded-lg text-xs font-bold shadow hover:bg-primary/90 flex items-center justify-center gap-2 transition-colors active:scale-95">
-                        <span class="material-symbols-outlined text-[16px]">campaign</span> Despachar Acción por Email
-                    </button>
-                    <div class="flex gap-2">
-                        <button onclick="openEmailModal()" class="flex-1 py-2 bg-surface-container-low text-primary rounded-lg text-[10px] font-bold border border-outline-variant/30 hover:bg-primary/10 flex items-center justify-center gap-1 transition-colors">
-                            <span class="material-symbols-outlined text-[14px]">mail</span> Email
-                        </button>
-                        <button onclick="openWhatsAppModal()" class="flex-1 py-2 bg-surface-container-low text-green-700 rounded-lg text-[10px] font-bold border border-green-200 hover:bg-green-50 flex items-center justify-center gap-1 transition-colors">
-                            <span class="material-symbols-outlined text-[14px]">chat</span> WhatsApp
-                        </button>
-                        <button onclick="openInteractionModal()" class="flex-1 py-2 bg-surface-container-low text-outline rounded-lg text-[10px] font-bold border border-outline-variant/30 hover:bg-surface-container flex items-center justify-center gap-1 transition-colors">
-                            <span class="material-symbols-outlined text-[14px]">edit_note</span> Nota
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Interaction History (Collapsible) -->
-                <div class="mt-4 pt-4 border-t border-outline-variant/20">
-                    <button onclick="toggleInteractionHistory()" class="w-full flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-outline mb-2">
-                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">history</span> Historial</span>
-                        <span class="material-symbols-outlined text-[14px]" id="historyToggleIcon">expand_more</span>
-                    </button>
-                    <div id="interactionHistoryList" class="space-y-2 max-h-[180px] overflow-y-auto no-scrollbar hidden"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 </div>
-</div>
-<!-- ============================================ -->
-<!-- MODAL: ENVIAR EMAIL CRM -->
-<!-- ============================================ -->
+</main>
+
+<!-- EMAIL MODAL -->
 <div id="emailModal" class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
-    <div class="bg-surface dark:bg-surface-container w-full max-w-lg mx-4 rounded-2xl shadow-2xl border border-outline-variant/20 overflow-hidden">
+    <div class="bg-surface w-full max-w-lg mx-4 rounded-2xl shadow-2xl border border-outline-variant/20 overflow-hidden">
         <div class="bg-primary p-5 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-white text-2xl">forward_to_inbox</span>
                 <div>
                     <h3 class="text-white font-bold text-base">Enviar Email CRM</h3>
-                    <p class="text-white/60 text-[10px] font-bold" id="emailModalClientLabel">Cliente: ---</p>
+                    <p class="text-white/60 text-[10px] font-bold" id="emailModalLabel">Cliente: ---</p>
                 </div>
             </div>
-            <button onclick="closeEmailModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+            <button onclick="closeModal('emailModal')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
                 <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
         </div>
-        <form id="crmEmailForm" class="p-6 space-y-4">
-            <input type="hidden" id="emailUserId" value="">
+        <form id="emailForm" class="p-6 space-y-4">
             <div>
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Plantilla de Comunicación</label>
-                <select id="emailTemplate" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-primary outline-none">
-                    <option value="bienvenida">🎉 Bienvenida — Onboarding inicial</option>
-                    <option value="cotizacion">📋 Cotización — Recordatorio pendiente</option>
-                    <option value="seguimiento">🤝 Seguimiento — Post-venta</option>
-                    <option value="reactivacion">🔄 Reactivación — Cliente inactivo</option>
+                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Plantilla</label>
+                <select id="emailTemplate" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none">
+                    <option value="bienvenida">🎉 Bienvenida</option>
+                    <option value="cotizacion">📋 Cotización</option>
+                    <option value="seguimiento">🤝 Seguimiento</option>
+                    <option value="reactivacion">🔄 Reactivación</option>
                 </select>
             </div>
             <div>
                 <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Asunto (Opcional)</label>
-                <input id="emailSubject" type="text" placeholder="Se usará el asunto por defecto de la plantilla" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none">
+                <input id="emailSubject" type="text" placeholder="Se usará el asunto por defecto" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none">
             </div>
             <div>
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Mensaje Personalizado (Opcional)</label>
-                <textarea id="emailCustomMsg" rows="3" placeholder="Agrega un mensaje adicional que se incluirá en el cuerpo del correo..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none resize-none"></textarea>
-            </div>
-            <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/20">
-                <p class="text-[9px] font-black uppercase tracking-widest text-outline mb-1">Vista Previa</p>
-                <p class="text-xs text-on-surface-variant" id="emailPreviewText">El email se enviará con la plantilla HTML profesional de JHIRE, incluyendo branding, CTA y footer legal.</p>
+                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Mensaje (Opcional)</label>
+                <textarea id="emailCustomMsg" rows="3" placeholder="Mensaje adicional..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none resize-none"></textarea>
             </div>
             <div class="flex gap-3 pt-2">
-                <button type="button" onclick="closeEmailModal()" class="flex-1 py-3 bg-surface-container-low text-on-surface rounded-xl text-xs font-bold border border-outline-variant/30 hover:bg-surface-container transition-colors">Cancelar</button>
-                <button type="submit" class="flex-1 py-3 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-[16px]">send</span> Enviar Email
+                <button type="button" onclick="closeModal('emailModal')" class="flex-1 py-3 bg-surface-container-low text-on-surface rounded-xl text-xs font-bold border border-outline-variant/30 hover:bg-surface-container transition-colors">Cancelar</button>
+                <button type="submit" class="flex-1 py-3 bg-primary text-white rounded-xl text-xs font-bold shadow-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">send</span> Enviar
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- ============================================ -->
-<!-- MODAL: WHATSAPP CRM -->
-<!-- ============================================ -->
+<!-- WHATSAPP MODAL -->
 <div id="whatsAppModal" class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
-    <div class="bg-surface dark:bg-surface-container w-full max-w-lg mx-4 rounded-2xl shadow-2xl border border-outline-variant/20 overflow-hidden">
+    <div class="bg-surface w-full max-w-lg mx-4 rounded-2xl shadow-2xl border border-outline-variant/20 overflow-hidden">
         <div class="bg-green-600 p-5 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-white text-2xl">chat</span>
                 <div>
                     <h3 class="text-white font-bold text-base">WhatsApp CRM</h3>
-                    <p class="text-white/60 text-[10px] font-bold" id="waModalClientLabel">Cliente: ---</p>
+                    <p class="text-white/60 text-[10px] font-bold" id="waModalLabel">Cliente: ---</p>
                 </div>
             </div>
-            <button onclick="closeWhatsAppModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+            <button onclick="closeModal('whatsAppModal')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
                 <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
         </div>
-        <form id="crmWhatsAppForm" class="p-6 space-y-4">
-            <input type="hidden" id="waUserId" value="">
+        <form id="waForm" class="p-6 space-y-4">
             <div>
                 <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Tipo de Mensaje</label>
-                <select id="waMessageType" onchange="updateWAPreview()" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-green-500 outline-none">
-                    <option value="cotizacion">📋 Recordatorio de Cotización</option>
-                    <option value="seguimiento">🤝 Seguimiento Post-Venta</option>
-                    <option value="recordatorio_pago">💰 Recordatorio de Pago</option>
-                    <option value="personalizado">✏️ Mensaje Personalizado</option>
+                <select id="waMessageType" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-green-500 outline-none">
+                    <option value="cotizacion">📋 Recordatorio Cotización</option>
+                    <option value="seguimiento">🤝 Seguimiento</option>
+                    <option value="recordatorio_pago">💰 Recordatorio Pago</option>
+                    <option value="personalizado">✏️ Personalizado</option>
                 </select>
             </div>
-            <div id="waCustomMsgContainer" class="hidden">
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Mensaje Personalizado</label>
-                <textarea id="waCustomMsg" rows="4" placeholder="Escribe tu mensaje personalizado para WhatsApp..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-green-500 outline-none resize-none"></textarea>
-            </div>
-            <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
-                <p class="text-[9px] font-black uppercase tracking-widest text-green-700 dark:text-green-400 mb-2 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[12px]">visibility</span> Vista Previa del Mensaje
-                </p>
-                <p class="text-xs text-green-800 dark:text-green-300 leading-relaxed whitespace-pre-line" id="waPreviewText">Cargando vista previa...</p>
+            <div id="waCustomContainer" class="hidden">
+                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Mensaje</label>
+                <textarea id="waCustomMsg" rows="3" placeholder="Escribe tu mensaje..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-green-500 outline-none resize-none"></textarea>
             </div>
             <div class="flex gap-3 pt-2">
-                <button type="button" onclick="closeWhatsAppModal()" class="flex-1 py-3 bg-surface-container-low text-on-surface rounded-xl text-xs font-bold border border-outline-variant/30 hover:bg-surface-container transition-colors">Cancelar</button>
-                <button type="submit" class="flex-1 py-3 bg-green-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-green-600/20 hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
+                <button type="button" onclick="closeModal('whatsAppModal')" class="flex-1 py-3 bg-surface-container-low text-on-surface rounded-xl text-xs font-bold border border-outline-variant/30 hover:bg-surface-container transition-colors">Cancelar</button>
+                <button type="submit" class="flex-1 py-3 bg-green-600 text-white rounded-xl text-xs font-bold shadow-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined text-[16px]">open_in_new</span> Abrir WhatsApp
                 </button>
             </div>
@@ -435,72 +367,39 @@
     </div>
 </div>
 
-<!-- ============================================ -->
-<!-- MODAL: REGISTRAR INTERACCIÓN -->
-<!-- ============================================ -->
+<!-- INTERACTION MODAL -->
 <div id="interactionModal" class="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
-    <div class="bg-surface dark:bg-surface-container w-full max-w-md mx-4 rounded-2xl shadow-2xl border border-outline-variant/20 overflow-hidden">
+    <div class="bg-surface w-full max-w-md mx-4 rounded-2xl shadow-2xl border border-outline-variant/20 overflow-hidden">
         <div class="bg-surface-container-low p-5 flex items-center justify-between border-b border-outline-variant/20">
             <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-primary text-2xl">edit_note</span>
                 <div>
                     <h3 class="text-on-surface font-bold text-base">Registrar Interacción</h3>
-                    <p class="text-outline text-[10px] font-bold" id="intModalClientLabel">Cliente: ---</p>
+                    <p class="text-outline text-[10px] font-bold" id="intModalLabel">Cliente: ---</p>
                 </div>
             </div>
-            <button onclick="closeInteractionModal()" class="w-8 h-8 rounded-full border border-outline-variant/30 hover:bg-error/10 hover:text-error flex items-center justify-center text-outline transition-colors">
+            <button onclick="closeModal('interactionModal')" class="w-8 h-8 rounded-full border border-outline-variant/30 hover:bg-error/10 flex items-center justify-center text-outline transition-colors">
                 <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
         </div>
-        <form id="crmInteractionForm" class="p-6 space-y-4">
-            <input type="hidden" id="intUserId" value="">
+        <form id="intForm" class="p-6 space-y-4">
             <div>
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Tipo de Interacción</label>
+                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Tipo</label>
                 <div class="grid grid-cols-5 gap-2">
-                    <label class="cursor-pointer">
-                        <input type="radio" name="intType" value="email" class="sr-only peer">
-                        <div class="peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors">
-                            <span class="material-symbols-outlined text-lg">mail</span>
-                            <p class="text-[8px] font-bold mt-1">Email</p>
-                        </div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="intType" value="whatsapp" class="sr-only peer">
-                        <div class="peer-checked:bg-green-100 peer-checked:border-green-500 peer-checked:text-green-700 bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors">
-                            <span class="material-symbols-outlined text-lg">chat</span>
-                            <p class="text-[8px] font-bold mt-1">WhatsApp</p>
-                        </div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="intType" value="llamada" class="sr-only peer" checked>
-                        <div class="peer-checked:bg-blue-100 peer-checked:border-blue-500 peer-checked:text-blue-700 bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors">
-                            <span class="material-symbols-outlined text-lg">call</span>
-                            <p class="text-[8px] font-bold mt-1">Llamada</p>
-                        </div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="intType" value="visita" class="sr-only peer">
-                        <div class="peer-checked:bg-amber-100 peer-checked:border-amber-500 peer-checked:text-amber-700 bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors">
-                            <span class="material-symbols-outlined text-lg">location_on</span>
-                            <p class="text-[8px] font-bold mt-1">Visita</p>
-                        </div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="intType" value="nota" class="sr-only peer">
-                        <div class="peer-checked:bg-purple-100 peer-checked:border-purple-500 peer-checked:text-purple-700 bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors">
-                            <span class="material-symbols-outlined text-lg">sticky_note_2</span>
-                            <p class="text-[8px] font-bold mt-1">Nota</p>
-                        </div>
-                    </label>
+                    <label class="cursor-pointer"><input type="radio" name="intType" value="email" class="sr-only peer"><div class="peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors whitespace-nowrap"><span class="material-symbols-outlined text-lg">mail</span><p class="text-[8px] font-bold mt-1">Email</p></div></label>
+                    <label class="cursor-pointer"><input type="radio" name="intType" value="whatsapp" class="sr-only peer"><div class="peer-checked:bg-green-100 peer-checked:border-green-500 peer-checked:text-green-700 bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors whitespace-nowrap"><span class="material-symbols-outlined text-lg">chat</span><p class="text-[8px] font-bold mt-1">WhatsApp</p></div></label>
+                    <label class="cursor-pointer"><input type="radio" name="intType" value="llamada" class="sr-only peer" checked><div class="peer-checked:bg-blue-100 peer-checked:border-blue-500 peer-checked:text-blue-700 bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors whitespace-nowrap"><span class="material-symbols-outlined text-lg">call</span><p class="text-[8px] font-bold mt-1">Llamada</p></div></label>
+                    <label class="cursor-pointer"><input type="radio" name="intType" value="visita" class="sr-only peer"><div class="peer-checked:bg-amber-100 peer-checked:border-amber-500 peer-checked:text-amber-700 bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors whitespace-nowrap"><span class="material-symbols-outlined text-lg">location_on</span><p class="text-[8px] font-bold mt-1">Visita</p></div></label>
+                    <label class="cursor-pointer"><input type="radio" name="intType" value="nota" class="sr-only peer"><div class="peer-checked:bg-purple-100 peer-checked:border-purple-500 peer-checked:text-purple-700 bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-center text-outline hover:bg-surface-container transition-colors whitespace-nowrap"><span class="material-symbols-outlined text-lg">sticky_note_2</span><p class="text-[8px] font-bold mt-1">Nota</p></div></label>
                 </div>
             </div>
             <div>
-                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Notas / Detalle</label>
-                <textarea id="intNotes" rows="3" required placeholder="Describe la interacción con el cliente..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none resize-none"></textarea>
+                <label class="text-[10px] font-black uppercase tracking-widest text-outline block mb-2">Detalle</label>
+                <textarea id="intNotes" rows="3" required placeholder="Describe la interacción..." class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none resize-none"></textarea>
             </div>
             <div class="flex gap-3 pt-2">
-                <button type="button" onclick="closeInteractionModal()" class="flex-1 py-3 bg-surface-container-low text-on-surface rounded-xl text-xs font-bold border border-outline-variant/30 hover:bg-surface-container transition-colors">Cancelar</button>
-                <button type="submit" class="flex-1 py-3 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                <button type="button" onclick="closeModal('interactionModal')" class="flex-1 py-3 bg-surface-container-low text-on-surface rounded-xl text-xs font-bold border border-outline-variant/30 hover:bg-surface-container transition-colors">Cancelar</button>
+                <button type="submit" class="flex-1 py-3 bg-primary text-white rounded-xl text-xs font-bold shadow-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined text-[16px]">save</span> Registrar
                 </button>
             </div>
@@ -509,25 +408,297 @@
 </div>
 
 </main>
+
+<script>
+const API = 'http://localhost:8000/api/crm';
+let allClients = [];
+let selectedClient = null;
+
+function getToken() { return localStorage.getItem('jhire_jwt_token'); }
+function authHeaders() { return { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }; }
+
+// ── LOAD CLIENTS
+async function loadClients() {
+    try {
+        const res = await fetch(`${API}/clients`, { headers: authHeaders() });
+        allClients = await res.json();
+        renderClients(allClients);
+        updateKPIs(allClients);
+    } catch(e) { console.error('CRM load error:', e); }
+}
+
+function updateKPIs(clients) {
+    document.getElementById('kpi-total').innerText = clients.length;
+    const totalInt = clients.reduce((s, c) => s + c.interactions_count, 0);
+    document.getElementById('kpi-interactions').innerText = totalInt;
+    // We'll count VIP/risk after loading recommendations for each - for now estimate
+    const withOrders = clients.filter(c => c.last_order_total !== null);
+    const atRisk = clients.filter(c => {
+        if (!c.last_order_date) return false;
+        const days = Math.floor((Date.now() - new Date(c.last_order_date).getTime()) / 86400000);
+        return days > 30;
+    });
+    document.getElementById('kpi-vip').innerText = withOrders.length;
+    document.getElementById('kpi-risk').innerText = atRisk.length;
+}
+
+function renderClients(clients) {
+    const tbody = document.getElementById('clientsTableBody');
+    tbody.innerHTML = '';
+    document.getElementById('clientCount').innerText = clients.length + ' registros';
+    
+    if (clients.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-xs text-outline">No se encontraron clientes.</td></tr>';
+        return;
+    }
+
+    clients.forEach(c => {
+        const initials = c.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        const lastOrder = c.last_order_date ? new Date(c.last_order_date).toLocaleDateString('es-PE') : '—';
+        const lastAmount = c.last_order_total ? 'S/ ' + c.last_order_total.toFixed(2) : '';
+        
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-surface-container/50 transition-colors cursor-pointer';
+        if (selectedClient && selectedClient.id === c.id) tr.classList.add('selected-row');
+        tr.onclick = () => selectClient(c);
+        tr.innerHTML = `
+            <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[11px] font-black flex-shrink-0">${initials}</div>
+                    <div>
+                        <p class="text-sm font-bold text-on-surface leading-tight">${c.name}</p>
+                        <p class="text-[10px] text-outline">${c.company || '—'}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="px-4 py-3">
+                <p class="text-xs text-on-surface">${c.email}</p>
+                <p class="text-[10px] text-outline">${c.phone || '—'}</p>
+            </td>
+            <td class="px-4 py-3 text-center">
+                <span class="inline-flex items-center px-2 py-1 rounded-lg text-xs font-bold ${c.interactions_count > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-surface-container text-outline'}">${c.interactions_count}</span>
+            </td>
+            <td class="px-4 py-3 text-center">
+                <p class="text-xs text-on-surface">${lastOrder}</p>
+                <p class="text-[10px] text-emerald-600 font-bold">${lastAmount}</p>
+            </td>
+            <td class="px-4 py-3 text-right">
+                <button onclick="event.stopPropagation(); selectClient(${JSON.stringify(c).replace(/"/g, '&quot;')})" class="px-3 py-1.5 bg-primary/10 text-primary text-[10px] font-bold rounded-lg hover:bg-primary/20 transition-colors">Analizar IA</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function filterClients() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allClients.filter(c => 
+        c.name.toLowerCase().includes(q) || 
+        c.email.toLowerCase().includes(q) || 
+        (c.company && c.company.toLowerCase().includes(q))
+    );
+    renderClients(filtered);
+}
+
+// ── SELECT CLIENT + AI ANALYSIS
+async function selectClient(client) {
+    selectedClient = client;
+    renderClients(allClients.filter(c => {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        return !q || c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
+    }));
+    
+    // Show loading
+    document.getElementById('aiEmpty').classList.add('hidden');
+    document.getElementById('aiResults').classList.add('hidden');
+    document.getElementById('aiLoading').classList.remove('hidden');
+    
+    try {
+        const [recRes, intRes] = await Promise.all([
+            fetch(`${API}/recommendations/${client.id}`, { headers: authHeaders() }),
+            fetch(`${API}/clients/${client.id}/interactions`, { headers: authHeaders() })
+        ]);
+        const recData = await recRes.json();
+        const intData = await intRes.json();
+        
+        // Populate AI panel
+        document.getElementById('aiClientName').innerText = client.name;
+        
+        const seg = recData.metrics.segment;
+        const segEl = document.getElementById('aiClientSegment');
+        segEl.innerText = seg;
+        const segColors = {
+            'Cliente VIP': 'bg-amber-100 text-amber-800',
+            'Cliente Frecuente': 'bg-emerald-100 text-emerald-800',
+            'En Riesgo': 'bg-red-100 text-red-800',
+            'Cliente Ocasional': 'bg-blue-100 text-blue-800',
+            'Nuevo Prospecto': 'bg-purple-100 text-purple-800'
+        };
+        segEl.className = `inline-flex mt-1.5 items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase ${segColors[seg] || 'bg-surface-container text-outline'}`;
+        
+        // Metrics
+        document.getElementById('aiMetricOrders').innerText = recData.metrics.total_orders;
+        document.getElementById('aiMetricSpent').innerText = 'S/ ' + recData.metrics.total_spent.toFixed(0);
+        document.getElementById('aiMetricTicket').innerText = 'S/ ' + recData.metrics.avg_ticket.toFixed(0);
+        document.getElementById('aiMetricDays').innerText = recData.metrics.days_since_last !== null ? recData.metrics.days_since_last + 'd' : '—';
+        
+        // Recommendations
+        const recList = document.getElementById('aiRecommendations');
+        recList.innerHTML = '';
+        recData.recommendations.forEach(r => {
+            const li = document.createElement('li');
+            li.className = 'bg-surface-container rounded-lg p-3 text-xs text-on-surface leading-relaxed';
+            li.innerText = r;
+            recList.appendChild(li);
+        });
+        
+        // History
+        const histList = document.getElementById('historyList');
+        histList.innerHTML = '';
+        if (intData.length === 0) {
+            histList.innerHTML = '<p class="text-[10px] text-outline text-center py-2">Sin interacciones registradas.</p>';
+        } else {
+            intData.slice(0, 10).forEach(i => {
+                const icons = { email: 'mail', whatsapp: 'chat', llamada: 'call', visita: 'location_on', nota: 'sticky_note_2' };
+                const d = new Date(i.date);
+                const div = document.createElement('div');
+                div.className = 'flex items-start gap-2 p-2 bg-surface-container rounded-lg';
+                div.innerHTML = `
+                    <span class="material-symbols-outlined text-[14px] text-primary mt-0.5">${icons[i.type] || 'note'}</span>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-[10px] text-on-surface leading-relaxed truncate">${i.notes}</p>
+                        <p class="text-[9px] text-outline mt-0.5">${d.toLocaleDateString('es-PE')} ${d.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'})}</p>
+                    </div>
+                `;
+                histList.appendChild(div);
+            });
+        }
+        
+        // Show results
+        document.getElementById('aiLoading').classList.add('hidden');
+        document.getElementById('aiResults').classList.remove('hidden');
+        
+    } catch(e) {
+        console.error('AI error:', e);
+        document.getElementById('aiLoading').classList.add('hidden');
+        document.getElementById('aiEmpty').classList.remove('hidden');
+    }
+}
+
+function toggleHistory() {
+    const list = document.getElementById('historyList');
+    const icon = document.getElementById('historyIcon');
+    list.classList.toggle('hidden');
+    icon.innerText = list.classList.contains('hidden') ? 'expand_more' : 'expand_less';
+}
+
+// ── MODALS
+function openModal(id) {
+    const m = document.getElementById(id);
+    m.classList.remove('opacity-0', 'pointer-events-none');
+    m.classList.add('opacity-100');
+}
+function closeModal(id) {
+    const m = document.getElementById(id);
+    m.classList.add('opacity-0', 'pointer-events-none');
+    m.classList.remove('opacity-100');
+}
+
+function openEmailModal() {
+    if (!selectedClient) return Swal.fire('Selecciona un cliente', '', 'warning');
+    document.getElementById('emailModalLabel').innerText = 'Cliente: ' + selectedClient.name;
+    openModal('emailModal');
+}
+function openWhatsAppModal() {
+    if (!selectedClient) return Swal.fire('Selecciona un cliente', '', 'warning');
+    document.getElementById('waModalLabel').innerText = 'Cliente: ' + selectedClient.name;
+    openModal('whatsAppModal');
+}
+function openInteractionModal() {
+    if (!selectedClient) return Swal.fire('Selecciona un cliente', '', 'warning');
+    document.getElementById('intModalLabel').innerText = 'Cliente: ' + selectedClient.name;
+    openModal('interactionModal');
+}
+
+// ── FORM HANDLERS
+document.getElementById('emailForm').onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const res = await fetch(`${API}/send-email`, {
+            method: 'POST', headers: authHeaders(),
+            body: JSON.stringify({
+                user_id: selectedClient.id,
+                template: document.getElementById('emailTemplate').value,
+                subject: document.getElementById('emailSubject').value || null,
+                custom_message: document.getElementById('emailCustomMsg').value || null
+            })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            Swal.fire({ icon: 'success', title: 'Email Enviado', text: data.message, timer: 2000, showConfirmButton: false });
+            closeModal('emailModal');
+            selectClient(selectedClient);
+        } else {
+            Swal.fire('Error', data.detail || 'No se pudo enviar', 'error');
+        }
+    } catch(e) { Swal.fire('Error', 'Error de conexión', 'error'); }
+};
+
+document.getElementById('waForm').onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const res = await fetch(`${API}/whatsapp-link`, {
+            method: 'POST', headers: authHeaders(),
+            body: JSON.stringify({
+                user_id: selectedClient.id,
+                message_type: document.getElementById('waMessageType').value,
+                custom_message: document.getElementById('waCustomMsg').value || null
+            })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            window.open(data.whatsapp_link, '_blank');
+            Swal.fire({ icon: 'success', title: 'WhatsApp Abierto', timer: 1500, showConfirmButton: false });
+            closeModal('whatsAppModal');
+            selectClient(selectedClient);
+        } else {
+            Swal.fire('Error', data.detail || 'No se pudo generar enlace', 'error');
+        }
+    } catch(e) { Swal.fire('Error', 'Error de conexión', 'error'); }
+};
+
+document.getElementById('waMessageType').onchange = function() {
+    document.getElementById('waCustomContainer').classList.toggle('hidden', this.value !== 'personalizado');
+};
+
+document.getElementById('intForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const type = document.querySelector('input[name="intType"]:checked')?.value || 'nota';
+    try {
+        const res = await fetch(`${API}/interactions`, {
+            method: 'POST', headers: authHeaders(),
+            body: JSON.stringify({
+                user_id: selectedClient.id,
+                type: type,
+                notes: document.getElementById('intNotes').value
+            })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            Swal.fire({ icon: 'success', title: 'Interacción Registrada', text: data.message, timer: 2000, showConfirmButton: false });
+            closeModal('interactionModal');
+            document.getElementById('intNotes').value = '';
+            loadClients();
+            setTimeout(() => selectClient(selectedClient), 500);
+        } else {
+            Swal.fire('Error', data.detail || 'No se pudo registrar', 'error');
+        }
+    } catch(e) { Swal.fire('Error', 'Error de conexión', 'error'); }
+};
+
+// Init
+document.addEventListener('DOMContentLoaded', loadClients);
+</script>
 <script src="app.js"></script>
-
-
-<!-- Mobile Offcanvas Menu -->
-<div id="mobileMenuOverlay" class="fixed inset-0 bg-black/50 z-[60] backdrop-blur-sm hidden transition-opacity opacity-0"></div>
-<aside id="mobileMenuSidebar" class="fixed top-0 right-0 h-full w-72 bg-surface shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 flex flex-col">
-    <div class="h-20 flex items-center justify-between px-6 border-b border-outline/10">
-        <span class="font-black text-primary tracking-widest uppercase text-sm">Menú</span>
-        <button id="closeMobileMenuBtn" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface">
-            <span class="material-symbols-outlined text-lg">close</span>
-        </button>
-    </div>
-    <div class="flex flex-col p-6 gap-6 flex-1 overflow-y-auto">
-        <a href="inicio.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">home</span> Inicio</a>
-        <a href="catalogo_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">inventory_2</span> Catálogo</a>
-        <a href="mis_pedidos.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">receipt_long</span> Mis Pedidos</a>
-        <hr class="border-outline/10">
-        <a href="perfil_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">account_circle</span> Mi Perfil</a>
-    </div>
-</aside>
-
-</body></html>
+</body>
+</html>

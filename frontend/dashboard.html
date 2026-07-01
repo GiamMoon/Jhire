@@ -97,6 +97,9 @@
         <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)
         </a>
+        <a href="nivel_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">trending_up</span> Nivel de Ventas
+        </a>
         <a href="crm.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">support_agent</span> CRM Clientes
         </a>
@@ -108,7 +111,16 @@
         <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">group</span> Gestor Usuarios
         </a>
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+        <a href="tiempo_registro.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">timer</span> Tiempos Operativos
+        </a>
+        <a href="tiempo_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">speed</span> Eficiencia Ventas
+        </a>
+        <a href="tiempo_facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span> Tiempo de Procesamiento
+        </a>
+        <a href="reportes.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">analytics</span> Reportes y BI
         </a>
     </nav>
@@ -129,11 +141,7 @@
     <!-- HEADER -->
     <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
         <div class="flex items-center gap-4">
-            <span class="text-xl font-bold text-primary font-headline tracking-tighter">Panel Maestro 2026</span>
-            <div class="relative ml-8 hidden sm:block">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
-                <input id="dashboardSearchInput" type="text" placeholder="Buscar órdenes por ID o correo..." class="pl-10 pr-4 py-1.5 bg-surface-container border border-outline-variant/30 rounded-lg text-sm text-on-surface focus:ring-2 focus:ring-primary w-64 shadow-inner transition-all outline-none">
-            </div>
+            <span class="text-xl font-bold text-primary font-headline tracking-tighter">JHIRE</span>
         </div>
         <div class="flex items-center gap-4">
             <!-- Theme Toggle -->
@@ -186,22 +194,20 @@
                     <span class="p-2 bg-primary/10 text-primary rounded-xl material-symbols-outlined">payments</span>
                     <span class="px-2 py-1 bg-success-container text-success text-[10px] font-black rounded-lg uppercase tracking-wider flex items-center gap-1">+Ventas</span>
                 </div>
-                <p class="text-outline text-xs font-bold uppercase tracking-widest relative z-10">Volumen Ventas</p>
+                <p class="text-outline text-xs font-bold uppercase tracking-widest relative z-10">Ventas Últ. 30d</p>
                 <h3 id="total-sales" class="text-3xl lg:text-3xl font-headline font-black text-on-surface mt-2 tracking-tighter relative z-10">Cargando...</h3>
             </div>
             
             <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20 hover:border-primary/50 transition-colors relative overflow-hidden group">
                 <div class="absolute -right-4 -top-4 opacity-5 group-hover:rotate-12 transition-transform duration-700">
-                    <span class="material-symbols-outlined text-9xl">psychology</span>
+                    <span class="material-symbols-outlined text-9xl">shopping_cart</span>
                 </div>
                 <div class="flex justify-between items-start mb-2 relative z-10">
-                    <span class="p-2 bg-indigo-500/10 text-indigo-500 rounded-xl material-symbols-outlined">psychology</span>
+                    <span class="p-2 bg-indigo-500/10 text-indigo-500 rounded-xl material-symbols-outlined">shopping_cart</span>
+                    <span class="px-2 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded-lg uppercase tracking-wider">30 días</span>
                 </div>
-                <p class="text-outline text-xs font-bold uppercase tracking-widest relative z-10">Confianza IA</p>
-                <div class="flex items-baseline gap-2 relative z-10 mt-2">
-                    <h3 id="forecast-accuracy" class="text-3xl lg:text-4xl font-headline font-black text-indigo-600 tracking-tighter">Cargando...</h3>
-                    <span class="text-xs font-bold text-outline">%</span>
-                </div>
+                <p class="text-outline text-xs font-bold uppercase tracking-widest relative z-10">Órdenes del Mes</p>
+                <h3 id="orders-count" class="text-3xl lg:text-4xl font-headline font-black text-indigo-600 mt-2 tracking-tighter relative z-10">--</h3>
             </div>
             
             <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20 hover:border-primary/50 transition-colors relative overflow-hidden group">
@@ -216,15 +222,15 @@
             </div>
 
             <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20 hover:border-primary/50 transition-colors relative overflow-hidden group">
-                <div class="flex flex-col h-full z-10 relative">
-                    <div class="flex items-center gap-2 mb-2 text-primary font-bold text-xs uppercase tracking-widest">
-                        <span class="material-symbols-outlined text-sm">robot_2</span> Motor IA Predictivo
-                    </div>
-                    <div id="ai-anomalies-box" class="bg-primary/5 border border-primary/20 rounded-xl p-4 flex-1 flex flex-col justify-center">
-                        <h4 class="text-sm font-bold text-on-surface mb-1 shadow-sm"><span class="w-1.5 h-1.5 inline-block rounded-full bg-primary mb-0.5"></span> Analizando métricas...</h4>
-                        <p class="text-xs text-outline leading-relaxed italic">Espere mientras el motor de Scikit-Learn procesa el pronóstico diario base histórico.</p>
-                    </div>
+                <div class="absolute -right-4 -top-4 opacity-5 group-hover:rotate-6 transition-transform duration-700">
+                    <span class="material-symbols-outlined text-9xl">confirmation_number</span>
                 </div>
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <span class="p-2 bg-amber-500/10 text-amber-600 rounded-xl material-symbols-outlined">confirmation_number</span>
+                    <span class="px-2 py-1 bg-amber-50 text-amber-700 text-[10px] font-black rounded-lg uppercase tracking-wider">Promedio</span>
+                </div>
+                <p class="text-outline text-xs font-bold uppercase tracking-widest relative z-10">Ticket Promedio</p>
+                <h3 id="avg-ticket" class="text-3xl lg:text-4xl font-headline font-black text-amber-600 mt-2 tracking-tighter relative z-10">--</h3>
             </div>
         </div>
         

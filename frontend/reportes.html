@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JHIRE 2026 | Reportes y BI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "var(--color-primary)", "surface": "var(--color-surface)", "on-surface": "var(--color-on-surface)", "surface-container": "var(--color-surface-container)", "surface-container-low": "var(--color-surface-container-low)", "surface-container-high": "var(--color-surface-container-high)", "outline": "var(--color-outline)", "outline-variant": "var(--color-outline-variant)", "error": "var(--color-error)", "on-error": "var(--color-on-error)", "success": "#16a34a", "success-container": "#dcfce7" }, fontFamily: { "headline": ["Manrope"], "body": ["Inter"] } } } }
+    </script>
+    <style id="dynamic-theme">
+        :root { --color-primary: #003461; --color-surface: #faf8ff; --color-on-surface: #131b2e; --color-surface-container: #eaedff; --color-surface-container-low: #f2f4ff; --color-surface-container-high: #d9e2ff; --color-outline: #727781; --color-outline-variant: #c2c7d1; --color-error: #ba1a1a; --color-on-error: #ffffff; }
+        html.dark { --color-primary: #a6c8ff; --color-surface: #111318; --color-on-surface: #e2e2e9; --color-surface-container: #1d2024; --color-surface-container-low: #191b20; --color-surface-container-high: #282a2f; --color-outline: #8c9199; --color-outline-variant: #42474e; --color-error: #ffb4ab; --color-on-error: #690005; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .anim-in { animation: fadeUp .5s ease-out both; }
+        .anim-d1 { animation: fadeUp .5s ease-out .1s both; }
+        .anim-d2 { animation: fadeUp .5s ease-out .2s both; }
+        .anim-d3 { animation: fadeUp .5s ease-out .3s both; }
+        @keyframes pulse-ring { 0% { transform: scale(.9); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+        .pulse-ring::before { content: ''; position: absolute; inset: -4px; border-radius: 9999px; border: 2px solid currentColor; animation: pulse-ring 1.5s ease-out infinite; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-surface font-body text-on-surface flex flex-col min-h-screen transition-colors duration-300">
+
+<aside class="fixed top-0 left-0 h-screen w-64 bg-surface border-r border-outline-variant/20 z-50 flex flex-col hidden md:flex shadow-xl">
+    <div class="h-16 flex items-center px-6 border-b border-outline-variant/20 bg-surface-container-low">
+        <span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+        <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
+    </div>
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">dashboard</span> Panel Central</a>
+        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">inventory_2</span> Inventarios</a>
+        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">category</span> Catálogo</a>
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Comercial</p>
+        <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)</a>
+        <a href="nivel_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">trending_up</span> Nivel de Ventas</a>
+        <a href="crm.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">support_agent</span> CRM Clientes</a>
+        <a href="facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">receipt_long</span> Facturación</a>
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
+        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">group</span> Gestor Usuarios</a>
+        <a href="tiempo_registro.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">timer</span> Tiempos Operativos</a>
+        <a href="tiempo_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">speed</span> Eficiencia Ventas</a>
+        <a href="tiempo_facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">receipt_long</span> Tiempo de Procesamiento</a>
+        <a href="reportes.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm transition-colors whitespace-nowrap"><span class="material-symbols-outlined">analytics</span> Reportes y BI</a>
+    </nav>
+    <div class="p-4 border-t border-outline-variant/20">
+        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">settings</span> Mi Perfil</a>
+        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors whitespace-nowrap"><span class="material-symbols-outlined">logout</span> Salir</button>
+    </div>
+</aside>
+
+<main class="md:ml-64 min-h-screen bg-surface">
+    <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
+        <div class="flex items-center gap-4"><span class="text-xl font-bold text-primary font-headline tracking-tighter">JHIRE</span></div>
+        <div class="flex items-center gap-4">
+            <button onclick="changeTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface"><span class="material-symbols-outlined text-[20px]" id="themeIcon">dark_mode</span></button>
+            <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm" id="avatarContainer">
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
+                <div class="hidden md:block text-left relative top-[1px]">
+                    <p id="headerUserName" class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Cargando...</p>
+                    <p id="headerUserRole" class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">...</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
+        <!-- Title -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-outline-variant/20 anim-in">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-headline font-black text-on-surface tracking-tight">Reportes y Business Intelligence</h2>
+                <p class="text-outline mt-1 font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-success animate-pulse"></span> Centro de inteligencia de negocio JHIRE</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="window.location.href='http://localhost:8000/api/reports/excel'" class="px-5 py-2.5 bg-success text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">table_chart</span> EXPORTAR EXCEL
+                </button>
+                <button onclick="window.location.href='http://localhost:8000/api/reports/pdf'" class="px-5 py-2.5 bg-error text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">picture_as_pdf</span> EXPORTAR PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- KPIs Row -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 anim-d1">
+            <div class="bg-surface-container-low p-5 rounded-2xl shadow-sm border border-outline-variant/20 text-center">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Total Órdenes</p>
+                <p id="rpt-total-orders" class="text-2xl font-headline font-black text-primary mt-1">--</p>
+            </div>
+            <div class="bg-surface-container-low p-5 rounded-2xl shadow-sm border border-outline-variant/20 text-center">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Ingresos Totales</p>
+                <p id="rpt-total-revenue" class="text-2xl font-headline font-black text-emerald-600 mt-1">--</p>
+            </div>
+            <div class="bg-surface-container-low p-5 rounded-2xl shadow-sm border border-outline-variant/20 text-center">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Ticket Promedio</p>
+                <p id="rpt-avg-ticket" class="text-2xl font-headline font-black text-indigo-600 mt-1">--</p>
+            </div>
+            <div class="bg-surface-container-low p-5 rounded-2xl shadow-sm border border-outline-variant/20 text-center">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Facturas Emitidas</p>
+                <p id="rpt-invoices" class="text-2xl font-headline font-black text-amber-600 mt-1">--</p>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 anim-d2">
+            <!-- Revenue by Day -->
+            <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-lg font-headline font-black text-on-surface">Ingresos Diarios</h4>
+                        <p class="text-xs text-outline font-medium mt-1">Últimos 30 días de operación</p>
+                    </div>
+                    <span class="material-symbols-outlined text-primary text-2xl">bar_chart</span>
+                </div>
+                <div class="relative h-[260px]"><canvas id="revenueChart"></canvas></div>
+            </div>
+
+            <!-- Orders by Status -->
+            <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-lg font-headline font-black text-on-surface">Estado de Órdenes</h4>
+                        <p class="text-xs text-outline font-medium mt-1">Distribución por estado actual</p>
+                    </div>
+                    <span class="material-symbols-outlined text-primary text-2xl">donut_large</span>
+                </div>
+                <div class="relative h-[260px]"><canvas id="statusChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Products Performance -->
+        <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20 anim-d3">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h4 class="text-lg font-headline font-black text-on-surface">Rendimiento de Productos</h4>
+                    <p class="text-xs text-outline font-medium mt-1">Contribución de cada producto al ingreso total</p>
+                </div>
+                <span class="material-symbols-outlined text-primary text-2xl">leaderboard</span>
+            </div>
+            <div class="relative h-[300px]"><canvas id="productChart"></canvas></div>
+        </div>
+
+        <!-- Detailed Orders Table -->
+        <div class="bg-surface-container-low rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden anim-d3">
+            <div class="p-6 border-b border-outline-variant/20 flex items-center justify-between">
+                <div>
+                    <h4 class="text-lg font-headline font-black text-on-surface">Detalle de Transacciones</h4>
+                    <p class="text-xs text-outline font-medium mt-1">Últimas 100 órdenes registradas</p>
+                </div>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+                    <input id="orderSearch" type="text" placeholder="Buscar..." class="pl-9 pr-4 py-2 bg-surface border border-outline-variant/30 rounded-xl text-xs font-medium focus:ring-2 focus:ring-primary outline-none w-48" oninput="filterOrders()">
+                </div>
+            </div>
+            <div class="overflow-x-auto max-h-[400px]">
+                <table class="w-full text-left border-collapse min-w-[700px]">
+                    <thead class="sticky top-0 bg-surface-container shadow-sm z-10">
+                        <tr class="text-[10px] font-extrabold uppercase tracking-widest text-outline border-b border-outline-variant/30">
+                            <th class="p-4">Código</th>
+                            <th class="p-4">Cliente</th>
+                            <th class="p-4 text-right">Monto</th>
+                            <th class="p-4 text-center">Estado</th>
+                            <th class="p-4 text-right">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr><td colspan="5" class="p-12 text-center text-outline text-xs font-bold animate-pulse">Cargando transacciones...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Billing Summary -->
+        <div class="bg-surface-container-low rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden anim-d3">
+            <div class="p-6 border-b border-outline-variant/20">
+                <h4 class="text-lg font-headline font-black text-on-surface">Resumen de Facturación Electrónica</h4>
+                <p class="text-xs text-outline font-medium mt-1">Comprobantes emitidos vía SUNAT</p>
+            </div>
+            <div class="overflow-x-auto max-h-[300px]">
+                <table class="w-full text-left border-collapse min-w-[700px]">
+                    <thead class="sticky top-0 bg-surface-container shadow-sm z-10">
+                        <tr class="text-[10px] font-extrabold uppercase tracking-widest text-outline border-b border-outline-variant/30">
+                            <th class="p-4">Nro. Comprobante</th>
+                            <th class="p-4">Cliente</th>
+                            <th class="p-4">RUC/DNI</th>
+                            <th class="p-4 text-right">Total</th>
+                            <th class="p-4 text-center">Estado SUNAT</th>
+                            <th class="p-4 text-right">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoicesTableBody">
+                        <tr><td colspan="6" class="p-12 text-center text-outline text-xs font-bold animate-pulse">Cargando facturas...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+const API = 'http://localhost:8000';
+let allOrders = [];
+const fmt = v => `S/ ${Number(v).toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+
+function getToken() { return localStorage.getItem('jhire_jwt_token'); }
+
+async function loadReportData() {
+    try {
+        const token = getToken();
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        
+        // Load dashboard summary for charts
+        const [summaryRes, ordersRes, invoicesRes] = await Promise.all([
+            fetch(API + '/api/dashboard/summary'),
+            fetch(API + '/api/orders/admin/all', { headers }),
+            fetch(API + '/api/billing/')
+        ]);
+        const summary = await summaryRes.json();
+        const orders = ordersRes.ok ? await ordersRes.json() : [];
+        const invoices = invoicesRes.ok ? await invoicesRes.json() : [];
+        allOrders = orders;
+
+        // KPIs
+        const totalRev = orders.reduce((s, o) => s + (o.status !== 'Cancelado' ? parseFloat(o.total_price) : 0), 0);
+        const activeOrders = orders.filter(o => o.status !== 'Cancelado');
+        document.getElementById('rpt-total-orders').textContent = orders.length;
+        document.getElementById('rpt-total-revenue').textContent = fmt(totalRev);
+        document.getElementById('rpt-avg-ticket').textContent = fmt(activeOrders.length > 0 ? totalRev / activeOrders.length : 0);
+        document.getElementById('rpt-invoices').textContent = invoices.length;
+
+        // Colors
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)';
+        const txtColor = isDark ? '#8c9199' : '#727781';
+
+        // Revenue Chart
+        if (summary.daily_labels && summary.daily_values) {
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'bar',
+                data: {
+                    labels: summary.daily_labels,
+                    datasets: [{ data: summary.daily_values, backgroundColor: 'rgba(0,52,97,0.7)', borderColor: '#003461', borderWidth: 1, borderRadius: 4, borderSkipped: false }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => fmt(ctx.parsed.y) } } },
+                    scales: {
+                        x: { ticks: { color: txtColor, font: { size: 9 }, maxTicksLimit: 15 }, grid: { display: false } },
+                        y: { ticks: { color: txtColor, font: { size: 9 }, callback: v => 'S/ ' + v }, grid: { color: gridColor } }
+                    }
+                }
+            });
+        }
+
+        // Status Chart
+        const statusCounts = {};
+        orders.forEach(o => { statusCounts[o.status] = (statusCounts[o.status] || 0) + 1; });
+        const statusColors = { 'Completado': '#16a34a', 'En Proceso': '#003461', 'Pendiente': '#d97706', 'Cancelado': '#ba1a1a' };
+        new Chart(document.getElementById('statusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(statusCounts),
+                datasets: [{ data: Object.values(statusCounts), backgroundColor: Object.keys(statusCounts).map(k => statusColors[k] || '#727781'), borderWidth: 2, borderColor: isDark ? '#111318' : '#faf8ff' }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: '65%',
+                plugins: { legend: { position: 'bottom', labels: { color: txtColor, font: { size: 10, weight: 'bold' }, padding: 15, usePointStyle: true, pointStyleWidth: 8 } } }
+            }
+        });
+
+        // Product Chart
+        if (summary.top_products && summary.top_products.length) {
+            const colors = ['#003461','#1e40af','#3b82f6','#6366f1','#8b5cf6','#a855f7','#d946ef','#ec4899','#f43f5e','#f97316'];
+            new Chart(document.getElementById('productChart'), {
+                type: 'bar',
+                data: {
+                    labels: summary.top_products.map(p => p.name),
+                    datasets: [{ data: summary.top_products.map(p => p.contribution), backgroundColor: colors.slice(0, summary.top_products.length), borderRadius: 6, borderSkipped: false }]
+                },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => fmt(ctx.parsed.x) + ` (${summary.top_products[ctx.dataIndex].percentage}%)` } } },
+                    scales: {
+                        x: { ticks: { color: txtColor, font: { size: 9 }, callback: v => 'S/ ' + v }, grid: { color: gridColor } },
+                        y: { ticks: { color: txtColor, font: { size: 10, weight: 'bold' } }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Orders Table
+        renderOrders(orders);
+
+        // Invoices Table
+        const invBody = document.getElementById('invoicesTableBody');
+        invBody.innerHTML = invoices.slice(0, 50).map(inv => {
+            const stColor = inv.sunat_status === 'Aceptada' ? 'bg-emerald-50 text-emerald-700' : inv.sunat_status === 'Emitida' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700';
+            return `<tr class="border-b border-outline-variant/10 hover:bg-surface-container-low/50 transition-colors">
+                <td class="p-4 text-sm font-bold text-primary">${inv.invoice_number}</td>
+                <td class="p-4 text-sm text-on-surface">${inv.client_name}</td>
+                <td class="p-4 text-sm text-outline">${inv.client_ruc_dni}</td>
+                <td class="p-4 text-sm text-right font-bold">${fmt(inv.total)}</td>
+                <td class="p-4 text-center"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${stColor}">${inv.sunat_status}</span></td>
+                <td class="p-4 text-sm text-right text-outline">${new Date(inv.issue_date).toLocaleDateString('es-PE')}</td>
+            </tr>`;
+        }).join('');
+
+    } catch (err) { console.error('Report load error:', err); }
+}
+
+function renderOrders(orders) {
+    const tbody = document.getElementById('ordersTableBody');
+    tbody.innerHTML = orders.slice(0, 100).map(o => {
+        const stColor = o.status === 'Completado' ? 'bg-emerald-50 text-emerald-700' : o.status === 'En Proceso' ? 'bg-blue-50 text-blue-700' : o.status === 'Pendiente' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-error';
+        return `<tr class="border-b border-outline-variant/10 hover:bg-surface-container-low/50 transition-colors">
+            <td class="p-4 text-sm font-bold text-primary">JHIRE-${o.id}</td>
+            <td class="p-4 text-sm text-on-surface">${o.user_email || 'Cliente #' + o.user_id}</td>
+            <td class="p-4 text-sm text-right font-bold">${fmt(o.total_price)}</td>
+            <td class="p-4 text-center"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${stColor}">${o.status}</span></td>
+            <td class="p-4 text-sm text-right text-outline">${new Date(o.created_at).toLocaleDateString('es-PE')}</td>
+        </tr>`;
+    }).join('');
+}
+
+function filterOrders() {
+    const q = document.getElementById('orderSearch').value.toLowerCase();
+    const filtered = allOrders.filter(o => {
+        return ('jhire-' + o.id).includes(q) || (o.user_email || '').toLowerCase().includes(q) || o.status.toLowerCase().includes(q);
+    });
+    renderOrders(filtered);
+}
+
+document.addEventListener('DOMContentLoaded', loadReportData);
+</script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -102,6 +102,9 @@
         <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm transition-colors">
             <span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)
         </a>
+        <a href="nivel_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">trending_up</span> Nivel de Ventas
+        </a>
         <a href="crm.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">support_agent</span> CRM Clientes
         </a>
@@ -113,7 +116,16 @@
         <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">group</span> Gestor Usuarios
         </a>
-        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+        <a href="tiempo_registro.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">timer</span> Tiempos Operativos
+        </a>
+        <a href="tiempo_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">speed</span> Eficiencia Ventas
+        </a>
+        <a href="tiempo_facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span> Tiempo de Procesamiento
+        </a>
+        <a href="reportes.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
             <span class="material-symbols-outlined">analytics</span> Reportes y BI
         </a>
     </nav>
@@ -132,11 +144,7 @@
 <!-- TopAppBar -->
 <header class="w-full h-16 sticky top-0 z-40 bg-surface dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm dark:shadow-none flex items-center justify-between px-6">
 <div class="flex items-center gap-8">
-<span class="text-xl font-bold text-blue-900 dark:text-white tracking-tight">JHIRE 2025</span>
-<div class="relative hidden lg:block w-96">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-<input class="w-full bg-slate-50 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Buscar ventas, clientes o productos..." type="text"/>
-</div>
+<span class="text-xl font-bold text-primary font-headline tracking-tighter">JHIRE</span>
 </div>
 <div class="flex items-center gap-4">
             <!-- Theme Toggle -->
@@ -153,252 +161,338 @@
             </div>
         </div>
     </header>
-<div class="p-8 max-w-7xl mx-auto space-y-8">
-<!-- Header Section -->
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-<div>
-<h2 class="text-3xl font-extrabold text-primary tracking-tight">Ventas &amp; Prospecting</h2>
-<p class="text-on-surface-variant mt-1">Inteligencia comercial y seguimiento de inventario en tiempo real.</p>
+<div class="p-6 md:p-8 max-w-[1400px] mx-auto h-[calc(100vh-4rem)] flex flex-col">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 shrink-0">
+        <div>
+            <h2 class="text-3xl font-extrabold text-primary tracking-tight">Caja Registradora (POS)</h2>
+            <p class="text-on-surface-variant mt-1 text-sm font-medium">Terminal de Ventas con Asistencia Inteligente (TPRCP)</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="clearTicket()" class="flex items-center gap-2 px-4 py-2 bg-error/10 text-error hover:bg-error hover:text-white font-bold rounded-lg transition-colors text-sm">
+                <span class="material-symbols-outlined text-lg">delete</span> Vaciar Ticket
+            </button>
+        </div>
+    </div>
+
+    <!-- Main POS Grid -->
+    <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0 overflow-hidden">
+        
+        <!-- Left Side: Catalog & AI -->
+        <div class="lg:col-span-8 flex flex-col bg-surface border border-outline-variant/20 rounded-2xl shadow-sm overflow-hidden h-full">
+            
+            <!-- AI Recommendations Banner (Hidden initially) -->
+            <div id="posAiRecommendations" class="hidden shrink-0 bg-gradient-to-r from-primary to-primary-container p-4 border-b border-outline-variant/20">
+                <p class="text-[10px] font-black uppercase tracking-widest text-white/90 flex items-center gap-1 mb-3">
+                    <span class="material-symbols-outlined text-[14px]">auto_awesome</span> IA Sugiere (Atajos Rápidos)
+                </p>
+                <div id="posAiList" class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                    <!-- AI items inserted here -->
+                </div>
+            </div>
+
+            <!-- Catalog Search & Filter -->
+            <div class="shrink-0 p-4 border-b border-outline-variant/10 bg-surface-container-low flex gap-3">
+                <div class="flex-1 relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+                    <input type="text" id="posSearchInput" placeholder="Buscar producto por nombre o ID..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/30 text-sm focus:ring-2 focus:ring-primary focus:border-primary bg-white dark:bg-surface-container-high dark:text-white dark:border-white/10 transition-colors">
+                </div>
+                <button class="px-4 py-2.5 bg-white dark:bg-surface-container-high dark:text-white dark:border-white/10 border border-outline-variant/30 rounded-xl text-on-surface hover:bg-surface-container transition-colors flex items-center gap-2 shadow-sm">
+                    <span class="material-symbols-outlined text-sm">filter_list</span> Categorías
+                </button>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="flex-1 overflow-y-auto p-4 bg-surface-container-lowest">
+                <div id="posProductGrid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <div class="col-span-full py-20 text-center text-outline-variant font-bold animate-pulse">Cargando catálogo...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Ticket / Cart -->
+        <div class="lg:col-span-4 flex flex-col bg-white dark:bg-surface-container-low border border-outline-variant/20 rounded-2xl shadow-xl overflow-hidden h-full">
+            <div class="shrink-0 p-4 bg-surface-container-low dark:bg-surface-container-high border-b border-outline-variant/20 dark:border-white/5 flex justify-between items-center">
+                <h3 class="font-black text-primary flex items-center gap-2"><span class="material-symbols-outlined">receipt_long</span> Ticket de Venta</h3>
+                <span id="posTicketCount" class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full">0 items</span>
+            </div>
+            
+            <!-- Items in Ticket -->
+            <div id="posTicketList" class="flex-1 overflow-y-auto p-4 space-y-3 bg-surface-container-lowest">
+                <div class="h-full flex flex-col items-center justify-center text-outline-variant opacity-60">
+                    <span class="material-symbols-outlined text-5xl mb-2">shopping_basket</span>
+                    <p class="text-sm font-bold">Ticket vacío</p>
+                    <p class="text-[10px]">Selecciona productos del catálogo</p>
+                </div>
+            </div>
+
+            <!-- Ticket Footer (Total & Checkout) -->
+            <div class="shrink-0 p-6 bg-surface border-t border-outline-variant/20 shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-outline uppercase tracking-widest">Total a Pagar</span>
+                    <span class="text-3xl font-black text-primary font-headline" id="posTicketTotal">S/ 0.00</span>
+                </div>
+                
+                <button id="posCheckoutBtn" onclick="completarVenta()" class="w-full py-4 bg-gradient-to-r from-success to-emerald-600 hover:from-emerald-600 hover:to-success text-white rounded-xl font-bold shadow-lg shadow-success/30 active:scale-95 transition-all text-sm tracking-wide flex justify-center items-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
+                    <span class="material-symbols-outlined">point_of_sale</span> COMPLETAR COTIZACIÓN
+                </button>
+            </div>
+        </div>
+
+    </div>
 </div>
-<div class="flex items-center gap-3">
-<button class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-low text-primary font-semibold rounded-md hover:bg-surface-container-high transition-colors" onclick="Swal.fire('Filtros Avanzados', 'El módulo de filtros comerciales se activará en la etapa v2.0', 'info')">
-<span class="material-symbols-outlined text-lg">filter_list</span>
-<span>Filtros</span>
-</button>
-<button class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold rounded-md shadow-lg shadow-primary/20 active:scale-95 transition-all" onclick="location.href='admin_catalogo.html'">
-<span class="material-symbols-outlined text-lg">add_shopping_cart</span>
-<span>Nueva Venta Rápida</span>
-</button>
-</div>
-</div>
-<!-- Bento Grid - KPIs and Funnel -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-<!-- Ventas Funnel Visualization -->
-<div class="md:col-span-3 bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-slate-100/50">
-<div class="flex justify-between items-center mb-6">
-<h3 class="font-bold text-lg text-primary">Embudo de Conversión</h3>
-<span class="text-xs font-medium text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Últimos 30 Días</span>
-</div>
-<div class="flex items-stretch h-32 w-full gap-1" id="crmFunnelContainer">
-<!-- Ventas Diarias -->
-<div class="funnel-step flex-1 bg-primary flex flex-col items-center justify-center text-on-primary relative">
-<span class="text-2xl font-black">428</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Ventas Diarias</span>
-</div>
-<!-- Ventas Semanales -->
-<div class="funnel-step flex-1 bg-primary/85 flex flex-col items-center justify-center text-on-primary">
-<span class="text-2xl font-black">156</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Ventas Semanales</span>
-</div>
-<!-- Ventas Mensuales -->
-<div class="funnel-step flex-1 bg-primary/70 flex flex-col items-center justify-center text-on-primary">
-<span class="text-2xl font-black">84</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Ventas Mensuales</span>
-</div>
-<!-- Ticket Promedio Ventas -->
-<div class="funnel-step flex-1 bg-primary/55 flex flex-col items-center justify-center text-on-primary">
-<span class="text-2xl font-black">32</span>
-<span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Ticket Promedio</span>
-</div>
-</div>
-<div class="mt-6 flex justify-around text-center">
-<div>
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Valor Total</p>
-<p class="text-lg font-black text-primary" id="kpiValorTotal">$0</p>
-</div>
-<div>
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ciclo Prom.</p>
-<p class="text-lg font-black text-primary" id="kpiCicloProm">-</p>
-</div>
-<div>
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Conversión</p>
-<p class="text-lg font-black text-tertiary-container" id="kpiConversion">0%</p>
-</div>
-</div>
-</div>
-<!-- Small KPI Card -->
-<div class="bg-primary bg-gradient-to-br from-primary to-primary-container p-6 rounded-xl text-white flex flex-col justify-between">
-<div>
-<span class="material-symbols-outlined opacity-50 text-4xl mb-2" style="font-variation-settings: 'FILL' 1;">trending_up</span>
-<h3 class="text-sm font-medium opacity-80">Meta Trimestral</h3>
-<p class="text-3xl font-black mt-1">78%</p>
-</div>
-<div class="mt-4">
-<div class="w-full bg-surface/20 h-2 rounded-full overflow-hidden">
-<div class="bg-surface h-full" style="width: 78%"></div>
-</div>
-<p class="text-[10px] mt-2 font-bold uppercase tracking-widest opacity-80">Restante: S/ 50k</p>
-</div>
-</div>
-</div>
-<!-- Lower Section: Products and Activities -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-<!-- Product Catalog (Left side) -->
-<div class="lg:col-span-1 space-y-4">
-<div class="flex items-center justify-between">
-<h3 class="font-bold text-lg text-primary">Catálogo Industrial</h3>
-<button class="text-primary text-xs font-bold hover:underline" onclick="location.href='admin_catalogo.html'">Ver Todo</button>
-</div>
-<div class="space-y-3" id="crmProductList">
-<!-- Product Item -->
-<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
-<img alt="Circular Industrial Brush" class="object-cover w-full h-full" data-alt="Close up high quality photograph of a steel circular industrial brush with metallic bristles and blue hub" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvLZYq7c_T_Wm_lZM-j0lFwSbw_b5g0Izy5fGG6g6exxL2lGNpMOi_t3McYwSOu5LAl02nmWzAoPFSalXL-L3anibsAyuy_weeMRRKPnt0nDWLg2Cp-GzK0fP_7XbMyAfC5nBzmUdf8zpyNnPkJR30UlN43rTwOSAgH4phQGUJsIUnWvFVZEg9ScBpQXMRpOMsqjKwjgIwanzRbz2RWlfhXGou-n7tpjH4fKJWsGTj8-8_NIM9KR2MkCoBJHpR8seraPF6f0-pCtc"/>
-</div>
-<div class="flex-1">
-<h4 class="text-sm font-bold text-on-surface">Acero Circular 400mm</h4>
-<p class="text-[10px] text-on-surface-variant">CAT: BR-0492-ST</p>
-<div class="flex items-center justify-between mt-2">
-<span class="text-xs font-bold text-primary">$45.00</span>
-<span class="text-[10px] px-2 py-0.5 bg-tertiary-container/10 text-tertiary-container font-bold rounded">124 in Stock</span>
-</div>
-</div>
-</div>
-<!-- Product Item -->
-<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
-<img alt="Roller Industrial Brush" class="object-cover w-full h-full" data-alt="Heavy duty long roller brush with synthetic nylon bristles used for industrial cleaning on a clean white floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIuCha2enK6IdukGeKd0YZ9JwBkWbtevynWdXKv_kdS4NiaO_8SJpBupt_YvnJX0EZp4fvZ_lS3NHOMIpcmc7rqRRSWXzVJVSXtN2Wopnyoie9fxHHEpIWv7I3lJ9tvbmm1HFFWPDCi2cvbdTsGbnbCvvPf3eS5utvk0zvRryMupuUNhHO_3pRxuVQxeYduHqLHAC0ziAYtymo1jF8X8JtoRelM7XKhZxGq4Bk5gU5lA9ix1hnn8pzRr3Nbubzr-fpgWaUSRMlV1Y"/>
-</div>
-<div class="flex-1">
-<h4 class="text-sm font-bold text-on-surface">Rodillo de Nylon Pro-X</h4>
-<p class="text-[10px] text-on-surface-variant">CAT: BR-1102-NY</p>
-<div class="flex items-center justify-between mt-2">
-<span class="text-xs font-bold text-primary">$189.50</span>
-<span class="text-[10px] px-2 py-0.5 bg-error-container/10 text-error-container font-bold rounded">12 in Stock</span>
-</div>
-</div>
-</div>
-<!-- Product Item -->
-<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-slate-50 flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
-<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center overflow-hidden">
-<img alt="Disc Industrial Brush" class="object-cover w-full h-full" data-alt="Disc shaped industrial floor scrubbing brush with thick black bristles and reinforced plastic base" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHT_hFZvS3dpKwF_du29XOdA7WgGfcy3LhuUxfi1f0hHx2QknW7cWnq82st8FxG1AvL4op17AUD9ho-4cxqS8h_3bGR7VSzhDKNG9ugH-notuE2z8e-opbJH_xav_IZjrNqACHouMDRj_Pk1ODJhH4oO3kXlE1hSTyE9D4fkgQW5kOIE2dR7v6Ki-xjiIj9D32NbBl7Msg6po5GsGQhLkyyT5EUOTuOAzIk4KKpuibZH4XejnbqpCAfviULHkzHMXorhBqP9qRYqA"/>
-</div>
-<div class="flex-1">
-<h4 class="text-sm font-bold text-on-surface">Disco Cepillo 20"</h4>
-<p class="text-[10px] text-on-surface-variant">CAT: BR-8821-HD</p>
-<div class="flex items-center justify-between mt-2">
-<span class="text-xs font-bold text-primary">$124.00</span>
-<span class="text-[10px] px-2 py-0.5 bg-tertiary-container/10 text-tertiary-container font-bold rounded">58 in Stock</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Recent Activity Table (Right side) -->
-<div class="lg:col-span-2 space-y-4">
-<h3 class="font-bold text-lg text-primary">Últimas Transacciones (POS)</h3>
-<div class="overflow-hidden rounded-xl bg-surface-container-lowest border border-slate-100/50 shadow-sm">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-container-low">
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">ID Transacción</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Cajero/Cliente</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Monto</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Estado</th>
-<th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-right">Acción</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-slate-50" id="crmRecentSalesBody">
-<tr class="hover:bg-slate-50 transition-colors">
-<td class="px-6 py-4">
-<span class="text-xs font-bold text-primary">#QT-2024-081</span>
-<p class="text-[10px] text-slate-400">Oct 24, 14:20</p>
-</td>
-<td class="px-6 py-4">
-<p class="text-xs font-bold text-on-surface">Global Automotriz S.A.</p>
-<p class="text-[10px] text-on-surface-variant">Suministro Industrial</p>
-</td>
-<td class="px-6 py-4">
-<span class="text-xs font-bold">$12,450.00</span>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-container text-on-tertiary">Invoiced</span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
-</td>
-</tr>
-<tr class="hover:bg-slate-50 transition-colors">
-<td class="px-6 py-4">
-<span class="text-xs font-bold text-primary">#QT-2024-082</span>
-<p class="text-[10px] text-slate-400">Oct 24, 11:05</p>
-</td>
-<td class="px-6 py-4">
-<p class="text-xs font-bold text-on-surface">Textiles del Norte</p>
-<p class="text-[10px] text-on-surface-variant">Fabricante</p>
-</td>
-<td class="px-6 py-4">
-<span class="text-xs font-bold">$3,820.00</span>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-primary">Approved</span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
-</td>
-</tr>
-<tr class="hover:bg-slate-50 transition-colors">
-<td class="px-6 py-4">
-<span class="text-xs font-bold text-primary">#QT-2024-083</span>
-<p class="text-[10px] text-slate-400">Oct 23, 16:45</p>
-</td>
-<td class="px-6 py-4">
-<p class="text-xs font-bold text-on-surface">Logística Integral S.C.</p>
-<p class="text-[10px] text-on-surface-variant">Operaciones de Almacén</p>
-</td>
-<td class="px-6 py-4">
-<span class="text-xs font-bold">$1,200.00</span>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-surface-container-high text-on-surface-variant">Pending</span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
-</td>
-</tr>
-<tr class="hover:bg-slate-50 transition-colors">
-<td class="px-6 py-4">
-<span class="text-xs font-bold text-primary">#QT-2024-084</span>
-<p class="text-[10px] text-slate-400">Oct 23, 09:12</p>
-</td>
-<td class="px-6 py-4">
-<p class="text-xs font-bold text-on-surface">Minería del Pacífico</p>
-<p class="text-[10px] text-on-surface-variant">Minería Industrial</p>
-</td>
-<td class="px-6 py-4">
-<span class="text-xs font-bold">$45,900.00</span>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-primary">Approved</span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="material-symbols-outlined text-slate-400 hover:text-primary">more_vert</button>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="px-6 py-4 bg-surface-container-low/50 flex items-center justify-between">
-<span class="text-xs text-on-surface-variant">Mostrando transacciones recientes de Base de Datos</span>
-<div class="flex gap-2">
-<button class="p-1 rounded hover:bg-surface text-slate-400 transition-colors"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
-<button class="p-1 rounded hover:bg-surface text-slate-400 transition-colors"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Intelligence Banner -->
-<div class="bg-surface-container-low rounded-xl p-6 border border-primary/5 flex items-center gap-6">
-<div class="w-12 h-12 bg-primary-container/20 rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">psychology</span>
-</div>
-<div class="flex-1">
-<h4 class="font-bold text-primary">Insight de Prospección IA</h4>
-<p class="text-sm text-on-surface-variant">Los datos históricos sugieren un aumento en la demanda en el sector industrial durante los próximos 15 días. Recomendamos envío de promos masivas a los Top 5 clientes.</p>
-</div>
-<button class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-md hover:bg-primary/90" onclick="Swal.fire('Campaña Iniciada', 'Segmentando correos de clientes Top 5. Los envíos se programarán en segundo plano (Background Tasks).', 'success')">Desplegar Campaña</button>
-</div>
-</div>
+
+<script>
+    let posProducts = [];
+    let posTicket = [];
+    let posStartTime = null;
+
+    async function loadPosProducts() {
+        try {
+            const res = await fetch('http://localhost:8000/api/products');
+            posProducts = await res.json();
+            renderPosProducts(posProducts);
+        } catch (e) {
+            console.error("Error loading products:", e);
+            document.getElementById('posProductGrid').innerHTML = '<p class="col-span-full text-center text-error font-bold">Error cargando catálogo.</p>';
+        }
+    }
+
+    function renderPosProducts(products) {
+        const grid = document.getElementById('posProductGrid');
+        grid.innerHTML = '';
+        products.forEach(p => {
+            const price = p.price_soles ? parseFloat(p.price_soles).toFixed(2) : "0.00";
+            const imageUrl = p.image_url || 'https://via.placeholder.com/150';
+            grid.innerHTML += `
+                <div onclick="addToTicket(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${price}, '${imageUrl}')" class="bg-white dark:bg-surface-container-high dark:border-white/5 border border-outline-variant/20 rounded-xl p-3 cursor-pointer hover:border-primary hover:shadow-lg transition-all flex flex-col h-full group active:scale-95">
+                    <div class="w-full h-24 bg-surface-container-lowest dark:bg-surface-container rounded-lg mb-2 overflow-hidden flex items-center justify-center p-1">
+                        <img src="${imageUrl}" class="max-h-full object-contain group-hover:scale-110 transition-transform">
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-[11px] font-bold text-on-surface line-clamp-2 leading-tight">${p.name}</p>
+                        <div class="mt-2 flex justify-between items-center">
+                            <span class="text-sm font-black text-primary">S/ ${price}</span>
+                            <span class="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-[14px]">add</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function addToTicket(id, name, price, image) {
+        // Start Timer on first click (TPRCP)
+        if (posTicket.length === 0) {
+            posStartTime = Date.now();
+            console.log("TIMER INICIADO: ", new Date(posStartTime));
+        }
+
+        let existing = posTicket.find(i => i.id === id);
+        if (existing) {
+            existing.quantity++;
+        } else {
+            posTicket.push({ id, name, price: parseFloat(price), image, quantity: 1 });
+        }
+        
+        renderTicket();
+        fetchRecommendations();
+    }
+
+    function removeFromTicket(id) {
+        posTicket = posTicket.filter(i => i.id !== id);
+        renderTicket();
+        fetchRecommendations();
+    }
+
+    function changeTicketQty(id, delta) {
+        let item = posTicket.find(i => i.id === id);
+        if (item) {
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                removeFromTicket(id);
+            } else {
+                renderTicket();
+            }
+        }
+    }
+
+    function clearTicket() {
+        posTicket = [];
+        posStartTime = null;
+        renderTicket();
+        document.getElementById('posAiRecommendations').classList.add('hidden');
+    }
+
+    function renderTicket() {
+        const list = document.getElementById('posTicketList');
+        const count = document.getElementById('posTicketCount');
+        const totalEl = document.getElementById('posTicketTotal');
+        const btn = document.getElementById('posCheckoutBtn');
+
+        if (posTicket.length === 0) {
+            list.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center text-outline-variant opacity-60">
+                    <span class="material-symbols-outlined text-5xl mb-2">shopping_basket</span>
+                    <p class="text-sm font-bold">Ticket vacío</p>
+                    <p class="text-[10px]">Selecciona productos del catálogo</p>
+                </div>
+            `;
+            count.innerText = "0 items";
+            totalEl.innerText = "S/ 0.00";
+            btn.disabled = true;
+            return;
+        }
+
+        btn.disabled = false;
+        list.innerHTML = '';
+        let totalItems = 0;
+        let totalSum = 0;
+
+        posTicket.forEach(item => {
+            totalItems += item.quantity;
+            totalSum += item.price * item.quantity;
+            
+            list.innerHTML += `
+                <div class="bg-white dark:bg-surface-container-high dark:border-white/5 border border-outline-variant/30 rounded-xl p-3 flex gap-3 shadow-sm relative group animate-in fade-in slide-in-from-right-4 duration-200">
+                    <img src="${item.image}" class="w-12 h-12 object-contain bg-surface-container-low dark:bg-surface-container rounded-lg p-1">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-[11px] font-bold text-on-surface truncate pr-6">${item.name}</p>
+                        <p class="text-xs text-primary font-black mt-0.5">S/ ${item.price.toFixed(2)}</p>
+                        
+                        <div class="flex items-center gap-3 mt-2">
+                            <div class="flex items-center bg-surface-container-low rounded-md border border-outline-variant/20">
+                                <button onclick="changeTicketQty(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center text-on-surface hover:bg-outline-variant/20 transition-colors rounded-l-md font-bold">-</button>
+                                <span class="text-xs font-black w-6 text-center">${item.quantity}</span>
+                                <button onclick="changeTicketQty(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center text-on-surface hover:bg-outline-variant/20 transition-colors rounded-r-md font-bold">+</button>
+                            </div>
+                            <span class="text-xs font-bold text-outline-variant">Sub: S/ ${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <button onclick="removeFromTicket(${item.id})" class="absolute top-2 right-2 text-outline-variant hover:text-error opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="material-symbols-outlined text-[16px]">close</span>
+                    </button>
+                </div>
+            `;
+        });
+
+        count.innerText = `${totalItems} items`;
+        totalEl.innerText = `S/ ${totalSum.toFixed(2)}`;
+    }
+
+    async function fetchRecommendations() {
+        const aiContainer = document.getElementById('posAiRecommendations');
+        const aiList = document.getElementById('posAiList');
+
+        if (posTicket.length === 0) {
+            aiContainer.classList.add('hidden');
+            return;
+        }
+
+        const productIds = posTicket.map(i => i.id);
+        
+        try {
+            const res = await fetch('http://localhost:8000/api/orders/recommend-products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_product_ids: productIds })
+            });
+            const data = await res.json();
+            
+            if (data.recommendations && data.recommendations.length > 0) {
+                aiContainer.classList.remove('hidden');
+                aiList.innerHTML = data.recommendations.map(r => {
+                    const price = parseFloat(r.price_soles).toFixed(2);
+                    return `
+                    <div onclick="addToTicket(${r.id}, '${r.name.replace(/'/g, "\\'")}', ${price}, '${r.image_url}')" class="shrink-0 w-44 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl p-2 flex items-center gap-3 cursor-pointer transition-all shadow-sm">
+                        <img src="${r.image_url}" class="w-10 h-10 object-contain bg-white/90 rounded-lg p-0.5">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[9px] font-bold text-white line-clamp-2 leading-tight">${r.name}</p>
+                            <p class="text-[11px] font-black text-amber-300 mt-0.5">S/ ${price}</p>
+                        </div>
+                        <span class="material-symbols-outlined text-white/50 text-[16px]">add_circle</span>
+                    </div>
+                `}).join('');
+            } else {
+                aiContainer.classList.add('hidden');
+            }
+        } catch (e) {
+            aiContainer.classList.add('hidden');
+        }
+    }
+
+    async function completarVenta() {
+        if (posTicket.length === 0) return;
+
+        const token = localStorage.getItem('jhire_jwt_token');
+        if (!token) {
+            Swal.fire('Atención', 'Debes iniciar sesión para procesar ventas.', 'warning');
+            return;
+        }
+
+        // Calculate Registration Time (TPRCP)
+        let regTimeSeconds = 0;
+        if (posStartTime) {
+            regTimeSeconds = Math.floor((Date.now() - posStartTime) / 1000);
+        }
+
+        const btn = document.getElementById('posCheckoutBtn');
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> PROCESANDO COTIZACIÓN...';
+        btn.disabled = true;
+
+        try {
+            const bodyPayload = { 
+                items: posTicket.map(i => ({ product_id: i.id, quantity: i.quantity })),
+                registration_time_seconds: regTimeSeconds
+            };
+            
+            const res = await fetch('http://localhost:8000/api/orders/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(bodyPayload)
+            });
+
+            if (res.status === 401) {
+                Swal.fire('Sesión Expirada', 'Tu sesión ha caducado. Por favor, cierra sesión en el menú lateral y vuelve a ingresar.', 'error');
+                return;
+            }
+
+            if (!res.ok) throw new Error(await res.text());
+            
+            const result = await res.json();
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Cotización Registrada',
+                html: `ID Cotización: <b>#ORD-${result.id}</b><br>Tiempo de registro medido: <b>${regTimeSeconds}s</b>`,
+                confirmButtonColor: '#16a34a'
+            });
+
+            clearTicket();
+
+        } catch (e) {
+            console.error("Error checkout:", e);
+            Swal.fire('Error', 'No se pudo procesar la venta.', 'error');
+        } finally {
+            btn.innerHTML = '<span class="material-symbols-outlined">point_of_sale</span> COMPLETAR COTIZACIÓN';
+            btn.disabled = false;
+        }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPosProducts();
+        
+        // Search filter
+        document.getElementById('posSearchInput').addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = posProducts.filter(p => p.name.toLowerCase().includes(term) || p.id.toString().includes(term));
+            renderPosProducts(filtered);
+        });
+    });
+</script>
 </main>
 <script src="app.js"></script>
 
@@ -413,11 +507,11 @@
         </button>
     </div>
     <div class="flex flex-col p-6 gap-6 flex-1 overflow-y-auto">
-        <a href="inicio.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">home</span> Inicio</a>
-        <a href="catalogo_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">inventory_2</span> Catálogo</a>
-        <a href="mis_pedidos.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">receipt_long</span> Mis Pedidos</a>
+        <a href="inicio.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors whitespace-nowrap"><span class="material-symbols-outlined">home</span> Inicio</a>
+        <a href="catalogo_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors whitespace-nowrap"><span class="material-symbols-outlined">inventory_2</span> Catálogo</a>
+        <a href="mis_pedidos.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors whitespace-nowrap"><span class="material-symbols-outlined">receipt_long</span> Mis Pedidos</a>
         <hr class="border-outline/10">
-        <a href="perfil_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors"><span class="material-symbols-outlined">account_circle</span> Mi Perfil</a>
+        <a href="perfil_usuario.html" class="flex items-center gap-4 text-base font-bold text-on-surface hover:text-primary transition-colors whitespace-nowrap"><span class="material-symbols-outlined">account_circle</span> Mi Perfil</a>
     </div>
 </aside>
 

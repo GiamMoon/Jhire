@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from ...infrastructure.database import get_db
 from ...domain.schemas import InvoiceCreate, InvoiceResponse
@@ -11,6 +11,184 @@ from ...infrastructure.security import get_current_user, User
 from ...domain.schemas import PaymentInstallmentCreate, PaymentInstallmentResponse
 
 router = APIRouter()
+
+@router.get("/tpf/reporte")
+def get_tpf_report(start_date: str = None, end_date: str = None, group_days: int = 0, db: Session = Depends(get_db)):
+    """
+    Agrupa facturas según group_days:
+      0 = automático (12 intervalos)
+      1 = diario (1 registro por día)
+      2,3,5... = cada N días
+    """
+    from datetime import date as date_type
+    
+    if start_date:
+        s = datetime.strptime(start_date, "%Y-%m-%d").date()
+    else:
+        s = date_type(2026, 3, 17)
+    if end_date:
+        e = datetime.strptime(end_date, "%Y-%m-%d").date()
+    else:
+        e = date_type(2026, 4, 15)
+    
+    total_days = (e - s).days + 1
+    
+    # Build intervals based on group_days
+    intervals = []
+    if group_days <= 0:
+        # Original: 12 fixed intervals
+        num_intervals = 12
+        days_per_interval = total_days / num_intervals
+        for i in range(num_intervals):
+            int_start = s + timedelta(days=int(i * days_per_interval))
+            int_end = s + timedelta(days=int((i + 1) * days_per_interval) - 1)
+            if i == num_intervals - 1:
+                int_end = e
+            intervals.append((int_start, int_end))
+    else:
+        # User-defined grouping by N days
+        current = s
+        while current <= e:
+            int_end = min(current + timedelta(days=group_days - 1), e)
+            intervals.append((current, int_end))
+            current = int_end + timedelta(days=1)
+    
+    results = []
+    for idx, (int_start, int_end) in enumerate(intervals, start=1):
+        invoices = db.query(Invoice).filter(
+            Invoice.issue_date >= datetime.combine(int_start, datetime.min.time()),
+            Invoice.issue_date <= datetime.combine(int_end, datetime.max.time()),
+            Invoice.processing_time_seconds > 0
+        ).all()
+        
+        total_seconds = sum(inv.processing_time_seconds for inv in invoices)
+        count = len(invoices)
+        total_mins = round(total_seconds / 60, 2)
+        avg_mins = round(total_mins / count, 2) if count > 0 else 0
+        
+        results.append({
+            "item": idx,
+            "fecha_emision": int_start.strftime("%d/%m/%Y"),
+            "fecha_finalizacion": int_end.strftime("%d/%m/%Y"),
+            "tiempo_total_procesamiento": total_mins,
+            "numero_total_facturas": count,
+            "tiempo_procesamiento": avg_mins
+        })
+        
+    return {"data": results}
+
+@router.post("/emitir")
+def emitir_factura_sunat(invoice_data: InvoiceCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """
+    Endpoint mejorado que simula el proceso completo de emisión electrónica
+    con OSE/PSE SUNAT, retornando metadatos detallados del procesamiento.
+    """
+    import time
+    import hashlib
+    
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Permisos insuficientes")
+    
+    if not invoice_data.client_name or len(invoice_data.client_name.strip()) < 3:
+        raise HTTPException(status_code=422, detail="Razón Social / Nombres debe tener al menos 3 caracteres")
+    
+    start_time = time.time()
+    steps = []
+    
+    # PASO 1: Validación de datos de entrada (Pydantic)
+    step1_start = time.time()
+    order = db.query(Order).filter(Order.id == invoice_data.order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Orden no encontrada en el sistema")
+    existing = db.query(Invoice).filter(Invoice.order_id == invoice_data.order_id).first()
+    if existing:
+        raise HTTPException(status_code=409, detail=f"La orden #{invoice_data.order_id} ya tiene comprobante: {existing.invoice_number}")
+    if order.total_price <= 0:
+        raise HTTPException(status_code=422, detail="El monto de la orden debe ser positivo")
+    steps.append({"step": "Validación Pydantic-Core", "time_ms": round((time.time() - step1_start) * 1000, 1), "status": "OK"})
+    
+    # PASO 2: Cálculo tributario IGV 18%
+    step2_start = time.time()
+    subtotal = round(float(order.total_price) / 1.18, 2)
+    igv = round(float(order.total_price) - subtotal, 2)
+    ruc_dni = invoice_data.client_ruc_dni.strip()
+    serie = "F001" if len(ruc_dni) == 11 else "B001"
+    doc_type = "Factura Electrónica" if serie == "F001" else "Boleta de Venta Electrónica"
+    steps.append({"step": "Cálculo tributario IGV (18%)", "time_ms": round((time.time() - step2_start) * 1000, 1), "status": "OK"})
+    
+    # PASO 3: Generación de XML UBL 2.1
+    step3_start = time.time()
+    last_invoice = db.query(Invoice).filter(
+        Invoice.invoice_number.like(f"{serie}-%"),
+        Invoice.invoice_number.not_like("%EXTRA%")
+    ).order_by(Invoice.id.desc()).first()
+    next_num = (int(last_invoice.invoice_number.split('-')[1]) + 1) if last_invoice else 1
+    invoice_num = f"{serie}-{str(next_num).zfill(8)}"
+    xml_hash = hashlib.sha256(f"{invoice_num}{subtotal}{igv}{ruc_dni}{datetime.utcnow().isoformat()}".encode()).hexdigest()
+    steps.append({"step": "Generación XML UBL 2.1", "time_ms": round((time.time() - step3_start) * 1000, 1), "status": "OK"})
+    
+    # PASO 4: Firma digital del comprobante
+    step4_start = time.time()
+    time.sleep(random.uniform(0.3, 0.6))  # Simular firma
+    signature_value = hashlib.sha512(xml_hash.encode()).hexdigest()[:64]
+    steps.append({"step": "Firma Digital (SHA-512)", "time_ms": round((time.time() - step4_start) * 1000, 1), "status": "OK"})
+    
+    # PASO 5: Envío a OSE/PSE SUNAT
+    step5_start = time.time()
+    time.sleep(random.uniform(0.8, 1.8))  # Simular conexión SUNAT
+    cdr_code = f"0{random.randint(100, 999)}"
+    cdr_description = "La Factura numero " + invoice_num + ", ha sido aceptada"
+    steps.append({"step": "Envío a OSE SUNAT", "time_ms": round((time.time() - step5_start) * 1000, 1), "status": "OK"})
+    
+    # PASO 6: Recepción de CDR (Constancia de Recepción)
+    step6_start = time.time()
+    time.sleep(random.uniform(0.2, 0.5))
+    steps.append({"step": "CDR Recibida (Aceptada)", "time_ms": round((time.time() - step6_start) * 1000, 1), "status": "OK"})
+    
+    elapsed_seconds = int(time.time() - start_time)
+    
+    # Guardar en DB
+    new_inv = Invoice(
+        order_id=invoice_data.order_id,
+        invoice_number=invoice_num,
+        client_ruc_dni=ruc_dni,
+        client_name=invoice_data.client_name.strip().upper(),
+        subtotal=subtotal,
+        igv=igv,
+        total=float(order.total_price),
+        sunat_status="Aceptada",
+        processing_time_seconds=elapsed_seconds
+    )
+    db.add(new_inv)
+    db.commit()
+    db.refresh(new_inv)
+    
+    total_time = round((time.time() - start_time) * 1000, 1)
+    
+    return {
+        "invoice": {
+            "id": new_inv.id,
+            "invoice_number": invoice_num,
+            "doc_type": doc_type,
+            "serie": serie,
+            "client_ruc_dni": ruc_dni,
+            "client_name": new_inv.client_name,
+            "subtotal": subtotal,
+            "igv": igv,
+            "total": new_inv.total,
+            "issue_date": new_inv.issue_date.strftime("%d/%m/%Y %H:%M:%S"),
+        },
+        "sunat": {
+            "status": "ACEPTADA",
+            "cdr_code": cdr_code,
+            "cdr_description": cdr_description,
+            "xml_hash": xml_hash[:40],
+            "signature": signature_value[:40],
+            "processing_steps": steps,
+            "total_time_ms": total_time,
+            "total_time_seconds": round(total_time / 1000, 2)
+        }
+    }
 
 @router.post("/", response_model=InvoiceResponse)
 def generate_invoice(invoice_data: InvoiceCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -47,7 +225,8 @@ def generate_invoice(invoice_data: InvoiceCreate, db: Session = Depends(get_db),
     
     # Sequential numbering per series
     last_invoice = db.query(Invoice).filter(
-        Invoice.invoice_number.like(f"{serie}-%")
+        Invoice.invoice_number.like(f"{serie}-%"),
+        Invoice.invoice_number.not_like("%EXTRA%")
     ).order_by(Invoice.id.desc()).first()
     
     if last_invoice:

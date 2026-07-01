@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JHIRE 2026 | Tiempos Operativos (TPRP)</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "var(--color-primary)",
+                        "surface": "var(--color-surface)",
+                        "on-surface": "var(--color-on-surface)",
+                        "surface-container": "var(--color-surface-container)",
+                        "surface-container-low": "var(--color-surface-container-low)",
+                        "surface-container-high": "var(--color-surface-container-high)",
+                        "outline": "var(--color-outline)",
+                        "outline-variant": "var(--color-outline-variant)",
+                        "error": "var(--color-error)",
+                        "on-error": "var(--color-on-error)",
+                        "success": "#16a34a",
+                        "success-container": "#dcfce7"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style id="dynamic-theme">
+        :root {
+            --color-primary: #003461;
+            --color-surface: #faf8ff;
+            --color-on-surface: #131b2e;
+            --color-surface-container: #eaedff;
+            --color-surface-container-low: #f2f4ff;
+            --color-surface-container-high: #d9e2ff;
+            --color-outline: #727781;
+            --color-outline-variant: #c2c7d1;
+            --color-error: #ba1a1a;
+            --color-on-error: #ffffff;
+        }
+        html.dark {
+            --color-primary: #a6c8ff;
+            --color-surface: #111318;
+            --color-on-surface: #e2e2e9;
+            --color-surface-container: #1d2024;
+            --color-surface-container-low: #191b20;
+            --color-surface-container-high: #282a2f;
+            --color-outline: #8c9199;
+            --color-outline-variant: #42474e;
+            --color-error: #ffb4ab;
+            --color-on-error: #690005;
+        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .anim-in { animation: fadeInUp .45s ease-out forwards; }
+        .anim-d1 { animation: fadeInUp .45s ease-out .08s forwards; opacity: 0; }
+        .anim-d2 { animation: fadeInUp .45s ease-out .16s forwards; opacity: 0; }
+        .anim-d3 { animation: fadeInUp .45s ease-out .24s forwards; opacity: 0; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface flex flex-col min-h-screen transition-colors duration-300">
+
+<!-- SIDEBAR -->
+<aside class="fixed top-0 left-0 h-screen w-64 bg-surface border-r border-outline-variant/20 z-50 flex flex-col hidden md:flex shadow-xl">
+    <div class="h-16 flex items-center px-6 border-b border-outline-variant/20 bg-surface-container-low">
+        <span class="material-symbols-outlined text-primary text-3xl mr-2" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+        <span class="text-2xl font-black tracking-tighter text-primary bg-clip-text">JHIRE</span>
+    </div>
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2">Principal</p>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">dashboard</span> Panel Central
+        </a>
+        <a href="inventario.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">inventory_2</span> Inventarios
+        </a>
+        <a href="admin_catalogo.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">category</span> Catálogo
+        </a>
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Comercial</p>
+        <a href="ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">point_of_sale</span> Ventas (POS)
+        </a>
+        <a href="nivel_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">trending_up</span> Nivel de Ventas
+        </a>
+        <a href="crm.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">support_agent</span> CRM Clientes
+        </a>
+        <a href="facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span> Facturación
+        </a>
+        <p class="text-[10px] uppercase font-bold text-outline tracking-widest pl-4 mb-2 mt-6">Administración</p>
+        <a href="admin_usuarios.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">group</span> Gestor Usuarios
+        </a>
+        <a href="tiempo_registro.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-bold rounded-xl shadow-sm transition-colors">
+            <span class="material-symbols-outlined">timer</span> Tiempos Operativos
+        </a>
+        <a href="tiempo_ventas.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">speed</span> Eficiencia Ventas
+        </a>
+        <a href="tiempo_facturacion.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span> Tiempo de Procesamiento
+        </a>
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">analytics</span> Reportes y BI
+        </a>
+    </nav>
+    <div class="p-4 border-t border-outline-variant/20">
+        <a href="admin_perfil.html" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">settings</span> Mi Perfil
+        </a>
+        <button id="logoutBtn" class="w-full mt-2 flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 font-bold rounded-xl transition-colors">
+            <span class="material-symbols-outlined">logout</span> Salir
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="md:ml-64 min-h-screen bg-surface">
+
+    <!-- HEADER -->
+    <header class="w-full h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+            <span class="text-xl font-bold text-primary font-headline tracking-tighter">JHIRE</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="changeTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark')" class="w-10 h-10 rounded-full border border-outline-variant/30 hover:bg-surface-container transition-colors flex items-center justify-center text-on-surface">
+                <span class="material-symbols-outlined text-[20px]" id="themeIcon">dark_mode</span>
+            </button>
+            <div class="flex items-center gap-3 bg-surface-container-low pl-1 pr-3 py-1 rounded-full border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-all" id="avatarContainer">
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=003461&color=fff" class="w-8 h-8 rounded-full border-2 border-primary/20">
+                <div class="hidden md:block text-left relative top-[1px]">
+                    <p id="headerUserName" class="text-[11px] font-black text-on-surface uppercase tracking-wide leading-none">Cargando...</p>
+                    <p id="headerUserRole" class="text-[9px] text-primary font-bold uppercase tracking-widest leading-none mt-[2px]">...</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <section class="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-outline-variant/20 anim-in">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-headline font-black text-on-surface tracking-tight">Registro de Cotizaciones (TPRCP)</h2>
+                <p class="text-outline mt-1 font-medium text-sm flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                    Monitoreo del tiempo que toma registrar cotizaciones y ventas
+                </p>
+            </div>
+            <div class="flex flex-col items-end">
+                <span class="text-xs font-bold text-outline uppercase tracking-widest mb-1">TIEMPO PROMEDIO GLOBAL</span>
+                <span class="text-3xl font-headline font-black text-primary" id="avgLabel">--:--:--</span>
+            </div>
+        </div>
+
+        <div class="bg-surface-container-low p-6 rounded-2xl shadow-sm border border-outline-variant/20 relative overflow-hidden anim-d1" id="ficha-section">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-outline-variant/20 pb-4">
+                <div>
+                    <h4 class="text-xl font-headline font-black text-on-surface">Historial de Cotizaciones</h4>
+                    <p class="text-sm text-outline font-medium mt-1">Auditoría de eficiencia en tiempo real</p>
+                </div>
+                <div class="flex items-center gap-2 mt-4 md:mt-0 flex-wrap">
+                    <input type="date" id="tprcp-start" class="text-xs p-2 rounded-lg border border-outline-variant bg-surface text-on-surface cursor-pointer">
+                    <span class="text-xs font-bold text-outline">hasta</span>
+                    <input type="date" id="tprcp-end" class="text-xs p-2 rounded-lg border border-outline-variant bg-surface text-on-surface cursor-pointer">
+                    <button onclick="loadTprp()" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:shadow-md transition-all">FILTRAR</button>
+                    <button onclick="document.getElementById('tprcp-start').value=''; document.getElementById('tprcp-end').value=''; loadTprp()" class="px-3 py-2 bg-surface-container-high text-on-surface text-xs font-bold rounded-lg hover:bg-outline-variant/50 transition-all">LIMPIAR</button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto border border-outline-variant/20 rounded-xl bg-surface">
+                <table class="w-full text-center border-collapse min-w-[800px]">
+                    <thead class="bg-surface-container-low border-b border-outline-variant/30">
+                        <tr class="text-on-surface-variant text-[11px] font-extrabold uppercase tracking-widest">
+                            <th class="p-3 border-r border-outline-variant/20">Nº</th>
+                            <th class="p-3 border-r border-outline-variant/20">FECHA</th>
+                            <th class="p-3 border-r border-outline-variant/20">INICIO DE REGISTRO</th>
+                            <th class="p-3 border-r border-outline-variant/20">FIN DE REGISTRO</th>
+                            <th class="p-3">TIEMPO TOTAL (TRCP)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tprpTableBody">
+                        <tr><td colspan="6" class="p-10 text-outline text-xs font-bold animate-pulse">Cargando datos...</td></tr>
+                    </tbody>
+                    <tfoot class="bg-surface-container-low border-t border-outline-variant/30 font-bold">
+                        <tr>
+                            <td colspan="4" class="p-3 text-right text-xs uppercase tracking-widest">TIEMPO PROMEDIO GLOBAL</td>
+                            <td class="p-3 text-sm text-primary" id="fichaPromedio">--:--:--</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+        </div>
+
+    </section>
+</main>
+
+<script>
+async function loadTprp() {
+    try {
+        const start = document.getElementById('tprcp-start').value;
+        const end = document.getElementById('tprcp-end').value;
+        let url = 'http://localhost:8000/api/orders/tprcp/reporte';
+        if(start || end) {
+            url += `?start_date=${start}&end_date=${end}`;
+        }
+        
+        const res = await fetch(url);
+        const payload = await res.json();
+        
+        const tbody = document.getElementById('tprpTableBody');
+        tbody.innerHTML = '';
+        
+        if (!payload.data || payload.data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-outline text-xs font-bold">No hay registros de cotizaciones en este rango de fechas.</td></tr>';
+            document.getElementById('fichaPromedio').innerText = '--:--:--';
+            document.getElementById('avgLabel').innerText = '--:--:--';
+            return;
+        }
+
+        payload.data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-outline-variant/10 hover:bg-surface-container-low/50 transition-colors text-sm';
+            tr.innerHTML = `
+                <td class="p-3 border-r border-outline-variant/10 font-bold text-outline">${row.item}</td>
+                <td class="p-3 border-r border-outline-variant/10">${row.fecha}</td>
+                <td class="p-3 border-r border-outline-variant/10 text-indigo-600 font-bold">${row.tiempo_inicial}</td>
+                <td class="p-3 border-r border-outline-variant/10 text-emerald-600 font-bold">${row.tiempo_final}</td>
+                <td class="p-3 font-black text-on-surface">${row.tiempo_registro}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        document.getElementById('fichaPromedio').innerText = payload.promedio_str;
+        document.getElementById('avgLabel').innerText = payload.promedio_str;
+        
+    } catch (err) {
+        console.error('TPRP error:', err);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadTprp);
+</script>
+<script src="app.js"></script>
+</body>
+</html>

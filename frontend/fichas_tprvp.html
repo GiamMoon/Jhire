@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Fichas de Registro TPRVP - JHIRE</title>
+    <style>
+        body { background-color: #555; padding: 40px; font-family: Arial, sans-serif; }
+        .page { background-color: white; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.5); max-width: 900px; margin: 0 auto 40px auto; page-break-after: always; }
+        h2 { text-align: center; text-decoration: underline; font-size: 16px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; border: 1px solid black; }
+        td, th { border: 1px solid black; padding: 5px; }
+        .header-cell { text-align: left; font-weight: bold; }
+        .bg-gray { background-color: #f2f2f2; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- PRE-TEST PAGE -->
+    <div class="page">
+        <h2>Ficha de registro Pre Test - Indicador tiempo promedio en el registro de las ventas</h2>
+        <table>
+            <tr>
+                <td class="header-cell" style="width: 25%;">Investigador(es)</td>
+                <td colspan="4" style="text-align: left;">De La Cruz Padilla Giampier Alberto</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Empresa investigada</td>
+                <td colspan="4" style="text-align: left;">ESCOBILLAS INDUSTRIALES JHIRE E.I.R.L.</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Objetivo</td>
+                <td colspan="4" style="text-align: left;">Recolectar información de los tiempos que se utilizan para el registro de las ventas que realizan los clientes en la empresa ESCOBILLAS INDUSTRIALES JHIRE E.I.R.L.</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Periodo</td>
+                <td colspan="4" style="text-align: left;">El periodo de recolección será de 30 días.</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Fecha de aprobación</td>
+                <td colspan="4" style="text-align: left;">18/05/2021</td>
+            </tr>
+            <tr class="bg-gray">
+                <td colspan="2">Variable</td>
+                <td colspan="3">Fórmula</td>
+            </tr>
+            <tr>
+                <td colspan="2">Gestion de ventas y facturacion</td>
+                <td colspan="3" rowspan="2">
+                    <div style="font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 15px; margin: 10px 0;">
+                        <b>TPRVP</b> = 
+                        <span style="display: inline-flex; flex-direction: column; text-align: center; vertical-align: middle; margin: 0 6px;">
+                            <span style="border-bottom: 1.5px solid black; padding: 0 4px;">&Sigma;<sup>n</sup><sub>1</sub> (TRVP)i</span>
+                            <span style="padding: 0 4px;">NV</span>
+                        </span>
+                    </div><br>
+                    <div style="text-align: left; font-size: 11px;">
+                    Donde:<br>
+                    TPRVP = Tiempo promedio en el registro de ventas de los productos.<br>
+                    TRVP = Tiempo en el registro de las ventas de los productos.<br>
+                    NV = Número de ventas registradas.
+                    </div>
+                </td>
+            </tr>
+            <tr class="bg-gray">
+                <td>Indicador</td>
+                <td>Medida</td>
+            </tr>
+            <tr>
+                <td>Tiempo promedio en el registro de las ventas</td>
+                <td>Porcentaje</td>
+            </tr>
+            <tr class="bg-gray">
+                <td>ÍTEM</td>
+                <td>FECHA</td>
+                <td>TIEMPO INICIAL</td>
+                <td>TIEMPO FINAL</td>
+                <td>TIEMPO EN EL REGISTRO DE LAS VENTAS (TRVP)</td>
+            </tr>
+            <tbody id="pre-test-body">
+                <tr><td colspan="5">Cargando datos desde Base de Datos...</td></tr>
+            </tbody>
+            <tr class="bg-gray">
+                <td colspan="4" style="text-align: center;">PROMEDIO</td>
+                <td id="pre-test-avg">--:--:--</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- POST-TEST PAGE -->
+    <div class="page">
+        <h2>Ficha de registro Post Test - Indicador tiempo promedio en el registro de las ventas</h2>
+        <table>
+            <tr>
+                <td class="header-cell" style="width: 25%;">Investigador(es)</td>
+                <td colspan="4" style="text-align: left;">De La Cruz Padilla Giampier Alberto</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Empresa investigada</td>
+                <td colspan="4" style="text-align: left;">ESCOBILLAS INDUSTRIALES JHIRE E.I.R.L.</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Objetivo</td>
+                <td colspan="4" style="text-align: left;">Recolectar información de los tiempos que se utilizan para el registro de las ventas que realizan los clientes en la empresa ESCOBILLAS INDUSTRIALES JHIRE E.I.R.L.</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Periodo</td>
+                <td colspan="4" style="text-align: left;">El periodo de recolección será de 30 días.</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Fecha de aprobación</td>
+                <td colspan="4" style="text-align: left;">18/05/2021</td>
+            </tr>
+            <tr class="bg-gray">
+                <td colspan="2">Variable</td>
+                <td colspan="3">Fórmula</td>
+            </tr>
+            <tr>
+                <td colspan="2">Gestion de ventas y facturacion</td>
+                <td colspan="3" rowspan="2">
+                    <div style="font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 15px; margin: 10px 0;">
+                        <b>TPRVP</b> = 
+                        <span style="display: inline-flex; flex-direction: column; text-align: center; vertical-align: middle; margin: 0 6px;">
+                            <span style="border-bottom: 1.5px solid black; padding: 0 4px;">&Sigma;<sup>n</sup><sub>1</sub> (TRVP)i</span>
+                            <span style="padding: 0 4px;">NV</span>
+                        </span>
+                    </div><br>
+                    <div style="text-align: left; font-size: 11px;">
+                    Donde:<br>
+                    TPRVP = Tiempo promedio en el registro de ventas de los productos.<br>
+                    TRVP = Tiempo en el registro de las ventas de los productos.<br>
+                    NV = Número de ventas registradas.
+                    </div>
+                </td>
+            </tr>
+            <tr class="bg-gray">
+                <td>Indicador</td>
+                <td>Medida</td>
+            </tr>
+            <tr>
+                <td>Tiempo promedio en el registro de las ventas</td>
+                <td>Porcentaje</td>
+            </tr>
+            <tr class="bg-gray">
+                <td>ÍTEM</td>
+                <td>FECHA</td>
+                <td>TIEMPO INICIAL</td>
+                <td>TIEMPO FINAL</td>
+                <td>TIEMPO EN EL REGISTRO DE LAS VENTAS (TRVP)</td>
+            </tr>
+            <tbody id="post-test-body">
+                <tr><td colspan="5">Cargando datos desde Base de Datos...</td></tr>
+            </tbody>
+            <tr class="bg-gray">
+                <td colspan="4" style="text-align: center;">PROMEDIO</td>
+                <td id="post-test-avg">--:--:--</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api/sales/tprvp/reporte';
+
+        async function loadTable(startDate, endDate, bodyId, avgId) {
+            try {
+                const res = await fetch(`${API_URL}?start_date=${startDate}&end_date=${endDate}`);
+                const payload = await res.json();
+                
+                const tbody = document.getElementById(bodyId);
+                tbody.innerHTML = '';
+                
+                if (!payload.data || payload.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5">No hay registros de ventas.</td></tr>';
+                    return;
+                }
+
+                payload.data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.item}</td>
+                        <td>${row.fecha}</td>
+                        <td>${row.tiempo_inicial}</td>
+                        <td>${row.tiempo_final}</td>
+                        <td>${row.tiempo_registro}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                document.getElementById(avgId).innerText = payload.promedio_str;
+                
+            } catch(e) {
+                console.error(e);
+                document.getElementById(bodyId).innerHTML = '<tr><td colspan="5">Error conectando al sistema JHIRE.</td></tr>';
+            }
+        }
+
+        // Pre-test: March 17 to April 15
+        loadTable('2026-03-17', '2026-04-15', 'pre-test-body', 'pre-test-avg');
+        
+        // Post-test: April 16 to May 15
+        loadTable('2026-04-16', '2026-05-15', 'post-test-body', 'post-test-avg');
+    </script>
+</body>
+</html>

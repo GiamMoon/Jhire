@@ -55,6 +55,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial call to set active button state
     const savedTheme = localStorage.getItem('jhire_theme') || 'auto';
     if(window.updateThemeUI) window.updateThemeUI(savedTheme);
+
+    // --- Sidebar Active State ---
+    (function highlightActiveSidebarLink() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const sidebarLinks = document.querySelectorAll('aside nav a, aside .p-4 a, aside div.p-4 a');
+        const ACTIVE_CLASSES = ['bg-primary/10', 'text-primary', 'shadow-sm'];
+        const INACTIVE_CLASSES = ['text-on-surface-variant', 'hover:bg-surface-container', 'hover:text-on-surface'];
+
+        sidebarLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href) return;
+            const linkPage = href.split('/').pop();
+
+            // Remove any existing active state
+            ACTIVE_CLASSES.forEach(cls => link.classList.remove(cls));
+
+            if (linkPage === currentPage) {
+                // Apply active state
+                INACTIVE_CLASSES.forEach(cls => link.classList.remove(cls));
+                ACTIVE_CLASSES.forEach(cls => link.classList.add(cls));
+            } else {
+                // Ensure inactive state
+                INACTIVE_CLASSES.forEach(cls => {
+                    if (!link.classList.contains(cls)) link.classList.add(cls);
+                });
+            }
+        });
+    })();
+
     // --- Mobile Menu Logic ---
     const openMobileMenuBtn = document.getElementById('openMobileMenuBtn');
     const closeMobileMenuBtn = document.getElementById('closeMobileMenuBtn');
@@ -424,15 +453,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Replace Dashboard data with dynamic API (Simulated if endpoint is down)
     const dashboardCheck = document.getElementById('total-sales');
     if (dashboardCheck) {
+        // Fetch from nivel-ventas/pcv-ml to stay consistent with nivel_ventas.html
+        fetch('http://localhost:8000/api/nivel-ventas/pcv-ml')
+            .then(res => res.json())
+            .then(nvData => {
+                // Use the same VA_real_30d that nivel_ventas.html uses
+                if (nvData && nvData.VA_real_30d) {
+                    document.getElementById('total-sales').innerText = `S/ ${nvData.VA_real_30d.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+                }
+            }).catch(() => {});
+
         fetch('http://localhost:8000/api/dashboard/summary')
             .then(res => res.json())
             .then(data => {
-                document.getElementById('total-sales').innerText = `S/. ${data.total_sales.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
-                if (document.getElementById('forecast-accuracy')) document.getElementById('forecast-accuracy').innerText = `${data.demand_forecast_accuracy}`;
+                // Órdenes del Mes y Ticket Promedio
+                if (data.sales_periods && data.sales_periods['30d']) {
+                    const p30 = data.sales_periods['30d'];
+                    const ordersEl = document.getElementById('orders-count');
+                    if (ordersEl) ordersEl.innerText = p30.count;
+                    const ticketEl = document.getElementById('avg-ticket');
+                    if (ticketEl) ticketEl.innerText = `S/ ${p30.avg_ticket.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+                }
                 
-                // NEW: Pronóstico Mañana KPI
+                // Pronóstico Mañana KPI
                 const forecastNextDay = document.getElementById('forecast-next-day');
-                if (forecastNextDay) forecastNextDay.innerText = `S/. ${data.projected_next_day.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+                if (forecastNextDay) forecastNextDay.innerText = `S/ ${data.projected_next_day.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
                 
                 const rankingBox = document.getElementById('product-ranking-list');
                 if (rankingBox && data.top_products) {
@@ -454,33 +499,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <div class="w-full bg-surface-container-high rounded-full h-1.5 overflow-hidden">
                                         <div class="h-full rounded-full transition-all duration-700" style="width:${pct}%;background:${barColors[index % barColors.length]}"></div>
                                     </div>
-                                    <p class="text-[10px] text-on-surface-variant font-medium mt-1">S/. ${p.contribution.toLocaleString('es-PE', {minimumFractionDigits: 2})}</p>
+                                    <p class="text-[10px] text-on-surface-variant font-medium mt-1">S/ ${p.contribution.toLocaleString('es-PE', {minimumFractionDigits: 2})}</p>
                                 </div>
                             </div>`;
                         });
                     }
                 }
                 
-                const anomaliesBox = document.getElementById('ai-anomalies-box');
-                if (anomaliesBox && data.ai_anomalies) {
-                    let msg = data.ai_anomalies[0] || "Sistema operativo estable. Sin desviaciones.";
-                    let isUp = msg.toLowerCase().includes('alza');
-                    
-                    anomaliesBox.innerHTML = `
-                        <h4 class="text-sm font-bold text-on-surface mb-1 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 inline-block rounded-full ${isUp ? 'bg-success' : 'bg-amber-500'} animate-pulse"></span> 
-                            ${isUp ? '📈 Alza Detectada' : '📉 Baja Detectada'}
-                        </h4>
-                        <p class="text-xs text-outline leading-relaxed">${msg}</p>
-                        <p class="text-[10px] text-primary font-bold mt-2">Análisis basado en tendencias históricas de ventas</p>
-                    `;
-                }
-                
                 // ============================================
                 // VENTAS POR PERÍODO (7d, 30d, 90d)
                 // ============================================
                 if (data.sales_periods) {
-                    const fmt = (v) => `S/. ${v.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+                    const fmt = (v) => `S/ ${v.toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
                     for (const [key, period] of Object.entries(data.sales_periods)) {
                         const totalEl = document.getElementById(`period-${key}-total`);
                         const countEl = document.getElementById(`period-${key}-count`);
@@ -667,9 +697,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .catch(err => {
-                console.log("Mocking data due to no backend connection", err);
-                document.getElementById('total-sales').innerText = `S/. 145,157.46`;
-                if (document.getElementById('forecast-accuracy')) document.getElementById('forecast-accuracy').innerText = `92`;
+                console.log("Dashboard summary fetch error", err);
+                if (document.getElementById('forecast-accuracy')) document.getElementById('forecast-accuracy').innerText = `--`;
             });
     }
     // Fetch Products dynamically if productGrid exists
@@ -833,6 +862,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
                         const item = { id: prod.id, name: prod.name, price: prod.price_soles, image: prod.image_url, quantity: qty };
                         let currentCart = JSON.parse(localStorage.getItem('jhire_cart')) || [];
+                        
+                        // Start Timer if cart was empty
+                        if (currentCart.length === 0) {
+                            localStorage.setItem('jhire_cart_start_time', Date.now());
+                        }
+
                         let existing = currentCart.find(i => i.id === item.id);
                         if(existing) { existing.quantity += qty; } else { currentCart.push(item); }
                         localStorage.setItem('jhire_cart', JSON.stringify(currentCart));
@@ -1165,6 +1200,13 @@ document.addEventListener('DOMContentLoaded', () => {
             <div id="cartItemsList" class="flex-1 overflow-y-auto space-y-3 mb-6 bg-surface dark:bg-surface-container dark:bg-surface border rounded-xl p-2 border-outline-variant/20 dark:border-white/5 shadow-inner">
                 <!-- Items list dynamic -->
             </div>
+            <!-- ML RECOMMENDATIONS -->
+            <div id="cartAiRecommendations" class="hidden mb-4">
+                <p class="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-1 mb-2"><span class="material-symbols-outlined text-[12px]">auto_awesome</span> IA Recomienda para acompañar</p>
+                <div id="cartAiRecsList" class="flex gap-2 overflow-x-auto pb-2">
+                    <!-- Dynamic Recs -->
+                </div>
+            </div>
             <div class="border-t pt-4 border-outline-variant/20 dark:border-white/10 space-y-4">
                 <div class="flex justify-between font-black text-xl text-on-surface">
                     <span>TOTAL:</span>
@@ -1198,6 +1240,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     window.changeCartQuantity = (id, delta) => {
         let currentCart = checkCartState();
+        
+        // Start Timer for TPRCP if cart was empty
+        if (currentCart.length === 0 && delta > 0) {
+            localStorage.setItem('jhire_cart_start_time', Date.now());
+        }
+
         let item = currentCart.find(i => i.id === id);
         if(item) {
             item.quantity = (item.quantity || 1) + delta;
@@ -1205,6 +1253,9 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('jhire_cart', JSON.stringify(currentCart));
             window.updateCartBadge();
             renderCartItems();
+        } else if (delta > 0) {
+            // Wait, this function might just change quantity. Where do they add a NEW item to the cart?
+            // Actually, if it's not in the cart, how is it added? We need to look at `addToCart` if it exists.
         }
     };
     
@@ -1242,6 +1293,46 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         cartTotal.innerText = `S/ ${total.toFixed(2)}`;
+        
+        // Fetch ML Recommendations
+        const aiContainer = document.getElementById('cartAiRecommendations');
+        const aiList = document.getElementById('cartAiRecsList');
+        if (data.length > 0 && aiContainer && aiList) {
+            const productIds = data.map(i => i.id);
+            fetch('http://localhost:8000/api/orders/recommend-products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_product_ids: productIds })
+            }).then(r => r.json()).then(res => {
+                if (res.recommendations && res.recommendations.length > 0) {
+                    aiContainer.classList.remove('hidden');
+                    aiList.innerHTML = res.recommendations.map(r => `
+                        <div class="shrink-0 w-40 bg-surface-container-low border border-outline-variant/20 rounded-lg p-2 flex flex-col gap-1 shadow-sm relative">
+                            <button onclick="window.addRecToCart(${r.id}, '${r.name}', ${r.price_soles}, '${r.image_url}')" class="absolute -top-2 -right-2 bg-primary text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-[12px]">add</span>
+                            </button>
+                            <img src="${r.image_url}" class="w-full h-12 object-contain rounded bg-white p-1">
+                            <p class="text-[9px] font-bold text-on-surface line-clamp-1">${r.name}</p>
+                            <p class="text-[10px] font-black text-primary">S/ ${r.price_soles.toFixed(2)}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    aiContainer.classList.add('hidden');
+                }
+            }).catch(e => {
+                aiContainer.classList.add('hidden');
+            });
+        } else if (aiContainer) {
+            aiContainer.classList.add('hidden');
+        }
+    };
+    
+    window.addRecToCart = (id, name, price, image) => {
+        let currentCart = checkCartState();
+        currentCart.push({ id, name, price, image, quantity: 1 });
+        localStorage.setItem('jhire_cart', JSON.stringify(currentCart));
+        window.updateCartBadge();
+        renderCartItems();
     };
 
     document.getElementById('navCartBtn')?.addEventListener('click', () => {
@@ -1265,7 +1356,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('cartCheckoutBtn').innerText = 'PROCESANDO...';
         
         try {
-            const bodyPayload = { items: data.map(i => ({ product_id: i.id, quantity: i.quantity || 1 })) };
+            // Get registration time TPRCP
+            const startTime = localStorage.getItem('jhire_cart_start_time');
+            let regTimeSeconds = 0;
+            if (startTime) {
+                regTimeSeconds = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+            }
+
+            const bodyPayload = { 
+                items: data.map(i => ({ product_id: i.id, quantity: i.quantity || 1 })),
+                registration_time_seconds: regTimeSeconds
+            };
             
             const res = await fetch('http://localhost:8000/api/orders/', {
                 method: 'POST',
@@ -1386,6 +1487,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(window.location.pathname.includes('dashboard.html')) {
         const token = localStorage.getItem('jhire_jwt_token');
         
+        // Track when each order was first shown to admin for TPRVP measurement
+        window._orderViewTimes = window._orderViewTimes || {};
+        
         window.updateOrderStatus = async (orderId, newStatus) => {
             const result = await Swal.fire({
                 title: '¿Estás seguro?',
@@ -1399,12 +1503,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if(!result.isConfirmed) return;
             try {
+                // Calculate elapsed seconds since order was displayed
+                let confirmationSeconds = 0;
+                if(newStatus === 'Completado' && window._orderViewTimes[orderId]) {
+                    confirmationSeconds = Math.round((Date.now() - window._orderViewTimes[orderId]) / 1000);
+                    if(confirmationSeconds < 1) confirmationSeconds = 1;
+                }
+                
                 const res = await fetch(`http://localhost:8000/api/orders/${orderId}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ status: newStatus })
+                    body: JSON.stringify({ status: newStatus, sale_confirmation_seconds: confirmationSeconds })
                 });
                 if(!res.ok) throw new Error("Error status");
+                delete window._orderViewTimes[orderId];
                 loadAdminOrders();
             } catch(e) {
                 console.error(e);
@@ -1430,6 +1542,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-outline text-xs">No hay órdenes pendientes en este momento.</td></tr>';
                 } else {
                     orders.forEach(order => {
+                        // Register view time for TPRVP tracking
+                        if(!window._orderViewTimes[order.id]) {
+                            window._orderViewTimes[order.id] = Date.now();
+                        }
                         let itemsHtml = order.items.map(i => `${i.quantity}x ${i.product.name}`).join('<br>');
                         
                         let anomalyTag = order.status === 'Anomalía / Revisión' ? '<div class="mt-1.5 inline-flex items-center gap-1 bg-error text-white px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse shadow-sm"><span class="material-symbols-outlined text-[10px]">warning</span> ANOMALÍA DETECTADA</div>' : '';
@@ -2319,125 +2435,259 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // Configurar Envío de Factura Formulada
-    const invoiceForm = document.getElementById('invoiceForm');
-    if(invoiceForm) {
-        invoiceForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const rucInput = document.getElementById('rucInput').value.trim();
-            const clientNameInput = document.getElementById('clientNameInput').value.trim();
-            const orderIdInput = document.getElementById('orderIdInput').value.trim();
-            const compliance = document.getElementById('compliance').checked;
-            const law29733 = document.getElementById('law29733').checked;
-            
-            if(!compliance || !law29733) {
-                Swal.fire('Requisito Legal', 'Debe aceptar las cláusulas de conformidad SUNAT y consentimiento de datos personales (Ley N° 29733) para generar comprobantes electrónicos.', 'warning');
-                return;
-            }
-            
-            // Validation: Client Name
-            if(!clientNameInput || clientNameInput.length < 3) {
-                Swal.fire('Error de Validación', 'La Razón Social / Nombre del cliente debe tener mínimo 3 caracteres.', 'error');
-                document.getElementById('clientNameInput').focus();
-                return;
-            }
-            
-            // Validation: Order ID
-            if(!orderIdInput || parseInt(orderIdInput) <= 0 || isNaN(parseInt(orderIdInput))) {
-                Swal.fire('Error de Validación', 'Ingrese un ID de Orden válido (número positivo).', 'error');
-                document.getElementById('orderIdInput').focus();
-                return;
-            }
-            
-            // Validation: RUC/DNI format
-            if(!/^\d{8}$|^\d{11}$/.test(rucInput)) {
-                Swal.fire('Error de Documento', 'El RUC debe contener 11 dígitos o el DNI 8 dígitos numéricos.', 'error');
-                document.getElementById('rucInput').focus();
-                return;
-            }
-            
-            // Validation: RUC Módulo-11 (only for 11-digit RUC)
-            if(rucInput.length === 11) {
-                if(!/^(10|15|16|17|20)/.test(rucInput)) {
-                    Swal.fire('Error RUC', 'El RUC debe iniciar con 10 (Persona Natural), 15, 16, 17 o 20 (Persona Jurídica) según normativa SUNAT.', 'error');
-                    return;
-                }
-                const multipliers = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
-                let total = 0;
-                for(let i = 0; i < 10; i++) total += parseInt(rucInput.charAt(i)) * multipliers[i];
-                let check = 11 - (total % 11);
-                if(check === 10) check = 0;
-                else if(check === 11) check = 1;
-                if(parseInt(rucInput.charAt(10)) !== check) {
-                    Swal.fire('RUC Inválido', 'El dígito verificador no coincide con el algoritmo Módulo-11 de SUNAT. Verifique el número ingresado.', 'error');
-                    return;
-                }
-            }
-            
-            // Show loading
-            Swal.fire({
-                title: 'Emitiendo CPE',
-                html: 'Enviando payload XML UBL 2.1 a OSE/SUNAT...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
-            });
-            
-            try {
-                const token = localStorage.getItem('jhire_jwt_token');
-                const res = await fetch('http://localhost:8000/api/billing/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({
-                        order_id: parseInt(orderIdInput),
-                        client_ruc_dni: rucInput,
-                        client_name: clientNameInput
-                    })
-                });
-                
-                const data = await res.json();
-                
-                if(res.ok) {
-                    Swal.fire({
-                        title: 'Comprobante Aceptado por SUNAT',
-                        html: `<div class="text-left mt-4 text-sm bg-surface-container-low p-4 rounded-lg" style="user-select: text;">
-                            <p><strong>Nro Resolución:</strong> SUNAT-${Math.floor(Math.random() * 1000000000)}</p>
-                            <p class="mt-2 text-green-700 font-bold"><span class="material-symbols-outlined text-[14px]">check_circle</span> Factura ${data.invoice_number} generada correctamente por S/ ${parseFloat(data.total).toFixed(2)}</p>
-                            <p class="text-xs text-outline mt-2 whitespace-pre-line break-all">Hash Firma: ${btoa(data.invoice_number + data.total)}</p>
-                        </div>`,
-                        icon: 'success',
-                        confirmButtonText: 'Imprimir / Descargar PDF',
-                        showCancelButton: true,
-                        cancelButtonText: 'Cerrar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.open(`http://localhost:8000/api/billing/${data.id}/pdf`, '_blank');
-                        }
-                    });
-                    invoiceForm.reset();
-                    loadDynamicBilling();
-                } else {
-                    Swal.fire('Error al Emitir', data.detail || 'Verifique que el ID de la Órden comercial exista en el sistema.', 'error');
-                }
-            } catch(e) {
-                Swal.fire('Fallo de Red', 'No se pudo contactar al facturador electrónico.', 'error');
-            }
-        });
-        
-        // Auto-fill logic for dummy RUC checking
-        const validateBtn = document.getElementById('validateRucBtn');
-        if(validateBtn) {
-            validateBtn.addEventListener('click', () => {
-                const ruc = document.getElementById('rucInput').value.trim();
-                const nameInp = document.getElementById('clientNameInput');
-                if(/^\d{8}$|^\d{11}$/.test(ruc)) {
-                    if(!nameInp.value) {
-                       nameInp.value = ruc.length === 11 ? "EMPRESA RUC " + ruc + " S.A.C." : "CLIENTE DNI " + ruc;
-                    }
-                }
-            });
-        }
-    }
+    // Conflicting invoiceForm listener removed, handled in facturacion.html
     loadDynamicCRM();
     loadDynamicBilling();
+
+    // ==========================================
+    // INVENTORY MODULE
+    // ==========================================
+    if (document.getElementById('inv-raw-materials')) {
+        let _invProducts = [];
+        let _invLowStock = [];
+
+        async function loadInventory() {
+            try {
+                const res = await fetch('/api/inventory/', { headers: authHeaders() });
+                if (!res.ok) return;
+                const d = await res.json();
+                _invProducts = d.products || [];
+                _invLowStock = d.low_stock_products || [];
+
+                document.getElementById('inv-raw-materials').innerHTML = `${d.raw_materials} <span class="text-sm font-medium text-outline">unidades</span>`;
+                document.getElementById('inv-finished-products').innerHTML = `${d.finished_products} <span class="text-sm font-medium text-outline">unidades</span>`;
+                document.getElementById('inv-low-stock').innerHTML = `${d.low_stock_items} <span class="text-sm font-medium text-outline">SKUs</span>`;
+                document.getElementById('inv-movements-count').innerHTML = `${d.total_movements_week} <span class="text-sm font-medium text-outline">registros</span>`;
+
+                const sugEl = document.getElementById('inv-ai-suggestion');
+                if (sugEl) sugEl.innerHTML = `<span class="w-2 h-2 rounded-full ${d.low_stock_items > 0 ? 'bg-error' : 'bg-success'} animate-pulse"></span> ${d.ai_suggestion}`;
+
+                // Suppliers
+                const sc = document.getElementById('supplierContainer');
+                if (sc) {
+                    if (d.suppliers.length === 0) {
+                        sc.innerHTML = '<p class="text-outline text-sm text-center py-8">Sin proveedores registrados</p>';
+                    } else {
+                        sc.innerHTML = d.suppliers.map(s => `<div class="flex items-center justify-between p-3 bg-surface-container rounded-xl"><span class="font-bold text-sm text-on-surface">${s.name}</span><span class="text-xs text-outline font-medium bg-surface px-2 py-1 rounded-lg">${s.lead_time}</span></div>`).join('');
+                    }
+                }
+
+                // Movements table
+                const tb = document.getElementById('movementTableBody');
+                if (tb) {
+                    if (d.movements.length === 0) {
+                        tb.innerHTML = '<tr><td colspan="3" class="text-center py-8 text-outline text-sm">Sin movimientos registrados</td></tr>';
+                    } else {
+                        tb.innerHTML = d.movements.map(m => `<tr class="hover:bg-surface-container/50 transition-colors"><td class="p-3 font-bold text-primary text-xs">${m.sku}</td><td class="p-3 text-on-surface">${m.desc}</td><td class="p-3 text-right"><span class="px-2 py-1 rounded-lg text-xs font-bold ${m.type === 'Entrada' ? 'bg-success-container text-success' : 'bg-red-100 text-error'}">${m.type}</span></td></tr>`).join('');
+                    }
+                }
+            } catch (e) { console.error('Inventory load error', e); }
+        }
+
+        // Make KPI cards clickable
+        document.querySelectorAll('[data-inv-detail]').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                const type = card.dataset.invDetail;
+                let title = '', items = [];
+                if (type === 'raw') { title = 'Insumos / Componentes'; items = _invProducts; }
+                else if (type === 'finished') { title = 'Productos para Venta'; items = _invProducts; }
+                else if (type === 'low') { title = 'Escasez Crítica (Stock < 20)'; items = _invLowStock; }
+                else if (type === 'movements') { title = 'Movimientos del Mes'; showMovementsModal(); return; }
+                showProductDrillModal(title, items, type);
+            });
+        });
+
+        function showProductDrillModal(title, items, type) {
+            let existing = document.getElementById('invDrillModal');
+            if (existing) existing.remove();
+            const modal = document.createElement('div');
+            modal.id = 'invDrillModal';
+            modal.className = 'fixed inset-0 bg-on-surface/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4';
+            const rows = items.length === 0
+                ? '<tr><td colspan="5" class="text-center py-8 text-outline">No hay productos en esta categoría</td></tr>'
+                : items.map(p => {
+                    const stockClass = p.stock < 20 ? 'text-error font-black' : 'text-on-surface';
+                    return `<tr class="hover:bg-surface-container/50 transition-colors border-b border-outline-variant/10">
+                        <td class="p-3 text-xs font-bold text-primary">JHIRE-${p.id}</td>
+                        <td class="p-3 font-medium text-sm">${p.name}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase bg-surface-container-high text-on-surface">${p.category}</span></td>
+                        <td class="p-3 ${stockClass} text-right font-bold">${p.stock}</td>
+                        <td class="p-3 text-right text-sm font-medium">S/. ${p.price_soles.toFixed(2)}</td>
+                    </tr>`;
+                }).join('');
+            modal.innerHTML = `<div class="bg-surface rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden shadow-2xl border border-outline-variant/20 flex flex-col">
+                <div class="p-5 border-b border-outline-variant/20 bg-surface-container-low flex justify-between items-center">
+                    <div><h3 class="text-lg font-bold font-headline">${title}</h3><p class="text-xs text-outline mt-0.5">${items.length} productos encontrados</p></div>
+                    <button onclick="document.getElementById('invDrillModal').remove()" class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined">close</span></button>
+                </div>
+                <div class="overflow-y-auto flex-1"><table class="w-full text-left"><thead class="bg-surface-container sticky top-0"><tr class="text-[10px] font-black uppercase text-outline tracking-wider">
+                    <th class="p-3">SKU</th><th class="p-3">Producto</th><th class="p-3">Categoría</th><th class="p-3 text-right">Stock</th><th class="p-3 text-right">Precio</th>
+                </tr></thead><tbody>${rows}</tbody></table></div>
+            </div>`;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+        }
+
+        function showMovementsModal() {
+            const tb = document.getElementById('movementTableBody');
+            if (!tb) return;
+            let existing = document.getElementById('invDrillModal');
+            if (existing) existing.remove();
+            const modal = document.createElement('div');
+            modal.id = 'invDrillModal';
+            modal.className = 'fixed inset-0 bg-on-surface/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4';
+            modal.innerHTML = `<div class="bg-surface rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden shadow-2xl border border-outline-variant/20 flex flex-col">
+                <div class="p-5 border-b border-outline-variant/20 bg-surface-container-low flex justify-between items-center">
+                    <h3 class="text-lg font-bold font-headline">Historial de Movimientos</h3>
+                    <button onclick="document.getElementById('invDrillModal').remove()" class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined">close</span></button>
+                </div>
+                <div class="overflow-y-auto flex-1 p-5"><table class="w-full text-left"><thead class="bg-surface-container"><tr class="text-[10px] font-black uppercase text-outline tracking-wider"><th class="p-3">SKU</th><th class="p-3">Detalle</th><th class="p-3 text-right">Estado</th></tr></thead><tbody>${tb.innerHTML}</tbody></table></div>
+            </div>`;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+        }
+
+        // Movement form
+        const mf = document.getElementById('movementForm');
+        if (mf) {
+            mf.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = { product_id: parseInt(document.getElementById('movProductId').value), type: document.getElementById('movType').value, quantity: parseInt(document.getElementById('movQuantity').value) };
+                try {
+                    const res = await fetch('/api/inventory/movement', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify(payload) });
+                    const data = await res.json();
+                    if (res.ok) { Swal.fire({ icon: 'success', title: 'Registrado', text: data.message, timer: 1500, showConfirmButton: false }); document.getElementById('movementModal').classList.add('hidden'); mf.reset(); loadInventory(); }
+                    else { Swal.fire({ icon: 'error', title: 'Error', text: data.detail }); }
+                } catch (err) { Swal.fire({ icon: 'error', title: 'Error de Red', text: err.message }); }
+            });
+        }
+        loadInventory();
+    }
+
+    // ==========================================
+    // ADMIN CATALOG MODULE
+    // ==========================================
+    if (document.getElementById('catalogGrid')) {
+        let _catProducts = [];
+        async function loadCatalog() {
+            try {
+                const res = await fetch('/api/products', { headers: authHeaders() });
+                if (!res.ok) return;
+                _catProducts = await res.json();
+                renderCatalog(_catProducts);
+            } catch (e) { console.error('Catalog load error', e); }
+        }
+
+        function renderCatalog(products) {
+            const grid = document.getElementById('catalogGrid');
+            const countEl = document.getElementById('catalogCount');
+            if (countEl) countEl.textContent = products.length;
+            if (products.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-16"><span class="material-symbols-outlined text-6xl text-outline-variant/40 mb-4 block">inventory_2</span><p class="text-outline text-lg font-bold">Sin productos</p></div>';
+                return;
+            }
+            grid.innerHTML = products.map(p => {
+                const stockColor = p.stock < 20 ? 'text-error' : p.stock < 50 ? 'text-yellow-600' : 'text-success';
+                const stockBg = p.stock < 20 ? 'bg-red-50' : p.stock < 50 ? 'bg-yellow-50' : 'bg-green-50';
+                return `<div class="bg-surface-container-low rounded-2xl border border-outline-variant/20 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all group">
+                    <div class="h-40 bg-surface-container flex items-center justify-center overflow-hidden">
+                        <img src="${p.image_url || '/assets/images/escobilla_1.png'}" alt="${p.name}" class="h-full w-full object-cover group-hover:scale-105 transition-transform" onerror="this.src='/assets/images/escobilla_1.png'">
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <p class="text-[10px] font-black text-primary uppercase tracking-widest">SKU: JHIRE-${p.id}</p>
+                        <h4 class="text-sm font-bold text-on-surface leading-tight line-clamp-2">${p.name}</h4>
+                        <div class="flex items-center justify-between pt-2 border-t border-outline-variant/10">
+                            <span class="text-lg font-black text-primary">S/. ${p.price_soles.toFixed(2)}</span>
+                            <span class="${stockBg} ${stockColor} px-2 py-1 rounded-lg text-[10px] font-black">${p.stock} uds</span>
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button onclick="editProduct(${p.id})" class="flex-1 px-3 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-1"><span class="material-symbols-outlined text-sm">edit</span>Editar</button>
+                            <button onclick="deleteProduct(${p.id})" class="px-3 py-2 bg-error/10 text-error text-xs font-bold rounded-lg hover:bg-error/20 transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Search filter
+        const catSearch = document.getElementById('catalogSearch');
+        if (catSearch) {
+            catSearch.addEventListener('input', () => {
+                const q = catSearch.value.toLowerCase();
+                renderCatalog(_catProducts.filter(p => p.name.toLowerCase().includes(q) || (p.id + '').includes(q)));
+            });
+        }
+
+        // Category filter
+        document.querySelectorAll('[data-cat-filter]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-cat-filter]').forEach(b => b.classList.remove('bg-primary', 'text-white'));
+                btn.classList.add('bg-primary', 'text-white');
+                const cat = btn.dataset.catFilter;
+                renderCatalog(cat === 'all' ? _catProducts : _catProducts.filter(p => (p.category || 'general') === cat));
+            });
+        });
+
+        // Add/Edit product modal
+        window.showAddProductModal = function() {
+            document.getElementById('productModalTitle').textContent = 'Agregar Producto';
+            document.getElementById('productForm').reset();
+            document.getElementById('productFormId').value = '';
+            document.getElementById('productModal').classList.remove('hidden');
+        };
+
+        window.editProduct = function(id) {
+            const p = _catProducts.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('productModalTitle').textContent = 'Editar Producto';
+            document.getElementById('productFormId').value = p.id;
+            document.getElementById('productFormName').value = p.name;
+            document.getElementById('productFormPrice').value = p.price_soles;
+            document.getElementById('productFormStock').value = p.stock;
+            document.getElementById('productFormCategory').value = p.category || 'general';
+            document.getElementById('productFormDesc').value = p.description || '';
+            document.getElementById('productModal').classList.remove('hidden');
+        };
+
+        window.deleteProduct = function(id) {
+            Swal.fire({ title: '¿Eliminar producto?', text: 'Esta acción no se puede deshacer', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ba1a1a', confirmButtonText: 'Eliminar', cancelButtonText: 'Cancelar' }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const res = await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() });
+                        if (res.ok || res.status === 404) { Swal.fire({ icon: 'success', title: 'Eliminado', timer: 1200, showConfirmButton: false }); loadCatalog(); }
+                        else { const d = await res.json(); Swal.fire({ icon: 'error', title: 'Error', text: d.detail || 'Error al eliminar' }); }
+                    } catch (e) { Swal.fire({ icon: 'error', title: 'Error', text: e.message }); }
+                }
+            });
+        };
+
+        const pf = document.getElementById('productForm');
+        if (pf) {
+            pf.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('productFormId').value;
+                const payload = {
+                    name: document.getElementById('productFormName').value,
+                    price_soles: parseFloat(document.getElementById('productFormPrice').value),
+                    stock: parseInt(document.getElementById('productFormStock').value),
+                    category: document.getElementById('productFormCategory').value,
+                    description: document.getElementById('productFormDesc').value
+                };
+                try {
+                    const url = id ? `/api/products/${id}` : '/api/products';
+                    const method = id ? 'PUT' : 'POST';
+                    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify(payload) });
+                    if (res.ok) { Swal.fire({ icon: 'success', title: id ? 'Actualizado' : 'Creado', timer: 1200, showConfirmButton: false }); document.getElementById('productModal').classList.add('hidden'); loadCatalog(); }
+                    else { const d = await res.json(); Swal.fire({ icon: 'error', title: 'Error', text: d.detail || 'Error' }); }
+                } catch (e) { Swal.fire({ icon: 'error', title: 'Error', text: e.message }); }
+            });
+        }
+        loadCatalog();
+    }
+
+    function authHeaders() {
+        const t = localStorage.getItem('token');
+        return t ? { 'Authorization': 'Bearer ' + t } : {};
+    }
 });

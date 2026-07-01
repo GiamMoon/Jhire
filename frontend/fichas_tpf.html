@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Fichas de Registro TPF - JHIRE</title>
+    <style>
+        body { background-color: #555; padding: 40px; font-family: Arial, sans-serif; }
+        .page { background-color: white; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.5); max-width: 900px; margin: 0 auto 40px auto; page-break-after: always; }
+        h2 { text-align: center; font-size: 16px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; border: 1px solid black; }
+        td, th { border: 1px solid black; padding: 5px; }
+        .header-cell { text-align: center; font-weight: bold; }
+        .bg-blue { background-color: #002060; color: white; font-weight: bold; text-align: center; }
+        .bg-gray { background-color: #f2f2f2; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- PRE-TEST PAGE -->
+    <div class="page">
+        <h2>Ficha de Registro Pre Test - Indicador Tiempo de procesamiento de facturas electrónicas</h2>
+        <table>
+            <tr>
+                <td colspan="6" class="bg-blue">FICHA DE REGISTRO- OBSERVACIÓN</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="header-cell" style="width: 30%;">Tipo de Prueba</td>
+                <td colspan="4">Pre-Test</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="header-cell">Investigadores</td>
+                <td colspan="4">De La Cruz Padilla Giampier Alberto</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="header-cell">Empresa Investigada</td>
+                <td colspan="4">ESCOBILLAS INDUSTRIALES JHIRE E.I.R.L.</td>
+            </tr>
+            <tr class="bg-gray">
+                <td>Variable</td>
+                <td>Indicador</td>
+                <td>Medida</td>
+                <td colspan="3">Formula</td>
+            </tr>
+            <tr>
+                <td>Gestion de ventas y facturacion</td>
+                <td>Tiempo de procesamiento</td>
+                <td>Razón</td>
+                <td colspan="3">Fórmula: Tiempo total de procesamiento / Número total de facturas emitidas</td>
+            </tr>
+        </table>
+        <br>
+        <table>
+            <tr class="bg-gray">
+                <td>Ítem</td>
+                <td>Fecha de emisión</td>
+                <td>Fecha de finalización</td>
+                <td>Tiempo total de procesamiento</td>
+                <td>Número total de facturas emitidas</td>
+                <td>Tiempo de procesamiento</td>
+            </tr>
+            <tbody id="pre-test-body">
+                <tr><td colspan="6">Cargando datos desde Base de Datos...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- POST-TEST PAGE -->
+    <div class="page">
+        <h2>Ficha de Registro Post Test - Indicador Tiempo de procesamiento de facturas electrónicas</h2>
+        <table>
+            <tr>
+                <td colspan="6" class="bg-blue">FICHA DE REGISTRO- OBSERVACIÓN</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="header-cell" style="width: 30%;">Tipo de Prueba</td>
+                <td colspan="4">Post-Test</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="header-cell">Investigadores</td>
+                <td colspan="4">De La Cruz Padilla Giampier Alberto</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="header-cell">Empresa Investigada</td>
+                <td colspan="4">ESCOBILLAS INDUSTRIALES JHIRE E.I.R.L.</td>
+            </tr>
+            <tr class="bg-gray">
+                <td>Variable</td>
+                <td>Indicador</td>
+                <td>Medida</td>
+                <td colspan="3">Formula</td>
+            </tr>
+            <tr>
+                <td>Gestion de ventas y facturacion</td>
+                <td>Tiempo de procesamiento</td>
+                <td>Razón</td>
+                <td colspan="3">Fórmula: Tiempo total de procesamiento / Número total de facturas emitidas</td>
+            </tr>
+        </table>
+        <br>
+        <table>
+            <tr class="bg-gray">
+                <td>Ítem</td>
+                <td>Fecha de emisión</td>
+                <td>Fecha de finalización</td>
+                <td>Tiempo total de procesamiento</td>
+                <td>Número total de facturas emitidas</td>
+                <td>Tiempo de procesamiento</td>
+            </tr>
+            <tbody id="post-test-body">
+                <tr><td colspan="6">Cargando datos desde Base de Datos...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api/billing/tpf/reporte';
+
+        async function loadTable(startDate, endDate, bodyId, prefix) {
+            try {
+                const res = await fetch(`${API_URL}?start_date=${startDate}&end_date=${endDate}`);
+                const payload = await res.json();
+                
+                const tbody = document.getElementById(bodyId);
+                tbody.innerHTML = '';
+                
+                if (!payload.data || payload.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">No hay registros.</td></tr>';
+                    return;
+                }
+
+                payload.data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${prefix}</td>
+                        <td>${row.fecha_emision}</td>
+                        <td>${row.fecha_finalizacion}</td>
+                        <td>${row.tiempo_total_procesamiento}</td>
+                        <td>${row.numero_total_facturas}</td>
+                        <td>${row.tiempo_procesamiento}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+            } catch(e) {
+                console.error(e);
+                document.getElementById(bodyId).innerHTML = '<tr><td colspan="6">Error conectando al sistema.</td></tr>';
+            }
+        }
+
+        // Pre-test: March 17 to April 15
+        loadTable('2026-03-17', '2026-04-15', 'pre-test-body', 'Pre');
+        
+        // Post-test: April 16 to May 15
+        loadTable('2026-04-16', '2026-05-15', 'post-test-body', 'Post');
+    </script>
+</body>
+</html>

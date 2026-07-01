@@ -200,15 +200,96 @@ def create_interaction(
         "interaction": {
             "id": interaction.id,
             "type": interaction.type,
-            "notes": interaction.notes,
             "date": interaction.date.isoformat()
         }
     }
 
 
 # =====================================================
-# NEW: GENERAR LINK WHATSAPP PRE-ARMADO
+# NEW: AI RECOMMENDATIONS FOR CRM
 # =====================================================
+
+@router.get("/recommendations/{user_id}")
+def get_client_recommendations(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Permisos insuficientes")
+        
+    target_user = db.query(User).filter(User.id == user_id).first()
+    if not target_user:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado")
+        
+    # Get all orders for client
+    orders = db.query(Order).filter(Order.user_id == user_id, Order.status != "Cancelado").all()
+    total_orders = len(orders)
+    total_spent = sum(float(o.total_price) for o in orders)
+    avg_ticket = total_spent / total_orders if total_orders > 0 else 0
+    
+    # Days since last order
+    last_order = max((o.created_at for o in orders), default=None)
+    days_since_last = (datetime.utcnow() - last_order).days if last_order else None
+    
+    # AI Segmentation Logic
+    segment = "Nuevo Prospecto"
+    if total_orders >= 5 and total_spent >= 1000:
+        segment = "Cliente VIP"
+    elif total_orders >= 2:
+        if days_since_last and days_since_last > 60:
+            segment = "En Riesgo"
+        else:
+            segment = "Cliente Frecuente"
+    elif total_orders == 1:
+        segment = "Cliente Ocasional"
+        
+    # Generate Recommendations
+    recommendations = []
+    if segment == "Cliente VIP":
+        recommendations = [
+            "Contactar para ofrecer productos exclusivos o preventas.",
+            "Asignar línea de crédito premium.",
+            "Solicitar un testimonio de éxito."
+        ]
+    elif segment == "En Riesgo":
+        recommendations = [
+            "Enviar campaña de reactivación con un 15% de descuento.",
+            "Realizar llamada de seguimiento para conocer motivos de inactividad."
+        ]
+    elif segment == "Cliente Frecuente":
+        recommendations = [
+            "Ofrecer programa de referidos.",
+            "Recomendar productos complementarios a sus últimas compras."
+        ]
+    elif segment == "Cliente Ocasional":
+        recommendations = [
+            "Enviar boletín de ofertas semanales.",
+            "Ofrecer envío gratis en su próxima compra."
+        ]
+    else:
+        recommendations = [
+            "Programar llamada de bienvenida y calificación.",
+            "Enviar catálogo general de productos top ventas."
+        ]
+        
+    return {
+        "metrics": {
+            "total_orders": total_orders,
+            "total_spent": total_spent,
+            "avg_ticket": avg_ticket,
+            "days_since_last": days_since_last,
+            "segment": segment
+        },
+        "recommendations": recommendations
+    }
+
+
+# =====================================================
+# NEW: WHATSAPP LINK GENERATOR
+# =====================================================
+
+import urllib.parse
 
 @router.post("/whatsapp-link")
 def generate_whatsapp_link(
@@ -218,205 +299,44 @@ def generate_whatsapp_link(
 ):
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Permisos insuficientes")
-    
+        
     target_user = db.query(User).filter(User.id == req.user_id).first()
     if not target_user:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
-    
+        
     if not target_user.phone:
-        raise HTTPException(status_code=400, detail="El cliente no tiene número de teléfono registrado")
+        raise HTTPException(status_code=400, detail="El cliente no tiene teléfono registrado")
+        
+    # Clean phone (remove spaces, '+', etc)
+    phone = "".join(filter(str.isdigit, target_user.phone))
+    if len(phone) == 9 and phone.startswith("9"):
+        phone = "51" + phone  # Default to Peru code if standard 9-digit mobile
+        
+    client_name = target_user.first_name or "Cliente"
     
-    client_name = f"{target_user.first_name or ''} {target_user.last_name or ''}".strip() or "Estimado/a cliente"
-    
-    # Build message based on type
-    messages = {
-        "cotizacion": (
-            f"Hola {client_name}, le saluda el equipo comercial de *JHIRE*. 🏭\n\n"
-            f"Le recordamos que tiene una cotización pendiente de revisión en nuestra plataforma. "
-            f"Las cotizaciones tienen una validez de 15 días.\n\n"
-            f"📋 Puede revisar el detalle en: http://localhost:8000/mis_pedidos.html\n\n"
-            f"¿Tiene alguna consulta sobre los productos o desea ajustar cantidades? "
-            f"Estamos para ayudarle.\n\n"
-            f"_Equipo Comercial JHIRE_"
-        ),
-        "seguimiento": (
-            f"Hola {client_name}, le saluda *JHIRE*. 🤝\n\n"
-            f"Queremos asegurarnos de que su último pedido haya llegado en perfectas condiciones. "
-            f"¿Cómo fue su experiencia con nuestros productos?\n\n"
-            f"Su opinión es muy importante para nosotros y nos ayuda a mejorar nuestro servicio industrial.\n\n"
-            f"_Equipo de Atención al Cliente JHIRE_"
-        ),
-        "recordatorio_pago": (
-            f"Hola {client_name}, le saluda el área de cobranzas de *JHIRE*. 📋\n\n"
-            f"Le recordamos amablemente que tiene una cuota de pago pendiente asociada a su factura. "
-            f"Le invitamos a regularizar el pago para mantener su línea de crédito activa.\n\n"
-            f"📞 Para consultas, comuníquese con nosotros al (01) 555-1234.\n\n"
-            f"_Área de Cobranzas JHIRE_"
-        ),
-        "personalizado": req.custom_message or f"Hola {client_name}, le saluda *JHIRE*.",
+    msg_map = {
+        "cotizacion": f"Hola {client_name}, te comparto la cotización solicitada de JHIRE.",
+        "seguimiento": f"Hola {client_name}, te escribo de JHIRE para hacer seguimiento a tus necesidades.",
+        "recordatorio_pago": f"Hola {client_name}, te recordamos que tienes un pago pendiente con JHIRE.",
+        "personalizado": req.custom_message or f"Hola {client_name},"
     }
     
-    message = messages.get(req.message_type, messages["personalizado"])
+    msg_text = msg_map.get(req.message_type, f"Hola {client_name},")
+    encoded_msg = urllib.parse.quote(msg_text)
     
-    # Clean phone number
-    import re
-    phone_clean = re.sub(r'\D', '', target_user.phone)
-    if not phone_clean.startswith('51') and len(phone_clean) == 9:
-        phone_clean = '51' + phone_clean  # Peru country code
+    wa_url = f"https://wa.me/{phone}?text={encoded_msg}"
     
-    # URL encode message
-    from urllib.parse import quote
-    wa_link = f"https://wa.me/{phone_clean}?text={quote(message)}"
-    
-    # Auto-register CRM interaction
+    # Auto-register interaction
     interaction = CRMInteraction(
         user_id=req.user_id,
         type="whatsapp",
-        notes=f"💬 WhatsApp enviado — Tipo: {req.message_type.upper()} | Operador: {current_user.email}"
+        notes=f"💬 WhatsApp generado — Plantilla: {req.message_type.upper()} | Operador: {current_user.email}"
     )
     db.add(interaction)
     db.commit()
     
     return {
         "status": "success",
-        "whatsapp_link": wa_link,
-        "phone": phone_clean,
-        "message_preview": message[:200] + "..." if len(message) > 200 else message,
-        "message_type": req.message_type,
-        "interaction_id": interaction.id
-    }
-
-
-# =====================================================
-# EXISTING: RECOMENDACIONES IA
-# =====================================================
-
-@router.get("/recommendations/{user_id}")
-def get_recommendations(user_id: int, db: Session = Depends(get_db)):
-    """
-    Análisis Predictivo de Comportamiento del Consumidor.
-    Analiza patrones de compra (frecuencia, recencia, ticket promedio, 
-    categorías preferidas) para sugerir acciones comerciales proactivas.
-    """
-    orders = db.query(Order).filter(
-        Order.user_id == user_id, 
-        Order.status != "Cancelado"
-    ).order_by(Order.created_at.desc()).all()
-    
-    recommendations = []
-    segment = "Nuevo Prospecto"
-    
-    if not orders:
-        segment = "Nuevo Prospecto"
-        recommendations = [
-            "🎯 Cliente sin historial de compras. Activar secuencia de bienvenida B2B.",
-            "📧 Programar email automatizado con catálogo de productos más vendidos.",
-            "📞 Asignar llamada de prospección dentro de las próximas 48 horas."
-        ]
-    else:
-        total_spent = sum([float(o.total_price) for o in orders])
-        total_orders = len(orders)
-        avg_ticket = total_spent / total_orders if total_orders > 0 else 0
-        
-        # Recencia: Días desde la última compra
-        last_order_date = orders[0].created_at
-        days_since_last = (datetime.utcnow() - last_order_date).days
-        
-        # Frecuencia: Compras por mes (basado en rango de fechas)
-        first_order_date = orders[-1].created_at
-        months_active = max(1, (datetime.utcnow() - first_order_date).days / 30)
-        freq_per_month = total_orders / months_active
-        
-        # Productos más comprados por este cliente
-        top_products = db.query(
-            Product.name,
-            func.sum(OrderItem.quantity).label("qty")
-        ).join(OrderItem, Product.id == OrderItem.product_id)\
-         .join(Order, Order.id == OrderItem.order_id)\
-         .filter(Order.user_id == user_id, Order.status != "Cancelado")\
-         .group_by(Product.name)\
-         .order_by(func.sum(OrderItem.quantity).desc())\
-         .limit(3).all()
-        
-        fav_products = [p[0] for p in top_products] if top_products else []
-        
-        # --- SEGMENTACIÓN POR COMPORTAMIENTO ---
-        
-        # VIP: Alto gasto + alta frecuencia
-        if total_spent > 5000 and freq_per_month >= 1:
-            segment = "Cliente VIP"
-            recommendations.append(
-                f"💎 Cliente de alto valor (LTV: S/ {total_spent:,.2f}). Ticket promedio: S/ {avg_ticket:,.2f}."
-            )
-            recommendations.append(
-                "🏆 Migrar a programa de fidelización Premium con descuentos escalonados del 5-15%."
-            )
-            if days_since_last > 15:
-                recommendations.append(
-                    f"⚠️ Última compra hace {days_since_last} días. Activar campaña de retención urgente."
-                )
-            else:
-                recommendations.append(
-                    "✅ Actividad reciente confirmada. Mantener seguimiento de satisfacción post-venta."
-                )
-        
-        # En Riesgo: Compró antes pero lleva mucho sin comprar
-        elif days_since_last > 30:
-            segment = "En Riesgo"
-            recommendations.append(
-                f"🚨 Sin actividad hace {days_since_last} días. Riesgo de abandono detectado."
-            )
-            recommendations.append(
-                f"📉 Frecuencia histórica: {freq_per_month:.1f} compras/mes → Patrón degradado."
-            )
-            recommendations.append(
-                "📧 Enviar oferta personalizada de reactivación con descuento del 10% en su categoría favorita."
-            )
-            if fav_products:
-                recommendations.append(
-                    f"🔄 Re-abastecimiento sugerido: {', '.join(fav_products[:2])} (productos más solicitados)."
-                )
-        
-        # Frecuente: Compra regularmente
-        elif freq_per_month >= 0.5:
-            segment = "Cliente Frecuente"
-            recommendations.append(
-                f"📊 Patrón estable: {freq_per_month:.1f} compras/mes. Ticket promedio: S/ {avg_ticket:,.2f}."
-            )
-            if fav_products:
-                recommendations.append(
-                    f"🛒 Productos favoritos: {', '.join(fav_products)}. Sugerir productos complementarios."
-                )
-            recommendations.append(
-                "📦 Ofrecer plan de compra recurrente con entrega programada para aumentar retención."
-            )
-        
-        # Ocasional
-        else:
-            segment = "Cliente Ocasional"
-            recommendations.append(
-                f"📋 {total_orders} compra(s) registrada(s). Gasto acumulado: S/ {total_spent:,.2f}."
-            )
-            recommendations.append(
-                "🎁 Enviar cupón de incentivo para segunda compra (+15% descuento en pedido > S/ 500)."
-            )
-            if fav_products:
-                recommendations.append(
-                    f"💡 Basado en su interés por {fav_products[0]}, sugerir kit complementario."
-                )
-            recommendations.append(
-                "📞 Programar contacto de seguimiento para entender necesidades del negocio."
-            )
-    
-    return {
-        "status": "success",
-        "message": segment,
-        "recommendations": recommendations,
-        "metrics": {
-            "total_orders": len(orders),
-            "total_spent": sum([float(o.total_price) for o in orders]) if orders else 0,
-            "avg_ticket": sum([float(o.total_price) for o in orders]) / len(orders) if orders else 0,
-            "days_since_last": (datetime.utcnow() - orders[0].created_at).days if orders else None,
-            "segment": segment
-        }
+        "whatsapp_link": wa_url,
+        "message": "Enlace generado"
     }

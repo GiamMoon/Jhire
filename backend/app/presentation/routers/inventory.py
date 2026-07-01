@@ -13,7 +13,7 @@ router = APIRouter()
 def get_inventory_summary(db: Session = Depends(get_db)):
     products = db.query(Product).all()
     finished = sum(p.stock for p in products)
-    low_stock = sum(1 for p in products if p.stock < 20)
+    low_stock_products = [p for p in products if p.stock < 20]
     
     movements_count = db.query(func.count(InventoryMovement.id)).scalar() or 0
     
@@ -25,16 +25,35 @@ def get_inventory_summary(db: Session = Depends(get_db)):
     movs = []
     for m in recent_movements:
         prod = db.query(Product).filter(Product.id == m.product_id).first()
-        movs.append({"sku": f"JHIRE-{m.product_id}", "desc": f"[{m.type}] {prod.name if prod else 'Unknown'} - Qty: {m.quantity}"})
+        movs.append({
+            "sku": f"JHIRE-{m.product_id}", 
+            "desc": f"[{m.type}] {prod.name if prod else 'Unknown'} - Qty: {m.quantity}",
+            "type": m.type
+        })
+
+    # Build detailed product lists for each KPI card
+    all_products_list = [{
+        "id": p.id, "name": p.name, "stock": p.stock,
+        "price_soles": p.price_soles, "category": p.category or "general",
+        "image_url": p.image_url
+    } for p in products]
+
+    low_stock_list = [{
+        "id": p.id, "name": p.name, "stock": p.stock,
+        "price_soles": p.price_soles, "category": p.category or "general",
+        "image_url": p.image_url
+    } for p in low_stock_products]
 
     return {
-        "raw_materials": int(finished * 0.4), # Mock calculation for raw material based on total stock
+        "raw_materials": int(finished * 0.4),
         "finished_products": finished,
-        "low_stock_items": low_stock,
+        "low_stock_items": len(low_stock_products),
         "total_movements_week": movements_count,
         "suppliers": suppliers_list,
         "movements": movs,
-        "ai_suggestion": "Basado en el stock en tiempo real, se requiere abastecimiento urgente para los ítems con escasez." if low_stock > 0 else "Los niveles de inventario se encuentran estables y dentro de los márgenes de seguridad."
+        "products": all_products_list,
+        "low_stock_products": low_stock_list,
+        "ai_suggestion": "Basado en el stock en tiempo real, se requiere abastecimiento urgente para los ítems con escasez." if len(low_stock_products) > 0 else "Los niveles de inventario se encuentran estables y dentro de los márgenes de seguridad."
     }
 
 @router.post("/movement")
