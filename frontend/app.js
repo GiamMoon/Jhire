@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 formData.append('username', email); // FastAPI OAuth2 uses 'username' mapped to our email (giampier)
                 formData.append('password', password);
                 
-                const loginRes = await fetch('http://localhost:8000/api/auth/token', {
+                const loginRes = await fetch('/api/auth/token', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: formData.toString()
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Create the user
-                const res = await fetch('http://localhost:8000/api/auth/register', {
+                const res = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 formData.append('username', email);
                 formData.append('password', password);
                 
-                const loginRes = await fetch('http://localhost:8000/api/auth/token', {
+                const loginRes = await fetch('/api/auth/token', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: formData.toString()
@@ -355,12 +355,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (text.includes('EXPORTAR REPORTE') || text.includes('DESCARGAR EXCEL')) {
             e.preventDefault();
             Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Generando Excel...', showConfirmButton: false, timer: 2000 });
-            window.location.href = "http://localhost:8000/api/reports/excel";
+            window.location.href = "/api/reports/excel";
         }
         if (text.includes('DESCARGAR PDF')) {
             e.preventDefault();
             Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Generando PDF...', showConfirmButton: false, timer: 2000 });
-            window.location.href = "http://localhost:8000/api/reports/pdf";
+            window.location.href = "/api/reports/pdf";
         }
 
         // AI Insights Refresh
@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const email = document.getElementById('newEmail').value;
                 const password = document.getElementById('newPassword').value;
                 
-                const res = await fetch('http://localhost:8000/api/auth/register', {
+                const res = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashboardCheck = document.getElementById('total-sales');
     if (dashboardCheck) {
         // Fetch from nivel-ventas/pcv-ml to stay consistent with nivel_ventas.html
-        fetch('http://localhost:8000/api/nivel-ventas/pcv-ml')
+        fetch('/api/nivel-ventas/pcv-ml')
             .then(res => res.json())
             .then(nvData => {
                 // Use the same VA_real_30d that nivel_ventas.html uses
@@ -463,7 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }).catch(() => {});
 
-        fetch('http://localhost:8000/api/dashboard/summary')
+        fetch('/api/dashboard/summary')
             .then(res => res.json())
             .then(data => {
                 // Órdenes del Mes y Ticket Promedio
@@ -704,7 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch Products dynamically if productGrid exists
     const productGrid = document.getElementById('productGrid');
     if (productGrid) {
-        fetch('http://localhost:8000/api/products')
+        fetch('/api/products')
             .then(res => {
                 if (!res.ok) throw new Error("HTTP " + res.status);
                 return res.json();
@@ -805,7 +805,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const productTitle = document.getElementById('productTitle');
     
     if (productId && productTitle) {
-        fetch(`http://localhost:8000/api/products/${productId}`)
+        fetch(`/api/products/${productId}`)
             .then(res => {
                 if (!res.ok) throw new Error("Product fetch failed");
                 return res.json();
@@ -886,7 +886,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ─── TRACK PRODUCT VIEW (Personalization Engine) ───────
                 const _trackToken = localStorage.getItem('jhire_jwt_token');
                 if (_trackToken) {
-                    fetch('http://localhost:8000/api/recommendations/track-view', {
+                    fetch('/api/recommendations/track-view', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -902,7 +902,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const compSection = document.getElementById('complementarySection');
                 const compGrid = document.getElementById('complementaryGrid');
                 if (compSection && compGrid) {
-                    fetch(`http://localhost:8000/api/recommendations/complementary/${productId}`)
+                    fetch(`/api/recommendations/complementary/${productId}`)
                         .then(r => r.json())
                         .then(items => {
                             if (!Array.isArray(items) || items.length === 0) return;
@@ -944,7 +944,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (_recSection && _recGrid && productGrid) {
         const _recToken = localStorage.getItem('jhire_jwt_token');
         if (_recToken) {
-            fetch('http://localhost:8000/api/recommendations/for-me', {
+            fetch('/api/recommendations/for-me', {
                 headers: { 'Authorization': `Bearer ${_recToken}` }
             })
             .then(r => { if (!r.ok) throw new Error('Not auth'); return r.json(); })
@@ -1153,7 +1153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
-                const response = await fetch('http://localhost:8000/api/chat/', {
+                const response = await fetch('/api/chat/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: message })
@@ -1299,7 +1299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const aiList = document.getElementById('cartAiRecsList');
         if (data.length > 0 && aiContainer && aiList) {
             const productIds = data.map(i => i.id);
-            fetch('http://localhost:8000/api/orders/recommend-products', {
+            fetch('/api/orders/recommend-products', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ current_product_ids: productIds })
@@ -1368,7 +1368,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 registration_time_seconds: regTimeSeconds
             };
             
-            const res = await fetch('http://localhost:8000/api/orders/', {
+            const res = await fetch('/api/orders/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(bodyPayload)
@@ -1402,7 +1402,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(window.location.pathname.includes('mis_pedidos.html')) {
         const token = localStorage.getItem('jhire_jwt_token');
         if(token) {
-            fetch('http://localhost:8000/api/orders/me', {
+            fetch('/api/orders/me', {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(async r => {
                 if(!r.ok) {
@@ -1510,7 +1510,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(confirmationSeconds < 1) confirmationSeconds = 1;
                 }
                 
-                const res = await fetch(`http://localhost:8000/api/orders/${orderId}/status`, {
+                const res = await fetch(`/api/orders/${orderId}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ status: newStatus, sale_confirmation_seconds: confirmationSeconds })
@@ -1527,7 +1527,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadAdminOrders = async () => {
             if(!document.getElementById('adminOrdersTableBody')) return;
             try {
-                const res = await fetch('http://localhost:8000/api/orders/admin', {
+                const res = await fetch('/api/orders/admin', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if(res.status === 403) {
@@ -1636,7 +1636,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // --- WebSockets Real-Time ---
         try {
-            const wsUrl = window.location.protocol === 'https:' ? 'wss://' : 'ws://' + 'localhost:8000/api/dashboard/ws';
+            const wsUrl = window.location.protocol === 'https:' ? 'wss://' : 'ws://' + window.location.host + '/api/dashboard/ws';
             const dashboardWs = new WebSocket(wsUrl);
             dashboardWs.onmessage = function(event) {
                 const data = JSON.parse(event.data);
@@ -1671,7 +1671,7 @@ async function loadHistoryAdminOrders() {
     
     try {
         const token = localStorage.getItem('jhire_jwt_token');
-        const res = await fetch('http://localhost:8000/api/orders/admin/all', {
+        const res = await fetch('/api/orders/admin/all', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -1726,7 +1726,7 @@ async function loadInventory() {
     const token = localStorage.getItem('jhire_jwt_token');
     
     try {
-        const res = await fetch('http://localhost:8000/api/inventory/', {
+        const res = await fetch('/api/inventory/', {
              headers: { 'Authorization': `Bearer ${token}` }
         });
         if(!res.ok) throw new Error('Error al conectar con Inventario');
@@ -1799,7 +1799,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             
             try {
-                const res = await fetch('http://localhost:8000/api/inventory/movement', {
+                const res = await fetch('/api/inventory/movement', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify(payload)
@@ -1843,7 +1843,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const crmClientsTableBody = document.getElementById('crmClientsTableBody');
         if (crmClientsTableBody) {
             try {
-                const res = await fetch('http://localhost:8000/api/crm/clients', {
+                const res = await fetch('/api/crm/clients', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) {
@@ -1970,7 +1970,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             const token = localStorage.getItem('jhire_jwt_token');
-            const res = await fetch(`http://localhost:8000/api/crm/recommendations/${userId}`, {
+            const res = await fetch(`/api/crm/recommendations/${userId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -2092,7 +2092,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const token = localStorage.getItem('jhire_jwt_token');
-                const res = await fetch('http://localhost:8000/api/crm/send-email', {
+                const res = await fetch('/api/crm/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({
@@ -2169,7 +2169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const token = localStorage.getItem('jhire_jwt_token');
-                const res = await fetch('http://localhost:8000/api/crm/whatsapp-link', {
+                const res = await fetch('/api/crm/whatsapp-link', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({
@@ -2228,7 +2228,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const token = localStorage.getItem('jhire_jwt_token');
-                const res = await fetch('http://localhost:8000/api/crm/interactions', {
+                const res = await fetch('/api/crm/interactions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({
@@ -2292,7 +2292,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const token = localStorage.getItem('jhire_jwt_token');
-            const res = await fetch('http://localhost:8000/api/crm/send-email', {
+            const res = await fetch('/api/crm/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({
@@ -2326,7 +2326,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const token = localStorage.getItem('jhire_jwt_token');
-            const res = await fetch(`http://localhost:8000/api/crm/clients/${userId}/interactions`, {
+            const res = await fetch(`/api/crm/clients/${userId}/interactions`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -2377,7 +2377,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(invContainer) {
             const token = localStorage.getItem('jhire_jwt_token');
             try {
-                const res = await fetch('http://localhost:8000/api/billing/', {
+                const res = await fetch('/api/billing/', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if(res.ok) {
@@ -2422,7 +2422,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     cancelButtonText: 'Cerrar'
                                 }).then((result) => {
                                     if(result.isConfirmed) {
-                                        window.open('http://localhost:8000/api/billing/' + d.invId + '/pdf', '_blank');
+                                        window.open('/api/billing/' + d.invId + '/pdf', '_blank');
                                     }
                                 });
                             });

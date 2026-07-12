@@ -399,7 +399,7 @@ function showSunatResult(data) {
                     <span class="text-xs font-black text-emerald-600">Procesado en ${data.sunat.total_time_seconds}s</span>
                 </div>
                 <div class="flex gap-2">
-                    <a href="http://localhost:8000/api/billing/${data.invoice.id}/pdf" target="_blank" class="px-3 py-2 bg-primary/10 text-primary text-[10px] font-bold rounded-lg hover:bg-primary/20 transition-colors flex items-center gap-1">
+                    <a href="/api/billing/${data.invoice.id}/pdf" target="_blank" class="px-3 py-2 bg-primary/10 text-primary text-[10px] font-bold rounded-lg hover:bg-primary/20 transition-colors flex items-center gap-1">
                         <span class="material-symbols-outlined text-[14px]">picture_as_pdf</span> PDF
                     </a>
                     <button onclick="document.getElementById('sunatModal').classList.add('hidden'); loadRecentInvoices();" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:opacity-90">CERRAR</button>
@@ -410,7 +410,7 @@ function showSunatResult(data) {
 
 async function loadRecentInvoices() {
     try {
-        const res = await fetch('http://localhost:8000/api/billing/');
+        const res = await fetch('/api/billing/');
         const invoices = await res.json();
         const container = document.getElementById('recentInvoicesContainer');
         if (!container) return;
@@ -470,7 +470,7 @@ async function loadRecentInvoices() {
                         <p class="text-sm font-black text-on-surface">S/ ${inv.total.toFixed(2)}</p>
                         <p class="text-[10px] ${sc} font-bold uppercase">${inv.sunat_status}</p>
                     </div>
-                    <a href="http://localhost:8000/api/billing/${inv.id}/pdf" target="_blank" class="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-primary/10 text-primary">
+                    <a href="/api/billing/${inv.id}/pdf" target="_blank" class="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-primary/10 text-primary">
                         <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
                     </a>
                 </div>
@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const startTime = Date.now();
             
             try {
-                const res = await fetch('http://localhost:8000/api/billing/emitir', {
+                const res = await fetch('/api/billing/emitir', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                     body: JSON.stringify({ order_id: parseInt(orderId), client_ruc_dni: rucDni, client_name: clientName })

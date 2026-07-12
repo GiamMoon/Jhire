@@ -310,7 +310,7 @@
 <script>
 let trendChartInst = null;
 let effChartInst = null;
-const API = 'http://localhost:8000/api/billing/tpf/reporte';
+const API = '/api/billing/tpf/reporte';
 
 async function loadTpf() {
     const start = document.getElementById('tpf-start').value;
@@ -333,7 +333,7 @@ async function loadTpf() {
         const [currentRes, prevRes, mlRes] = await Promise.all([
             fetch(`${API}?start_date=${start}&end_date=${end}&group_days=${groupDays}`),
             fetch(`${API}?start_date=${refStart.toISOString().split('T')[0]}&end_date=${refEnd.toISOString().split('T')[0]}&group_days=${groupDays}`),
-            fetch(`http://localhost:8000/api/tiempo-facturacion/predict`)
+            fetch(`/api/tiempo-facturacion/predict`)
         ]);
         
         const currentData = (await currentRes.json()).data;

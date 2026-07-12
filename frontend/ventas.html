@@ -249,7 +249,7 @@
 
     async function loadPosProducts() {
         try {
-            const res = await fetch('http://localhost:8000/api/products');
+            const res = await fetch('/api/products');
             posProducts = await res.json();
             renderPosProducts(posProducts);
         } catch (e) {
@@ -394,7 +394,7 @@
         const productIds = posTicket.map(i => i.id);
         
         try {
-            const res = await fetch('http://localhost:8000/api/orders/recommend-products', {
+            const res = await fetch('/api/orders/recommend-products', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ current_product_ids: productIds })
@@ -448,7 +448,7 @@
                 registration_time_seconds: regTimeSeconds
             };
             
-            const res = await fetch('http://localhost:8000/api/orders/', {
+            const res = await fetch('/api/orders/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(bodyPayload)

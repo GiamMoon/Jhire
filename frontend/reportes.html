@@ -80,10 +80,10 @@
                 <p class="text-outline mt-1 font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-success animate-pulse"></span> Centro de inteligencia de negocio JHIRE</p>
             </div>
             <div class="flex flex-wrap gap-3">
-                <button onclick="window.location.href='http://localhost:8000/api/reports/excel'" class="px-5 py-2.5 bg-success text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                <button onclick="window.location.href='/api/reports/excel'" class="px-5 py-2.5 bg-success text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2">
                     <span class="material-symbols-outlined text-sm">table_chart</span> EXPORTAR EXCEL
                 </button>
-                <button onclick="window.location.href='http://localhost:8000/api/reports/pdf'" class="px-5 py-2.5 bg-error text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                <button onclick="window.location.href='/api/reports/pdf'" class="px-5 py-2.5 bg-error text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2">
                     <span class="material-symbols-outlined text-sm">picture_as_pdf</span> EXPORTAR PDF
                 </button>
             </div>
@@ -206,7 +206,7 @@
 </main>
 
 <script>
-const API = 'http://localhost:8000';
+const API = '';
 let allOrders = [];
 const fmt = v => `S/ ${Number(v).toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
 
